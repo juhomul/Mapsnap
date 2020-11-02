@@ -1,4 +1,4 @@
-package com.example.group3app;
+package com.example.group3;
 
 import org.junit.Test;
 
