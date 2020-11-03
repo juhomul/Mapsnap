@@ -14,8 +14,27 @@ const port = 3000;
 app.use(bodyParser.json());
 
 // Object arrays for development before database
-let users = [];
-let stories = [];
+let users = [
+  {
+    id: 1,
+    username: "ossi",
+    email: "ossi.miilukangas@hotmail.com",
+    password: bcrypt.hashSync("ossi123", 6),
+  },
+];
+
+let stories = [
+  {
+    id: 1,
+    userId: 1,
+    username: "ossi",
+    title: "Testistoori",
+    desc: "testitesti",
+    image: {},
+    lat: 65.0131155,
+    lng: 25.4732011,
+  },
+];
 
 /*********************************************
  * AUTHENTICATION STRATEGIES
@@ -123,6 +142,91 @@ app.get("/user/login",
 app.get("/user", (req, res) => {
   res.json({ users });
 });
+
+/*********************************************
+ * STORY ENDPOINTS
+ ********************************************/
+
+app.get("/story", (req, res) => {
+  res.json({ stories });
+});
+
+// Get story by its id
+app.get("/story/id/:id", (req, res) => {
+  const story = stories.find((e) => e.id == req.params.id);
+  if (story !== undefined) {
+    res.json({ story });
+  } else {
+    res.status(404).send("Story Id Not Found");
+  }
+});
+
+// Get stories by userId
+app.get("/story/userid/:userId", (req, res) => {
+  const userStories = stories.filter((e) => e.userId == req.params.userId);
+  if (userStories.length > 0) {
+    res.json({ userStories });
+  } else {
+    res.status(404).send("Stories with the userId not found");
+  }
+});
+
+// Get all story locations
+app.get("/story/location", (req, res) => {
+  let locations = []
+  stories.forEach(e => {
+    let locObj = {
+      id: e.id,
+      lat: e.lat,
+      lng: e.lng,
+    };
+    locations.push(locObj);
+  });
+  res.status(200).send({locations})
+})
+
+app.post("/story",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    //TODO: test that request body includes all properties
+
+    const newStory = {
+      id: stories.length + 1,
+      userId: req.user.id,
+      username: req.user.username,
+      title: req.body.title,
+      desc: req.body.desc,
+      image: req.body.image,
+      lat: req.body.lat,
+      lng: req.body.lng,
+    };
+    stories.push(newStory);
+
+    res.status(201).json(stories[stories.length - 1]);
+  }
+);
+
+app.delete("/story/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // find index of a json object from resources by id
+    const result = stories.findIndex((e) => e.id == req.params.id);
+
+    // test that index was found
+    if (result === -1) {
+      res.status(404).send("Story Id Not Found");
+      return;
+    }
+
+    // test that the user is authorized to modify the resource
+    if (stories[result].userId !== req.user.id) {
+      res.status(403).send("Forbidden: User not authorized");
+      return;
+    }
+    stories.splice(result, 1);
+    res.status(200).send("Story deleted, Id: " + req.params.id);
+  }
+);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
