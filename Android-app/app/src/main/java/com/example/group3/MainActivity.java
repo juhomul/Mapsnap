@@ -14,5 +14,9 @@ public class MainActivity extends AppCompatActivity {
 
         //Intent loginIntent = new Intent(this, loginActivity.class);
         //startActivity(loginIntent);
+
+        //Map open intent
+        Intent mapsIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapsIntent);
     }
 }
