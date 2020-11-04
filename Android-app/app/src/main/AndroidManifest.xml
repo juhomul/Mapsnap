@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Group3">
 
-        <activity android:name=".loginActivity">
+        <activity android:name=".loginActivity"></activity>
         <activity android:name=".MainActivity">
 
             <intent-filter>
@@ -19,7 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>
