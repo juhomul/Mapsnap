@@ -98,7 +98,11 @@ app.post("/user/register", (req, res) => {
     return;
   }
 
-  //TODO: Test that username is not taken
+  //Test that username is not taken
+  if (users.find((e) => e.username == req.body.username) !== undefined) {
+    res.status(400).send("Bad Request: Username already taken");
+    return;
+  }
 
   // hash the password
   const hashedPassword = bcrypt.hashSync(req.body.password, 6);
@@ -189,6 +193,26 @@ app.post("/story",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     //TODO: test that request body includes all properties
+    if ("title" in req.body == false) {
+      res.status(400).send("Bad Request: Missing title");
+      return;
+    }
+    if ("desc" in req.body == false) {
+      res.status(400).send("Bad Request: Missing desc");
+      return;
+    }
+    if ("image" in req.body == false) {
+      res.status(400).send("Bad Request: Missing image");
+      return;
+    }
+    if ("lat" in req.body == false) {
+      res.status(400).send("Bad Request: Missing lat");
+      return;
+    }
+    if ("lng" in req.body == false) {
+      res.status(400).send("Bad Request: Missing lng");
+      return;
+    }
 
     const newStory = {
       id: stories.length + 1,
