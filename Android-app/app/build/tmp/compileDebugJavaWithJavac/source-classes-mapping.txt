@@ -1,0 +1,21 @@
+com/example/group3/SignUpActivity.java
+ com.example.group3.SignUpActivity
+ com.example.group3.SignUpActivity$1
+ com.example.group3.SignUpActivity$2
+com/example/group3/MapsActivity.java
+ com.example.group3.MapsActivity
+com/example/group3/loginActivity.java
+ com.example.group3.loginActivity
+ com.example.group3.loginActivity$1
+ com.example.group3.loginActivity$2
+com/example/group3/BuildConfig.java
+ com.example.group3.BuildConfig
+com/example/group3/ExampleExplore.java
+ com.example.group3.ExampleExplore
+ com.example.group3.ExampleExplore$1
+com/example/group3/ExampleProfile.java
+ com.example.group3.ExampleProfile
+ com.example.group3.ExampleProfile$1
+com/example/group3/MainActivity.java
+ com.example.group3.MainActivity
+ com.example.group3.MainActivity$1
