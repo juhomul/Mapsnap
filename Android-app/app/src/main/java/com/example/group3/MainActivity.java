@@ -53,5 +53,7 @@ public class MainActivity extends AppCompatActivity {
         //ExampleProfile
         Intent profileIntent = new Intent(this, ExampleProfile.class);
         startActivity(profileIntent);
+
+        //Version 0.1
     }
 }
