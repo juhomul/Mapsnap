@@ -9,27 +9,27 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity {
+public class ExampleExplore extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_example_explore);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
-        bottomNavigationView.setSelectedItemId(R.id.map);
+        bottomNavigationView.setSelectedItemId(R.id.explore);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.map:
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.explore:
-                        startActivity(new Intent(getApplicationContext(), ExampleExplore.class));
-                        finish();
-                        overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.profile:
@@ -41,14 +41,5 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        Intent loginIntent = new Intent(this, loginActivity.class);
-        startActivity(loginIntent);
-        //Intent loginIntent = new Intent(this, loginActivity.class);
-        //startActivity(loginIntent);
-
-        //Map open intent
-        Intent mapsIntent = new Intent(this, MapsActivity.class);
-        startActivity(mapsIntent);
     }
 }
