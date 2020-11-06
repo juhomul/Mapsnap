@@ -18,7 +18,6 @@
         android:theme="@style/Theme.Group3">
         <activity android:name=".ExampleProfile"></activity>
         <activity android:name=".ExampleExplore" />
-        <activity android:name=".MapActivity" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
