@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
-const BasicStrategy = require("passport-http").BasicStrategy;
 const jwt = require("jsonwebtoken");
 const jwtStrategy = require("passport-jwt").Strategy,
   ExtractJwt = require("passport-jwt").ExtractJwt;
@@ -217,7 +216,7 @@ app.post("/story",
   }
 );
 
-app.delete("/story/:id",
+app.delete("/story/id/:id",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     // find index of a json object from resources by id
