@@ -35,30 +35,6 @@ let stories = [
     lng: 25.4732011,
   },
 ];
-
-/*********************************************
- * AUTHENTICATION STRATEGIES
- ********************************************/
-
-// Http basic authentication strategy
-passport.use(
-  new BasicStrategy(function (username, password, done) {
-    // find user from resources by username
-    const user = users.find((e) => e.username == username);
-
-    // if user not found
-    if (user == undefined) {
-      return done(null, false, { message: "HTTP Basic username not found" });
-    }
-
-    // compare passwords
-    if (bcrypt.compareSync(password, user.password) == false) {
-      return done(null, false, { message: "HTTP Basic password not found" });
-    }
-
-    return done(null, user);
-  })
-);
   
 // JWT authentication strategy
 let options = {};
@@ -98,7 +74,11 @@ app.post("/user/register", (req, res) => {
     return;
   }
 
-  //TODO: Test that username is not taken
+  //Test that username is not taken
+  if (users.find((e) => e.username == req.body.username) !== undefined) {
+    res.status(400).send("Bad Request: Username already taken");
+    return;
+  }
 
   // hash the password
   const hashedPassword = bcrypt.hashSync(req.body.password, 6);
@@ -115,13 +95,24 @@ app.post("/user/register", (req, res) => {
 });
 
 app.get("/user/login",
-  passport.authenticate("basic", { session: false }),
   (req, res) => {
+    const user = users.find((e) => e.username == req.body.username);
+
+    // if user not found
+    if (user === undefined) {
+      res.status(401).send("Unauthorized: Username not found");
+    }
+
+    // compare passwords
+    if (bcrypt.compareSync(req.body.password, user.password) == false) {
+      res.status(401).send("Unauthorized: Wrong password");
+    }
+
     // construct body and set options
     const body = {
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
+      id: user.id,
+      username: user.username,
+      email: user.email,
     };
 
     const payload = {
@@ -189,6 +180,26 @@ app.post("/story",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     //TODO: test that request body includes all properties
+    if ("title" in req.body == false) {
+      res.status(400).send("Bad Request: Missing title");
+      return;
+    }
+    if ("desc" in req.body == false) {
+      res.status(400).send("Bad Request: Missing desc");
+      return;
+    }
+    if ("image" in req.body == false) {
+      res.status(400).send("Bad Request: Missing image");
+      return;
+    }
+    if ("lat" in req.body == false) {
+      res.status(400).send("Bad Request: Missing lat");
+      return;
+    }
+    if ("lng" in req.body == false) {
+      res.status(400).send("Bad Request: Missing lng");
+      return;
+    }
 
     const newStory = {
       id: stories.length + 1,
