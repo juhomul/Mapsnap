@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +14,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     Button signUpButton, backButton;
     EditText editUsername, editPassword, editPassword2;
-    String newUsername, newPassword, newPassword2;
+    String getUsernameText, getPasswordText, getPasswordConfirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +38,32 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newUsername = editUsername.getText().toString();
-                newPassword = editPassword.getText().toString();
-                newPassword2 = editPassword2.getText().toString();
-                if(newPassword.equals(newPassword2)) {
+                getUsernameText = editUsername.getText().toString();
+                getPasswordText = editPassword.getText().toString();
+                getPasswordConfirm = editPassword2.getText().toString();
+
+                if(TextUtils.isEmpty(getUsernameText)) {
+                    editUsername.setError("This cannot be empty");
+                }
+                else if(TextUtils.isEmpty(getPasswordText)) {
+                    editPassword.setError("This cannot be empty");
+                }
+                else if(getPasswordText.equals(getPasswordConfirm)) {
                     Toast.makeText(getApplicationContext(),
-                            "Sign Up complete", Toast.LENGTH_SHORT).show();
-                    startActivity(backIntent);
+                            "Sign up complete", Toast.LENGTH_SHORT).show();
+                    Intent loginIntent = new Intent(SignUpActivity.this, loginActivity.class);
+                    loginIntent.putExtra("username", getUsernameText);
+                    loginIntent.putExtra("password", getPasswordText);
+                    startActivity(loginIntent);
                     //todo
                 }
-                else{
-                    Toast.makeText(getApplicationContext(),
-                            "Password doesn't match", Toast.LENGTH_SHORT).show();
+                else {
+                    editPassword2.setError("Password doesn't match");
                 }
+
+
+
+
 
             }
         });
