@@ -75,7 +75,7 @@ app.post("/user/register", (req, res) => {
 
   //Test that username is not taken
   if (users.find((e) => e.username == req.body.username) !== undefined) {
-    res.status(400).send("Bad Request: Username already taken");
+    res.status(409).send("Conflict: Username already taken");
     return;
   }
 
@@ -100,11 +100,13 @@ app.get("/user/login",
     // if user not found
     if (user === undefined) {
       res.status(401).send("Unauthorized: Username not found");
+      return;
     }
 
     // compare passwords
     if (bcrypt.compareSync(req.body.password, user.password) == false) {
       res.status(401).send("Unauthorized: Wrong password");
+      return;
     }
 
     // construct body and set options
@@ -125,6 +127,28 @@ app.get("/user/login",
     // create and return token
     const token = jwt.sign(payload, jwtSecretKey.secret, options);
     res.status(200).json({ token });
+  }
+);
+
+app.delete("/user/id/:id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    // find index of a json object from resources by id
+    const result = users.findIndex((e) => e.id == req.params.id);
+
+    // test that index was found
+    if (result === -1) {
+      res.status(404).send("User Id Not Found");
+      return;
+    }
+
+    // test that the user is authorized to modify the resource
+    if (users[result].id !== req.user.id) {
+      res.status(403).send("Forbidden: User not authorized");
+      return;
+    }
+    users.splice(result, 1);
+    res.status(200).send("User deleted, Id: " + req.params.id);
   }
 );
 
