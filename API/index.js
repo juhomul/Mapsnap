@@ -93,7 +93,7 @@ app.post("/user/register", (req, res) => {
   res.status(201).json({ newUser });
 });
 
-app.get("/user/login",
+app.post("/user/login",
   (req, res) => {
     console.log(req.body);
 
