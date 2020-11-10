@@ -95,6 +95,9 @@ app.post("/user/register", (req, res) => {
 
 app.get("/user/login",
   (req, res) => {
+    console.log(req.body);
+
+
     const user = users.find((e) => e.username == req.body.username);
 
     // if user not found
