@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const jwtStrategy = require("passport-jwt").Strategy,
   ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwtSecretKey = require("./jwt-key.json");
+const dbconf = require("./db_cfg.json");
 const e = require("express");
 const mysql = require("mysql");
 const app = express();
@@ -16,11 +17,11 @@ app.use(bodyParser.json());
 
 // Create MySQL connection
 var db = mysql.createConnection({
-  host: "group3db.czavswxxt8w0.us-east-1.rds.amazonaws.com",
-  user: "admin",
-  password: "adminroot",
-  database: "group3db"
-})
+  host: dbconf.host,
+  user: dbconf.user,
+  password: dbconf.password,
+  database: dbconf.database
+});
 
 db.connect();
 
