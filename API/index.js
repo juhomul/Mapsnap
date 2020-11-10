@@ -226,7 +226,11 @@ app.delete("/user/id/:id",
 app.get("/user", (req, res) => {
   let sql = "SELECT * FROM user";
   db.query(sql, function(err, users, fields) {
-    if (err) throw err;
+    if (err) {
+      console.log(err);
+      res.status(500).send("MySQL ERROR");
+      return;
+    }
     res.status(200).json({ users })
   })
 });
