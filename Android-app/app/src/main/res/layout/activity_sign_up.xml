@@ -27,13 +27,23 @@
         android:paddingTop="50dp"
         android:id="@+id/usernameEdit"
         android:hint="Username"/>
-
     <EditText
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameEdit"
+        android:paddingTop="30dp"
+        android:id="@+id/emailEdit"
+        android:hint="Email"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailEdit"
         android:paddingTop="30dp"
         android:id="@+id/passwordEdit"
         android:hint="Password"
