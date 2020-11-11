@@ -24,7 +24,7 @@ public class ExampleExplore extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.map:
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
