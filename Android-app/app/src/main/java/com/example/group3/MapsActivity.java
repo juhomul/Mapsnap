@@ -78,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             //Add marker
                             MarkerOptions options = new MarkerOptions().position(latLng)
-                                    .title("You are here!");
+                                    .title("!Enemy airstrike incomink to this location!");
                             //Zoom map
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
 

@@ -43,12 +43,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Login
-        Intent loginIntent = new Intent(this, loginActivity.class);
-        startActivity(loginIntent);
+        //Intent loginIntent = new Intent(this, loginActivity.class);
+        //startActivity(loginIntent);
 
         //Map open intent
-        //Intent mapsIntent = new Intent(this, MapsActivity.class);
-        //startActivity(mapsIntent);
+        Intent mapsIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapsIntent);
 
         //ExampleProfile
         //Intent profileIntent = new Intent(this, ExampleProfile.class);
