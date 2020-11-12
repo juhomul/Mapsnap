@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -21,11 +22,11 @@ public class MainActivity extends AppCompatActivity {
         //startActivity(loginIntent);
 
         //Map open intent
-        //Intent mapsIntent = new Intent(this, MapsActivity.class);
-        //startActivity(mapsIntent);
+        Intent mapsIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapsIntent);
 
         //ProfileActivity
-        Intent profileIntent = new Intent(this, ProfileActivity.class);
-        startActivity(profileIntent);
+        //Intent profileIntent = new Intent(this, ProfileActivity.class);
+        //startActivity(profileIntent);
     }
 }
