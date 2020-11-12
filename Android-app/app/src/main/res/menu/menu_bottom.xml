@@ -13,7 +13,7 @@
 
     <item
         android:title="Map"
-        android:id="@+id/map"
+        android:id="@+id/map_view"
         android:icon="@drawable/ic_map" />
 
     <item

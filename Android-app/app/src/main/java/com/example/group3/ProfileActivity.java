@@ -9,34 +9,35 @@ import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class ExampleExplore extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_example_explore);
+        setContentView(R.layout.activity_profile);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
-        bottomNavigationView.setSelectedItemId(R.id.explore);
+        bottomNavigationView.setSelectedItemId(R.id.profile);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.map:
+                    case R.id.map_view:
                         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.explore:
-                        return true;
-
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(), ExampleProfile.class));
+                        startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
+
+                    case R.id.profile:
+                        return true;
+
                 }
                 return false;
             }
