@@ -137,7 +137,7 @@ app.post("/user/login", (req, res) => {
 
     // create and return token
     const token = jwt.sign(payload, jwtSecretKey.secret, options);
-    res.status(200).send({ userId: dbuser.userid, token: token });
+    res.status(200).send({ userId: dbuser.userid, username: dbuser.username, email: dbuser.email, token: token });
   })
 });
 
