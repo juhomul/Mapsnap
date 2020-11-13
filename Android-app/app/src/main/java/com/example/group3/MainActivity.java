@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -16,44 +17,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
-        bottomNavigationView.setSelectedItemId(R.id.map);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.map:
-                        return true;
-
-                    case R.id.explore:
-                        startActivity(new Intent(getApplicationContext(), ExampleExplore.class));
-                        finish();
-                        overridePendingTransition(0, 0);
-                        return true;
-
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(), ExampleProfile.class));
-                        finish();
-                        overridePendingTransition(0, 0);
-                        return true;
-                }
-                return false;
-            }
-        });
-
-        //Login
-        //Intent loginIntent = new Intent(this, loginActivity.class);
-        //startActivity(loginIntent);
+        //jos löytyy tallennettu user nii menee suoraa loginnin ohi
+        if(SaveSharedPreference.getUserName(MainActivity.this).length() == 0)
+        {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+        }
+        else
+        {
+            Intent mapsIntent = new Intent(this, MapsActivity.class);
+            startActivity(mapsIntent);
+        }
 
         //Map open intent
         //Intent mapsIntent = new Intent(this, MapsActivity.class);
         //startActivity(mapsIntent);
 
-        //ExampleProfile
-        Intent profileIntent = new Intent(this, ExampleProfile.class);
-        startActivity(profileIntent);
+        //ProfileActivity
+        //Intent profileIntent = new Intent(this, ProfileActivity.class);
+        //startActivity(profileIntent);
 
-        //Version 0.1
+        //Camera
+        //Intent cameraIntent = new Intent(this, cameraActivity.class);
+        //startActivity(cameraIntent);
+
+        //Version 0.2
     }
 }

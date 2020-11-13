@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".loginActivity">
+    tools:context=".LoginActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -18,32 +18,61 @@
         android:paddingTop="150dp"
         android:id="@+id/loginText"/>
 
-    <EditText
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
         app:layout_constraintTop_toBottomOf="@+id/loginText"
-        android:paddingTop="50dp"
-        android:id="@+id/usernameEdit"
-        android:hint="Username"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/padding" />
 
     <EditText
+        android:id="@+id/usernameEdit"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_person"
+        android:hint="Username"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/padding"
+        android:inputType="textPersonName"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
         app:layout_constraintTop_toBottomOf="@+id/usernameEdit"
-        android:paddingTop="30dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/padding2" />
+
+    <EditText
         android:id="@+id/passwordEdit"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:drawableStart="@android:drawable/ic_lock_idle_lock"
+        android:drawableTint="#A82E2A2A"
         android:hint="Password"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/padding2" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEdit"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="Stay logged in"
+        android:id="@+id/stayLoggedIn"
+        />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
-        app:layout_constraintTop_toBottomOf="@+id/passwordEdit"
+        app:layout_constraintTop_toBottomOf="@+id/stayLoggedIn"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:id="@+id/loginButton"
