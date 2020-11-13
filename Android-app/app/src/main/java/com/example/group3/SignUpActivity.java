@@ -35,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
 
-        Intent backIntent = new Intent(SignUpActivity.this, loginActivity.class);
+        Intent backIntent = new Intent(SignUpActivity.this, LoginActivity.class);
 
         signUpButton = findViewById(R.id.signUpButton);
         backButton = findViewById(R.id.backButton);

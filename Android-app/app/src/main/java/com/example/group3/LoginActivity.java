@@ -21,7 +21,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class loginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     Button login, signUp;
     EditText editUsername, editPassword;
@@ -89,7 +89,7 @@ public class loginActivity extends AppCompatActivity {
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent signUpIntent = new Intent(loginActivity.this, SignUpActivity.class);
+                Intent signUpIntent = new Intent(LoginActivity.this, SignUpActivity.class);
                 startActivity(signUpIntent);
             }
         });
@@ -109,7 +109,7 @@ public class loginActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                        Intent profileIntent = new Intent(loginActivity.this, ExampleProfile.class); //joku activity täs
+                        Intent profileIntent = new Intent(LoginActivity.this, ProfileActivity.class); //joku activity täs
                         profileIntent.putExtra("token", token);
                         startActivity(profileIntent);
 
