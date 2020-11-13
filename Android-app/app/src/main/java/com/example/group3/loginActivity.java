@@ -3,11 +3,13 @@ package com.example.group3;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -102,25 +104,31 @@ public class loginActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Log.d("mytag", "" + response);  // printtaan vaa vastauksen
                         try {
-                            token = response.getString("token");
-                            //Toast.makeText(getApplicationContext(),
-                            //        token, Toast.LENGTH_SHORT).show();
+
+                            token = response.getString("token"); // hakee tokenin APIsta
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
+                        CheckBox stayLoggedIn = findViewById(R.id.stayLoggedIn);
+
+                        if(stayLoggedIn.isChecked()) {
+                            SaveSharedPreference.setUserName(loginActivity.this, getUsernameText); //tallentaa usernamen sharedpreferencee
+                        }
+
+                        SaveSharedPreference.setToken(loginActivity.this, token); //tallentaa tokenin sharedpreferencee
+
                         Intent profileIntent = new Intent(loginActivity.this, ExampleProfile.class); //joku activity täs
-                        profileIntent.putExtra("token", token);
                         startActivity(profileIntent);
 
-                        // jos ois get pyyntö nii tässä pitäs varmaa parsee se json vastaus
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("mytag", "" + error);
                         Toast.makeText(getApplicationContext(),
-                                "" + error, Toast.LENGTH_SHORT).show();
+                                "Password or username incorrect", Toast.LENGTH_SHORT).show();
                         //todo
                     }
                 });
