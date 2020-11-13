@@ -41,7 +41,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.side_info:
-                        // Open info activity
+                        startActivity(new Intent(getApplicationContext(), InfoActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.side_logout:
