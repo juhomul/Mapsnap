@@ -12,17 +12,17 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
-public class ProfileActivity extends AppCompatActivity {
+public class InfoActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_info);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
-        bottomNavigationView.setSelectedItemId(R.id.profile);
+        bottomNavigationView.setSelectedItemId(R.id.map_view);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -56,9 +56,6 @@ public class ProfileActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.map_view:
-                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
-                        finish();
-                        overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.explore:
@@ -68,8 +65,10 @@ public class ProfileActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.profile:
+                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
                         return true;
-
                 }
                 return false;
             }
