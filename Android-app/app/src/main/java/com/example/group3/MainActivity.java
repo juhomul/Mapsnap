@@ -66,5 +66,9 @@ public class MainActivity extends AppCompatActivity {
         //ProfileActivity
         //Intent profileIntent = new Intent(this, ProfileActivity.class);
         //startActivity(profileIntent);
+
+        //Camera
+        Intent cameraIntent = new Intent(this, cameraActivity.class);
+        startActivity(cameraIntent);
     }
 }
