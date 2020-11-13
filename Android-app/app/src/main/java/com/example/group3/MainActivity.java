@@ -25,36 +25,10 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            Intent profileIntent = new Intent(this, ProfileActivity.class);
-            startActivity(profileIntent);
+            Intent mapsIntent = new Intent(this, MapsActivity.class);
+            startActivity(mapsIntent);
         }
-
-        /*BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
-        bottomNavigationView.setSelectedItemId(R.id.google_map);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.google_map:
-                        return true;
-
-                    case R.id.explore:
-                        startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
-                        finish();
-                        overridePendingTransition(0, 0);
-                        return true;
-
-                    case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                        finish();
-                        overridePendingTransition(0, 0);
-                        return true;
-                }
-                return false;
-            }
-        });*/
-
+        
         //Map open intent
         //Intent mapsIntent = new Intent(this, MapsActivity.class);
         //startActivity(mapsIntent);
@@ -66,5 +40,7 @@ public class MainActivity extends AppCompatActivity {
         //Camera
         //Intent cameraIntent = new Intent(this, cameraActivity.class);
         //startActivity(cameraIntent);
+
+        //Version 0.2
     }
 }
