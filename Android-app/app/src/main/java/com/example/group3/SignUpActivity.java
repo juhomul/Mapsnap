@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,7 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
 
-        Intent backIntent = new Intent(SignUpActivity.this, loginActivity.class);
+        Intent backIntent = new Intent(SignUpActivity.this, LoginActivity.class);
 
         signUpButton = findViewById(R.id.signUpButton);
         backButton = findViewById(R.id.backButton);
@@ -43,6 +45,26 @@ public class SignUpActivity extends AppCompatActivity {
         editPassword = findViewById(R.id.passwordEdit);
         editPassword2 = findViewById(R.id.password2Edit);
         editEmail = findViewById(R.id.emailEdit);
+
+        TextWatcher passwordCount = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length() < 6) {
+                    editPassword.setError("Password must be at least 6 characters");
+                }
+            }
+        };
+        editPassword.addTextChangedListener(passwordCount);
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +80,11 @@ public class SignUpActivity extends AppCompatActivity {
                 getPasswordConfirm = editPassword2.getText().toString();
                 getEmailText = editEmail.getText().toString();
 
+                int length = editPassword.getText().length();
+
+                if(!isEmailValid(getEmailText)) {
+                    editEmail.setError("Invalid email address");
+                }
 
                 if(TextUtils.isEmpty(getUsernameText)) {
                     editUsername.setError("This cannot be empty");
@@ -65,9 +92,7 @@ public class SignUpActivity extends AppCompatActivity {
                 else if(TextUtils.isEmpty(getPasswordText)) {
                     editPassword.setError("This cannot be empty");
                 }
-                else if(getPasswordText.equals(getPasswordConfirm)) {
-                    Toast.makeText(getApplicationContext(),
-                            "Sign up complete", Toast.LENGTH_SHORT).show();
+                else if(getPasswordText.equals(getPasswordConfirm) && length >= 6) {
 
                     requestQueue = Volley.newRequestQueue(SignUpActivity.this);
 
@@ -81,10 +106,14 @@ public class SignUpActivity extends AppCompatActivity {
                     }
 
                     register("http://34.203.33.211/user/register");
+                    //pitäis saaha errori jos käyttäjänimi on jo käytössä
+
+                    Toast.makeText(getApplicationContext(),
+                            "Sign up complete", Toast.LENGTH_SHORT).show();
                     startActivity(backIntent);
 
                 }
-                else {
+                else if(!getPasswordText.equals(getPasswordConfirm)) {
                     editPassword2.setError("Password doesn't match");
                 }
             }
@@ -109,5 +138,8 @@ public class SignUpActivity extends AppCompatActivity {
                 });
 
         requestQueue.add(jsonObjectRequest);
+    }
+    boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }
