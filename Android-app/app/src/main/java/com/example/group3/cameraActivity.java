@@ -3,6 +3,9 @@ package com.example.group3;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -18,6 +21,7 @@ public class cameraActivity extends AppCompatActivity {
 
     private CameraKitView cameraKitView;
     private Button photoButton;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
