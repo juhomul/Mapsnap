@@ -114,12 +114,12 @@ public class LoginActivity extends AppCompatActivity {
                         CheckBox stayLoggedIn = findViewById(R.id.stayLoggedIn);
 
                         if(stayLoggedIn.isChecked()) {
-                            SaveSharedPreference.setUserName(loginActivity.this, getUsernameText); //tallentaa usernamen sharedpreferencee
+                            SaveSharedPreference.setUserName(LoginActivity.this, getUsernameText); //tallentaa usernamen sharedpreferencee
                         }
 
-                        SaveSharedPreference.setToken(loginActivity.this, token); //tallentaa tokenin sharedpreferencee
+                        SaveSharedPreference.setToken(LoginActivity.this, token); //tallentaa tokenin sharedpreferencee
 
-                        Intent profileIntent = new Intent(loginActivity.this, ExampleProfile.class); //joku activity täs
+                        Intent profileIntent = new Intent(LoginActivity.this, ProfileActivity.class); //joku activity täs
                         startActivity(profileIntent);
 
                     }

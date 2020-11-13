@@ -6,6 +6,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -36,6 +37,7 @@ public class InfoActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.side_logout:
+                        SaveSharedPreference.clearUser(InfoActivity.this);
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
