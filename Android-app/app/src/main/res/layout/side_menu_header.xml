@@ -17,11 +17,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Username"
+        android:id="@+id/showUsername"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="username@email.com" />
+        android:id="@+id/showEmail"
+        android:text="username@email.com"/>
 
 </LinearLayout>

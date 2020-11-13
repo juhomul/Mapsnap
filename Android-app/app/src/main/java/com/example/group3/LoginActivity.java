@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     RequestQueue requestQueue;
     JSONObject jsonBody;
     String token;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +107,8 @@ public class LoginActivity extends AppCompatActivity {
                         try {
 
                             token = response.getString("token"); // hakee tokenin APIsta
+                            //email = response.getString("email");
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -118,6 +121,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         SaveSharedPreference.setToken(LoginActivity.this, token); //tallentaa tokenin sharedpreferencee
+                        //SaveSharedPreference.setEmail(LoginActivity.this, email);
 
                         Intent profileIntent = new Intent(LoginActivity.this, ProfileActivity.class); //joku activity täs
                         startActivity(profileIntent);
