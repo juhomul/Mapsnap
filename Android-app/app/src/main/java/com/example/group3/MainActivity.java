@@ -20,40 +20,40 @@ public class MainActivity extends AppCompatActivity {
         //jos löytyy tallennettu user nii menee suoraa loginnin ohi
         if(SaveSharedPreference.getUserName(MainActivity.this).length() == 0)
         {
-            Intent loginIntent = new Intent(this, loginActivity.class);
+            Intent loginIntent = new Intent(this, LoginActivity.class);
             startActivity(loginIntent);
         }
         else
         {
-            Intent profileIntent = new Intent(this, ExampleProfile.class);
+            Intent profileIntent = new Intent(this, ProfileActivity.class);
             startActivity(profileIntent);
         }
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
-        bottomNavigationView.setSelectedItemId(R.id.map);
+        /*BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+        bottomNavigationView.setSelectedItemId(R.id.google_map);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.map:
+                    case R.id.google_map:
                         return true;
 
                     case R.id.explore:
-                        startActivity(new Intent(getApplicationContext(), ExampleExplore.class));
+                        startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.profile:
-                        startActivity(new Intent(getApplicationContext(), ExampleProfile.class));
+                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
                 }
                 return false;
             }
-        });
+        });*/
 
         //Login
         //Intent loginIntent = new Intent(this, loginActivity.class);
