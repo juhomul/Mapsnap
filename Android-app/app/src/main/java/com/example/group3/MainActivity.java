@@ -40,5 +40,7 @@ public class MainActivity extends AppCompatActivity {
         //Camera
         //Intent cameraIntent = new Intent(this, cameraActivity.class);
         //startActivity(cameraIntent);
+
+        //Version 0.2
     }
 }
