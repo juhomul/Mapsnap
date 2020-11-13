@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
         });*/
 
         //Login
-        //Intent loginIntent = new Intent(this, loginActivity.class);
-        //startActivity(loginIntent);
+        Intent loginIntent = new Intent(this, LoginActivity.class);
+        startActivity(loginIntent);
 
         //Map open intent
         //Intent mapsIntent = new Intent(this, MapsActivity.class);
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         //startActivity(profileIntent);
 
         //Camera
-        Intent cameraIntent = new Intent(this, cameraActivity.class);
-        startActivity(cameraIntent);
+        //Intent cameraIntent = new Intent(this, cameraActivity.class);
+        //startActivity(cameraIntent);
     }
 }
