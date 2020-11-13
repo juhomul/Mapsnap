@@ -17,16 +17,54 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Login
-        //Intent loginIntent = new Intent(this, loginActivity.class);
-        //startActivity(loginIntent);
+        //jos löytyy tallennettu user nii menee suoraa loginnin ohi
+        if(SaveSharedPreference.getUserName(MainActivity.this).length() == 0)
+        {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+        }
+        else
+        {
+            Intent profileIntent = new Intent(this, ProfileActivity.class);
+            startActivity(profileIntent);
+        }
+
+        /*BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
+        bottomNavigationView.setSelectedItemId(R.id.google_map);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.google_map:
+                        return true;
+
+                    case R.id.explore:
+                        startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.profile:
+                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
+                        return true;
+                }
+                return false;
+            }
+        });*/
 
         //Map open intent
-        Intent mapsIntent = new Intent(this, MapsActivity.class);
-        startActivity(mapsIntent);
+        //Intent mapsIntent = new Intent(this, MapsActivity.class);
+        //startActivity(mapsIntent);
 
         //ProfileActivity
         //Intent profileIntent = new Intent(this, ProfileActivity.class);
         //startActivity(profileIntent);
+
+        //Camera
+        //Intent cameraIntent = new Intent(this, cameraActivity.class);
+        //startActivity(cameraIntent);
     }
 }
