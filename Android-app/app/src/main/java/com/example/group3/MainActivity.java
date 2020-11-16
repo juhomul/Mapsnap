@@ -18,15 +18,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //SaveSharedPreference.clearUser(this);
+
         //jos löytyy tallennettu user nii menee suoraa loginnin ohi
-        if(SaveSharedPreference.getUserName(MainActivity.this).length() == 0)
+        if(SaveSharedPreference.getStayLogged(MainActivity.this).length() == 0)
         {
             Intent loginIntent = new Intent(this, LoginActivity.class);
             startActivity(loginIntent);
         }
         else
         {
-            Intent mapsIntent = new Intent(this, MapsActivity.class);
+            Intent mapsIntent = new Intent(this, ProfileActivity.class);
             startActivity(mapsIntent);
         }
         

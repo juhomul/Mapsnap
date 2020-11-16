@@ -18,6 +18,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -39,6 +40,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private DrawerLayout drawer;
     SupportMapFragment supportMapFragment;
     FusedLocationProviderClient client;
+    TextView showEmail, showUsername;
+    String email, username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+      
+        email = SaveSharedPreference.getEmail(ProfileActivity.this);
+        username = SaveSharedPreference.getUserName(ProfileActivity.this);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.map_view);
@@ -63,6 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         return true;
 
                     case R.id.side_logout:
+                        SaveSharedPreference.clearUser(MapsActivity.this);
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
@@ -77,6 +84,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menu:
+                        showEmail = findViewById(R.id.showEmail);
+                        showEmail.setText(email);
+
+                        showUsername = findViewById(R.id.showUsername);
+                        showUsername.setText(username);
+
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
                         return true;

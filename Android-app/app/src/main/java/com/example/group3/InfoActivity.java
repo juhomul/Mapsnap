@@ -17,6 +17,8 @@ import com.google.android.material.navigation.NavigationView;
 public class InfoActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
+    TextView showEmail, showUsername;
+    String email, username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,9 @@ public class InfoActivity extends AppCompatActivity {
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+      
+        email = SaveSharedPreference.getEmail(ProfileActivity.this);
+        username = SaveSharedPreference.getUserName(ProfileActivity.this);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.map_view);
@@ -56,7 +61,12 @@ public class InfoActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menu:
-                        drawer = findViewById(R.id.drawer_layout);
+                        showEmail = findViewById(R.id.showEmail);
+                        showEmail.setText(email);
+
+                        showUsername = findViewById(R.id.showUsername);
+                        showUsername.setText(username);
+
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
                         return true;
