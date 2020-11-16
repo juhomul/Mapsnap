@@ -24,6 +24,9 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        drawer = findViewById(R.id.drawer_layout);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+      
         email = SaveSharedPreference.getEmail(ProfileActivity.this);
         username = SaveSharedPreference.getUserName(ProfileActivity.this);
 
@@ -63,8 +66,6 @@ public class ProfileActivity extends AppCompatActivity {
                         showUsername = findViewById(R.id.showUsername);
                         showUsername.setText(username);
 
-                        drawer = findViewById(R.id.drawer_layout);
-                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
                         return true;
