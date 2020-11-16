@@ -75,6 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 switch (item.getItemId()){
                     case R.id.menu:
                         drawer = findViewById(R.id.drawer_layout);
+                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
                         return true;
