@@ -151,6 +151,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             //Add marker on map
                             googleMap.addMarker(options);
 
+                            //These are test markers
+                            //TestMarkers test1 = new TestMarkers("Oulu1", 65.0121, 25.4651);
+                            //TestMarkers test2 = new TestMarkers("Oulu2", 65.1121, 25.5651);
+                            //TestMarkers test3 = new TestMarkers("Oulu3", 65.2121, 25.3651);
+                            //TestMarkers test4 = new TestMarkers("Oulu4", 65.0121, 25.2651);
+
+                            //Marker marker1 = googleMap.addMarker(test1);
                         }
                     }));
                 }
