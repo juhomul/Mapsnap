@@ -9,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -16,11 +17,16 @@ import com.google.android.material.navigation.NavigationView;
 public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
+    TextView showEmail, showUsername;
+    String email, username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore);
+
+        email = SaveSharedPreference.getEmail(ExploreActivity.this);
+        username = SaveSharedPreference.getUserName(ExploreActivity.this);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.explore);
@@ -37,6 +43,7 @@ public class ExploreActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.side_logout:
+                        SaveSharedPreference.clearUser(ExploreActivity.this);
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
@@ -51,6 +58,12 @@ public class ExploreActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menu:
+                        showEmail = findViewById(R.id.showEmail);
+                        showEmail.setText(email);
+
+                        showUsername = findViewById(R.id.showUsername);
+                        showUsername.setText(username);
+
                         drawer = findViewById(R.id.drawer_layout);
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
