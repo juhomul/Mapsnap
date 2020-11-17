@@ -17,7 +17,7 @@ const mysql = require("mysql");
 const app = express();
 const port = 3000;
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 
 // Create MySQL connection
 var db = mysql.createConnection({
