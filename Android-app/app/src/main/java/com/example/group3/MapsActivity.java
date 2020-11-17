@@ -26,6 +26,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,6 +35,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -42,6 +46,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient client;
     TextView showEmail, showUsername;
     String email, username;
+    public ArrayList<LatLng> markersList;
+
+    public MapsActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-      
+
         email = SaveSharedPreference.getEmail(MapsActivity.this);
         username = SaveSharedPreference.getUserName(MapsActivity.this);
 
@@ -130,6 +138,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(MapsActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
         }
+        //Get and build markers Arraylist!
+        getMarkers();
     }
 
     private void getCurrentLocation() {
@@ -166,6 +176,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             //Add marker on map
                             googleMap.addMarker(options);
 
+                            //These are test markers
+                            //TestMarkers test1 = new TestMarkers("Oulu1", 65.0121, 25.4651);
+                            //TestMarkers test2 = new TestMarkers("Oulu2", 65.1121, 25.5651);
+                            //TestMarkers test3 = new TestMarkers("Oulu3", 65.2121, 25.3651);
+                            //TestMarkers test4 = new TestMarkers("Oulu4", 65.0121, 25.2651);
+
+                            //Marker marker1 = googleMap.addMarker(test1);
                         }
                     }));
                 }
@@ -187,7 +204,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        getMarkers();
         getCurrentLocation();
+
+        mMap = googleMap;
+        for (int i = 0; i < markersList.size(); i++){
+            mMap.addMarker(
+                    new MarkerOptions().
+                            position(markersList.get(i)).
+                            icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
+                            title("Marker" + i));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
+        }
     }
 
     /**
@@ -199,5 +229,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
+    public ArrayList<LatLng> getMarkers(){
+        //Loops and adds new markers to the list
+        markersList = new ArrayList<LatLng>();
+
+        LatLng oulu1 = new LatLng(65.0121, 25.4651);
+        LatLng oulu2 = new LatLng(66.0782, 25.3600);
+        LatLng oulu3 = new LatLng(65.1241, 25.2121);
+        LatLng oulu4 = new LatLng(64.0021, 25.1001);
+
+        markersList.add(oulu1);
+        markersList.add(oulu2);
+        markersList.add(oulu3);
+        markersList.add(oulu4);
+
+        return markersList;
+
+    }
 
 }
