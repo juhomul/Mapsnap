@@ -221,7 +221,7 @@ app.get("/story", (req, res) => {
 app.post("/image", (req, res) => {
   console.log(req.body.image);
   image = req.body.image;
-  res.sendStatus(200);
+  res.send(200).json({vittu: "perkeleee"});
 });
 
 app.get("/image", (req, res) => {
