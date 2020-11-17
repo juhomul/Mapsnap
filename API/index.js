@@ -29,6 +29,8 @@ var db = mysql.createConnection({
 });
 
 db.connect();
+
+var image;
   
 // JWT authentication strategy
 let options = {};
@@ -214,6 +216,16 @@ app.get("/story", (req, res) => {
 
     res.status(200).json({ stories })
   })
+});
+
+app.post("/image", (req, res) => {
+  console.log(req.body.image);
+  image = req.body.image;
+  res.sendStatus(200);
+});
+
+app.get("/image", (req, res) => {
+  res.status(200).json({image});
 });
 
 app.get("/images/:filename", (req, res) => {
