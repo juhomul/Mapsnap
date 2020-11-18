@@ -59,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
+      
         email = SaveSharedPreference.getEmail(MapsActivity.this);
         username = SaveSharedPreference.getUserName(MapsActivity.this);
 
