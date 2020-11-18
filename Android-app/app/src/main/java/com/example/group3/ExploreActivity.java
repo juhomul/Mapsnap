@@ -25,8 +25,11 @@ public class ExploreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore);
 
-        email = SaveSharedPreference.getEmail(ExploreActivity.this);
-        username = SaveSharedPreference.getUserName(ExploreActivity.this);
+        drawer = findViewById(R.id.drawer_layout);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+      
+        email = SaveSharedPreference.getEmail(ProfileActivity.this);
+        username = SaveSharedPreference.getUserName(ProfileActivity.this);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.explore);
@@ -64,8 +67,6 @@ public class ExploreActivity extends AppCompatActivity {
                         showUsername = findViewById(R.id.showUsername);
                         showUsername.setText(username);
 
-                        drawer = findViewById(R.id.drawer_layout);
-                        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
                         return true;
