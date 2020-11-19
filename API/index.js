@@ -17,7 +17,7 @@ const mysql = require("mysql");
 const app = express();
 const port = 3000;
 
-app.use(bodyParser.json({limit: '100mb'}));
+app.use(bodyParser.json({limit: '50mb'}));
 
 // Create MySQL connection
 var db = mysql.createConnection({
@@ -29,8 +29,6 @@ var db = mysql.createConnection({
 });
 
 db.connect();
-
-var image;
   
 // JWT authentication strategy
 let options = {};
@@ -218,20 +216,6 @@ app.get("/story", (req, res) => {
   })
 });
 
-app.post("/image", (req, res) => {
-  console.log(req.body.image);
-  image = req.body.image;
-  res.status(200).json({vittu: "perkeleee"});
-});
-
-app.get("/image", (req, res) => {
-  res.status(200).json({image});
-});
-
-app.get("/images/:filename", (req, res) => {
-  res.status(200).sendFile(path.join(__dirname, "/images/" + req.params.filename));
-});
-
 // Get story by its id
 app.get("/story/id/:id", (req, res) => {
   // find story from database
@@ -323,10 +307,6 @@ app.post("/story",
       return;
     }
 
-    // upload image
-    //let imagePath = "/images/" + req.file.filename + ".jpg";
-    //fs.renameSync(req.file.path, "." + imagePath);
-
     // get datetime in correct timezone and format
     dateObj = new Date()
     localEpoch = dateObj.getTime() - (dateObj.getTimezoneOffset() * 60000);
@@ -360,7 +340,7 @@ app.post("/story",
         lat: req.body.lat,
         lng: req.body.lng,
         timestamp: isoDate,
-        image: req.body.image
+        image: req.body.image.slice(0, 30) + "..."
       });
     })
   }
