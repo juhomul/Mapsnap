@@ -1,73 +1,61 @@
 package com.example.group3;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.camerakit.CameraKitView;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
+import static com.example.group3.MapsActivity.REQUEST_IMAGE_CAPTURE;
+
 public class cameraActivity extends AppCompatActivity {
 
-    private CameraKitView cameraKitView;
-    private Button photoButton;
-    Bitmap bitmap;
+    public static final int REQUEST_IMAGE_CAPTURE = 1;
+    ImageView displayImageView = findViewById(R.id.displayImageView);
+
+    private void dispatchTakePictureIntent() {
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            displayImageView.setImageBitmap(imageBitmap);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-        cameraKitView = findViewById(R.id.camera);
-
-        photoButton = findViewById(R.id.photoButton);
-        photoButton.setOnClickListener(photoOnClickListener);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        cameraKitView.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        cameraKitView.onPause();
-        super.onPause();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        cameraKitView.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    private View.OnClickListener photoOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            cameraKitView.captureImage(new CameraKitView.ImageCallback() {
-                @Override
-                public void onImage(CameraKitView cameraKitView, byte[] photo) {
-                    File savedPhoto = new File(Environment.getExternalStorageDirectory(), "photo.jpg");
-                    try {
-                        FileOutputStream outputStream = new FileOutputStream(savedPhoto.getPath());
-                        outputStream.write(photo);
-                        outputStream.close();
-                    } catch (java.io.IOException e) {
-                        e.printStackTrace();
-                        Log.e("cameraActivity", "Exception in photo callback");
-                    }
-                }
-            });
+        try {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
         }
-    };
+    }
 }

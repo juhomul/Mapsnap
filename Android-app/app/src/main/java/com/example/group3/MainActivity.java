@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
          */
         
         //Map open intent
-        //Intent mapsIntent = new Intent(this, MapsActivity.class);
-        //startActivity(mapsIntent);
+        Intent mapsIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapsIntent);
 
         //ProfileActivity
         //Intent profileIntent = new Intent(this, ProfileActivity.class);
@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         //startActivity(cameraIntent);
 
         //SaveStory
-        Intent createStoryIntent = new Intent(this, CreateStoryActivity.class);
-        startActivity(createStoryIntent);
+        //Intent createStoryIntent = new Intent(this, CreateStoryActivity.class);
+        //startActivity(createStoryIntent);
 
         //Version 0.2
     }
