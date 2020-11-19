@@ -18,6 +18,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -57,8 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         drawer = findViewById(R.id.drawer_layout);
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
+        //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
       
         email = SaveSharedPreference.getEmail(MapsActivity.this);
         username = SaveSharedPreference.getUserName(MapsActivity.this);
@@ -67,6 +67,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         bottomNavigationView.setSelectedItemId(R.id.map_view);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
+
+        View headerView = navigationView.getHeaderView(0);
+        showEmail = headerView.findViewById(R.id.showEmail);
+        showUsername = headerView.findViewById(R.id.showUsername);
+        showEmail.setText(email);
+        showUsername.setText(username);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
