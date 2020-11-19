@@ -318,14 +318,14 @@ app.post("/story",
       res.status(400).send("Bad Request: Missing lng");
       return;
     }
-    if ("file" in req == false) {
+    if ("image" in req.body == false) {
       res.status(400).send("Bad Request: Missing image");
       return;
     }
 
     // upload image
-    let imagePath = "/images/" + req.file.filename + ".jpg";
-    fs.renameSync(req.file.path, "." + imagePath);
+    //let imagePath = "/images/" + req.file.filename + ".jpg";
+    //fs.renameSync(req.file.path, "." + imagePath);
 
     // get datetime in correct timezone and format
     dateObj = new Date()
@@ -343,7 +343,7 @@ app.post("/story",
       req.body.lat,
       req.body.lng,
       isoDate,
-      imagePath
+      req.body.image
     ];
     db.query(sql_i, [values], function(err, data, fields) {
       if (err) {
@@ -360,7 +360,7 @@ app.post("/story",
         lat: req.body.lat,
         lng: req.body.lng,
         timestamp: isoDate,
-        image: imagePath
+        image: req.body.image
       });
     })
   }
