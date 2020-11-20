@@ -7,7 +7,7 @@
     tools:context=".CreateStoryActivity">
 
     <Button
-        android:id="@+id/btnSaveStory"
+        android:id="@+id/buttonSaveStory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save a Story"
@@ -33,4 +33,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/textViewLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Here show current location after pressing the button"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSaveStory"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageDisplayView"
+        android:layout_width="407dp"
+        android:layout_height="442dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="34dp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textSaveStory"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 </androidx.constraintlayout.widget.ConstraintLayout>
