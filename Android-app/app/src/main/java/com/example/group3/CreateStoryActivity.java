@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -22,21 +25,24 @@ public class CreateStoryActivity extends AppCompatActivity {
     TextView textLocation;
     FusedLocationProviderClient client;
     String userLocation;
+    ImageView displayImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_story);
-
+        Intent intent = getIntent();
+        Bitmap image = (Bitmap) intent.getParcelableExtra("BitmapImage");
         client = LocationServices.getFusedLocationProviderClient(this);
         textLocation = findViewById(R.id.textViewLocation);
 
+        displayImageView = findViewById(R.id.imageDisplayView);
+        displayImageView.setImageBitmap(image);
         btnSaveStory = findViewById(R.id.buttonSaveStory);
         btnSaveStory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
+                //SAVE IMAGE
             }
         });
 
