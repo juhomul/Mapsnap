@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                login("http://34.203.33.211/user/login");
+                login("http://100.26.132.75/user/login");
 
                 if(TextUtils.isEmpty(getUsernameText)) {
                     editUsername.setError("This cannot be empty");
