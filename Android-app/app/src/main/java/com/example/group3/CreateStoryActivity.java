@@ -24,7 +24,7 @@ public class CreateStoryActivity extends AppCompatActivity {
     Button btnSaveStory;
     TextView textLocation;
     FusedLocationProviderClient client;
-    String userLocation;
+    String userLocationAPI;
     ImageView displayImageView;
 
     @Override
@@ -67,6 +67,7 @@ public class CreateStoryActivity extends AppCompatActivity {
                     String userLocation = String.valueOf(userLat);
                     userLocation = "Latitude: " +  userLocation + "\n" + "Longitude: " + String.valueOf(userLong);
                     textLocation.setText(userLocation);
+                    userLocationAPI = userLocation;
                 }
             }
         });
