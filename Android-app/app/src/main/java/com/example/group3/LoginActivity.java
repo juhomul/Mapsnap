@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -27,10 +28,9 @@ public class LoginActivity extends AppCompatActivity {
 
     Button login, signUp;
     EditText editUsername, editPassword;
-    String getUsernameText, getPasswordText;
+    String getUsernameText, getPasswordText, token, email, username;
     RequestQueue requestQueue;
     JSONObject jsonBody;
-    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                login("http://34.203.33.211/user/login");
+                login("http://100.26.132.75/user/login");
 
                 if(TextUtils.isEmpty(getUsernameText)) {
                     editUsername.setError("This cannot be empty");
@@ -67,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
                 if(TextUtils.isEmpty(getPasswordText)) {
                     editPassword.setError("This cannot be empty");
                 }
+
+
                 /*Bundle extras = getIntent().getExtras();
                 if (extras != null) {
                     String userName = extras.getString("username");
@@ -104,9 +106,9 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         Log.d("mytag", "" + response);  // printtaan vaa vastauksen
                         try {
-
                             token = response.getString("token"); // hakee tokenin APIsta
-
+                            email = response.getString("email");
+                            username = response.getString("username");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -114,14 +116,16 @@ public class LoginActivity extends AppCompatActivity {
                         CheckBox stayLoggedIn = findViewById(R.id.stayLoggedIn);
 
                         if(stayLoggedIn.isChecked()) {
-                            SaveSharedPreference.setUserName(LoginActivity.this, getUsernameText); //tallentaa usernamen sharedpreferencee
+                            SaveSharedPreference.setStayLogged(LoginActivity.this, "yes"); //jos stayLogged string olemassa, pysyy kirjautuneena
                         }
 
+                        SaveSharedPreference.setUserName(LoginActivity.this, username); //tallentaa usernamen sharedpreferencee
                         SaveSharedPreference.setToken(LoginActivity.this, token); //tallentaa tokenin sharedpreferencee
+                        SaveSharedPreference.setEmail(LoginActivity.this, email);
+
 
                         Intent profileIntent = new Intent(LoginActivity.this, ProfileActivity.class); //joku activity täs
                         startActivity(profileIntent);
-
                     }
                 }, new Response.ErrorListener() {
                     @Override

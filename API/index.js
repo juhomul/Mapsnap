@@ -2,11 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require('uuid');
+const fs = require("fs");
+const path = require("path");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const jwtStrategy = require("passport-jwt").Strategy,
   ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwtSecretKey = require("./jwt-key.json");
+const multer = require("multer");
+const multerUpload = multer({ dest: "images/" });
 const dbconf = require("./db_cfg.json");
 const e = require("express");
 const mysql = require("mysql");
@@ -137,7 +141,7 @@ app.post("/user/login", (req, res) => {
 
     // create and return token
     const token = jwt.sign(payload, jwtSecretKey.secret, options);
-    res.status(200).send({ userId: dbuser.userid, token: token });
+    res.status(200).send({ userId: dbuser.userid, username: dbuser.username, email: dbuser.email, token: token });
   })
 });
 
@@ -212,6 +216,10 @@ app.get("/story", (req, res) => {
   })
 });
 
+app.get("/images/:filename", (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, "/images/" + req.params.filename));
+});
+
 // Get story by its id
 app.get("/story/id/:id", (req, res) => {
   // find story from database
@@ -280,6 +288,7 @@ app.get("/story/location", (req, res) => {
 
 app.post("/story",
   passport.authenticate("jwt", { session: false }),
+  multerUpload.single("image"),
   (req, res) => {
     if ("title" in req.body == false) {
       res.status(400).send("Bad Request: Missing title");
@@ -297,12 +306,14 @@ app.post("/story",
       res.status(400).send("Bad Request: Missing lng");
       return;
     }
-    if ("image" in req.body == false) {
+    if ("file" in req == false) {
       res.status(400).send("Bad Request: Missing image");
       return;
     }
 
-    let tempImageRoute = "/temp/image/route";
+    // upload image
+    let imagePath = "/images/" + req.file.filename + ".jpg";
+    fs.renameSync(req.file.path, "." + imagePath);
 
     // get datetime in correct timezone and format
     dateObj = new Date()
@@ -320,7 +331,7 @@ app.post("/story",
       req.body.lat,
       req.body.lng,
       isoDate,
-      tempImageRoute
+      imagePath
     ];
     db.query(sql_i, [values], function(err, data, fields) {
       if (err) {
@@ -337,7 +348,7 @@ app.post("/story",
         lat: req.body.lat,
         lng: req.body.lng,
         timestamp: isoDate,
-        image: tempImageRoute
+        image: imagePath
       });
     })
   }
