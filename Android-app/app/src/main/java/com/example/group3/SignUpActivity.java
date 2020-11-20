@@ -105,12 +105,12 @@ public class SignUpActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    register("http://34.203.33.211/user/register");
+                    register("http://100.26.132.75/user/register");
                     //pitäis saaha errori jos käyttäjänimi on jo käytössä
 
                     Toast.makeText(getApplicationContext(),
                             "Sign up complete", Toast.LENGTH_SHORT).show();
-                    startActivity(backIntent);
+                    startActivity(backIntent);       //nää 3 riviä varmaa eri paikkaan
 
                 }
                 else if(!getPasswordText.equals(getPasswordConfirm)) {
