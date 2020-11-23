@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         //SaveSharedPreference.clearUser(this);
 
-        /*
+
         //jos löytyy tallennettu user nii menee suoraa loginnin ohi
         if(SaveSharedPreference.getStayLogged(MainActivity.this).length() == 0)
         {
@@ -33,12 +33,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(mapsIntent);
         }
 
-         */
+
 
         
         //Map open intent
-        Intent mapsIntent = new Intent(this, MapsActivity.class);
-        startActivity(mapsIntent);
+        //Intent mapsIntent = new Intent(this, MapsActivity.class);
+        //startActivity(mapsIntent);
 
         //ProfileActivity
         //Intent profileIntent = new Intent(this, ProfileActivity.class);
