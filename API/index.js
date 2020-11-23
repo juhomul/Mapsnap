@@ -21,14 +21,13 @@ app.use(bodyParser.json({limit: '50mb'}));
 
 // Create MySQL connection
 var db = mysql.createConnection({
+  connectionLimit: 10,
   host: dbconf.host,
   user: dbconf.user,
   password: dbconf.password,
   database: dbconf.database,
   timezone: 'UTC'
 });
-
-db.connect();
   
 // JWT authentication strategy
 let options = {};
@@ -48,6 +47,16 @@ passport.use(
     }
   })
 );
+
+app.get("/pooltest", (req, res) => {
+  for(var i=0;i<10;i++) {
+    db.query('SELECT * FROM story', function(err, rows, fields) {
+      if (err) throw err;
+      console.log(rows[0].title); //Show 1
+    });
+   }
+  res.sendStatus(200);
+})
 
 /*********************************************
  * USER ENDPOINTS
