@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -20,8 +21,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -108,10 +113,6 @@ public class SignUpActivity extends AppCompatActivity {
                     register("http://100.26.132.75/user/register");
                     //pitäis saaha errori jos käyttäjänimi on jo käytössä
 
-                    Toast.makeText(getApplicationContext(),
-                            "Sign up complete", Toast.LENGTH_SHORT).show();
-                    startActivity(backIntent);       //nää 3 riviä varmaa eri paikkaan
-
                 }
                 else if(!getPasswordText.equals(getPasswordConfirm)) {
                     editPassword2.setError("Password doesn't match");
@@ -127,11 +128,21 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("mytag", "" + response);
+                        Toast.makeText(getApplicationContext(),
+                                "Sign up complete", Toast.LENGTH_SHORT).show();
+
+                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("mytag", "" + error);
+                        NetworkResponse networkResponse = error.networkResponse;
+                        if (networkResponse != null && networkResponse.data != null) {
+                            String jsonError = new String(networkResponse.data);
+                            Toast.makeText(getApplicationContext(),
+                                    "" + jsonError, Toast.LENGTH_SHORT).show();
+                        }
                         Toast.makeText(getApplicationContext(),
                                 "" + error, Toast.LENGTH_SHORT).show();
                     }
@@ -142,4 +153,5 @@ public class SignUpActivity extends AppCompatActivity {
     boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
+
 }

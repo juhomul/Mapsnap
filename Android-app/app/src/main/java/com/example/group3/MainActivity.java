@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            Intent mapsIntent = new Intent(this, ProfileActivity.class);
+            Intent mapsIntent = new Intent(this, MapsActivity.class);
             startActivity(mapsIntent);
         }
 
