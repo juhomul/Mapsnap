@@ -68,11 +68,6 @@ public class ProfileActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menu:
-                        /*showEmail = findViewById(R.id.showEmail);
-                        showEmail.setText(email);
-
-                        showUsername = findViewById(R.id.showUsername);
-                        showUsername.setText(username);*/
 
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);

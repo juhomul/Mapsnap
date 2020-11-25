@@ -139,11 +139,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu:
-                        showEmail = findViewById(R.id.showEmail);
-                        showEmail.setText(email);
-
-                        showUsername = findViewById(R.id.showUsername);
-                        showUsername.setText(username);
 
                         if (!drawer.isDrawerOpen(GravityCompat.START))
                             drawer.openDrawer(GravityCompat.START);
@@ -154,8 +149,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         return true;
 
                     case R.id.explore:
-                        Intent camIntent = new Intent(getApplicationContext(), cameraActivity.class);
-                        startActivity(camIntent);
+                        /*Intent camIntent = new Intent(getApplicationContext(), cameraActivity.class);
+                        startActivity(camIntent);*/
+                        startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
