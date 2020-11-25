@@ -41,6 +41,8 @@ public class CreateStoryActivity extends AppCompatActivity {
         displayImageView = findViewById(R.id.imageDisplayView);
         displayImageView.setImageBitmap(image);
 
+        Intent mapsIntent = new Intent(this, MapsActivity.class);
+
         btnSaveStory = findViewById(R.id.buttonSaveStory);
         btnSaveStory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +63,9 @@ public class CreateStoryActivity extends AppCompatActivity {
                 Log.d("CreateStory", "latitude: " + strLat);
                 Log.d("CreateStory", "longitude: " + strLong);
                 Log.d("CreateStory", "Description: " + strDesc);
+
+                startActivity(mapsIntent);
+                finish();
             }
         });
 

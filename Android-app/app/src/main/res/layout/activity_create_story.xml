@@ -11,7 +11,7 @@
         android:id="@+id/buttonSaveStory"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Save a Story"
+        android:text="Save this Story"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -20,7 +20,8 @@
         android:id="@+id/textSaveStory"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="This is sample text for stoory This is sample text for stooryThis is sample text for stooryThis is sample text for stoory"
+        android:gravity="start"
+        android:hint="Write a description..."
         app:layout_constraintBottom_toTopOf="@+id/buttonSaveStory"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.428"

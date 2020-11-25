@@ -98,6 +98,7 @@ public class cameraActivity extends AppCompatActivity {
             Intent imageIntent = new Intent(this, CreateStoryActivity.class);
             imageIntent.putExtra("BitmapImage", image);
             startActivity(imageIntent);
+            finish(); //Kun kuva "accept" niin sulkee cameraActivityn taustalta joten ei "back" nappia painaessa enää tulla cameraan :)
         }
     }
 }
