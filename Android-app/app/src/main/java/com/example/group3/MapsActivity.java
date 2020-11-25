@@ -59,18 +59,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        camBtn = findViewById(R.id.camBtn);
-        camBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent camIntent = new Intent(view.getContext(), cameraActivity.class);
-                startActivity(camIntent);
-            }
-        });
-
-
         drawer = findViewById(R.id.drawer_layout);
-        //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         email = SaveSharedPreference.getEmail(MapsActivity.this);
         username = SaveSharedPreference.getUserName(MapsActivity.this);
@@ -139,11 +129,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu:
-                        showEmail = findViewById(R.id.showEmail);
-                        showEmail.setText(email);
-
-                        showUsername = findViewById(R.id.showUsername);
-                        showUsername.setText(username);
 
                         if (!drawer.isDrawerOpen(GravityCompat.START))
                             drawer.openDrawer(GravityCompat.START);
@@ -160,6 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         return true;
 
                     case R.id.explore:
+                        startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;

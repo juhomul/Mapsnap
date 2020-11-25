@@ -17,7 +17,7 @@ import com.google.android.material.navigation.NavigationView;
 public class ProfileActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
-    TextView showEmail, showUsername;
+    TextView showEmail, showUsername, profileUsername;
     String email, username;
 
     @Override
@@ -30,6 +30,9 @@ public class ProfileActivity extends AppCompatActivity {
       
         email = SaveSharedPreference.getEmail(ProfileActivity.this);
         username = SaveSharedPreference.getUserName(ProfileActivity.this);
+
+        profileUsername = findViewById(R.id.profile_username);
+        profileUsername.setText(username);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
@@ -68,18 +71,18 @@ public class ProfileActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menu:
-                        /*showEmail = findViewById(R.id.showEmail);
-                        showEmail.setText(email);
-
-                        showUsername = findViewById(R.id.showUsername);
-                        showUsername.setText(username);*/
-
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
                         return true;
 
                     case R.id.map_view:
                         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.camera:
+                        startActivity(new Intent(getApplicationContext(), cameraActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;

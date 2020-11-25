@@ -12,8 +12,10 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,35 +33,74 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+
 
 public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username, description, title, image;
+    String email, username, description, title, image, postersUsername, lat, lng, isoTime;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
     ListView listView;
+    EditText searchBar;
     ArrayList<String> maintitle = new ArrayList<String>();
     ArrayList<String> subtitle = new ArrayList<String>();
     ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
-
+    ArrayList<String> usernameArraylist = new ArrayList<String>();
+    ArrayList<String> latitude = new ArrayList<String>();
+    ArrayList<String> longitude = new ArrayList<String>();
+    ArrayList<String> timestamp = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore);
 
+
         requestQueue = Volley.newRequestQueue(this);
         listView = findViewById(R.id.storyListView);
+        searchBar = findViewById(R.id.searchBar);
 
+
+        getStories("http://100.26.132.75/story");
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String lat = latitude.get(i);
+                String lng = longitude.get(i);
+                Intent mapsIntent = new Intent(ExploreActivity.this, MapsActivity.class);
+                mapsIntent.putExtra("latitude", lat);
+                mapsIntent.putExtra("longitude", lng);
+                //startActivity(mapsIntent);
 
+
+                //Toast.makeText(ExploreActivity.this, ""+ timestamp.get(i), Toast.LENGTH_SHORT).show();
+            }
+        });
+        searchBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                final int DRAWABLE_RIGHT = 2;
+
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
+
+                        return true;
+                    }
+                }
+                return false;
             }
         });
 
@@ -82,7 +123,7 @@ public class ExploreActivity extends AppCompatActivity {
         showEmail.setText(email);
         showUsername.setText(username);
 
-        getStories("http://100.26.132.75/story");
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -110,11 +151,6 @@ public class ExploreActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menu:
-                        showEmail = findViewById(R.id.showEmail);
-                        showEmail.setText(email);
-
-                        showUsername = findViewById(R.id.showUsername);
-                        showUsername.setText(username);
 
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
@@ -122,6 +158,12 @@ public class ExploreActivity extends AppCompatActivity {
 
                     case R.id.map_view:
                         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.camera:
+                        startActivity(new Intent(getApplicationContext(), cameraActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
@@ -162,7 +204,7 @@ public class ExploreActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
     private void parseJSON(JSONArray json) {
-        for(int i = 1; i < json.length(); i++) {
+        for(int i = 0; i < json.length(); i++) {
             try {
                 story = json.getJSONObject(i);
             } catch (JSONException e) {
@@ -172,20 +214,40 @@ public class ExploreActivity extends AppCompatActivity {
                 description = story.getString("description");
                 title = story.getString("title");
                 image = story.getString("image");
+                postersUsername = story.getString("username");
+                lat = story.getString("lat");
+                lng = story.getString("lng");
+                isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
+            String asd = odt.toString();
+
             maintitle.add(title);
             subtitle.add(description);
             imgid.add(decodedByte);
+            usernameArraylist.add(postersUsername);
+            latitude.add(lat);
+            longitude.add(lng);
+            timestamp.add(asd); // tässä timestamp lisätään listviewiin
+
+            Collections.reverse(maintitle);
+            Collections.reverse(subtitle);
+            Collections.reverse(imgid);
+            Collections.reverse(usernameArraylist);
+            Collections.reverse(latitude);
+            Collections.reverse(longitude);
+            Collections.reverse(timestamp);
+
             arrayAdapt();
         }
     }
     private void arrayAdapt() {
-        CustomListView adapter = new CustomListView(this, maintitle, subtitle, imgid);
+        CustomListView adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
         listView.setAdapter(adapter);
     }
 
