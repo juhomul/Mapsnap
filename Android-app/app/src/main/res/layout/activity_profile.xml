@@ -38,7 +38,8 @@
                 android:layout_toRightOf="@id/profile_picture"
                 android:layout_marginTop="40dp"
                 android:includeFontPadding="false"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:id="@+id/profile_username"/>
 
 
         </RelativeLayout>
@@ -155,6 +156,14 @@
             android:layout_alignParentBottom="true" />
 
     </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:id="@+id/nav_view"
+        app:headerLayout="@layout/side_menu_header"
+        app:menu="@menu/side_menu" />
 
 
 

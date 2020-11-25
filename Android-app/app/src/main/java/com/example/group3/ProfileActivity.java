@@ -17,7 +17,7 @@ import com.google.android.material.navigation.NavigationView;
 public class ProfileActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
-    TextView showEmail, showUsername;
+    TextView showEmail, showUsername, profileUsername;
     String email, username;
 
     @Override
@@ -26,10 +26,13 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         drawer = findViewById(R.id.drawer_layout);
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
       
         email = SaveSharedPreference.getEmail(ProfileActivity.this);
         username = SaveSharedPreference.getUserName(ProfileActivity.this);
+
+        profileUsername = findViewById(R.id.profile_username);
+        profileUsername.setText(username);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);

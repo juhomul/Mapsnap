@@ -33,8 +33,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 
 public class ExploreActivity extends AppCompatActivity {
@@ -102,7 +107,7 @@ public class ExploreActivity extends AppCompatActivity {
 
 
         drawer = findViewById(R.id.drawer_layout);
-        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
       
         email = SaveSharedPreference.getEmail(ExploreActivity.this);
         username = SaveSharedPreference.getUserName(ExploreActivity.this);
@@ -212,13 +217,15 @@ public class ExploreActivity extends AppCompatActivity {
                 postersUsername = story.getString("username");
                 lat = story.getString("lat");
                 lng = story.getString("lng");
-                isoTime = story.getString("timestamp");
+                isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
+            String asd = odt.toString();
 
             maintitle.add(title);
             subtitle.add(description);
@@ -226,7 +233,7 @@ public class ExploreActivity extends AppCompatActivity {
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
-            timestamp.add(isoTime);;
+            timestamp.add(asd); // tässä timestamp lisätään listviewiin
 
             Collections.reverse(maintitle);
             Collections.reverse(subtitle);
