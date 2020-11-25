@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         {
             Intent mapsIntent = new Intent(this, MapsActivity.class);
             startActivity(mapsIntent);
+            finish();
         }
         
         //Map open intent
@@ -50,5 +51,14 @@ public class MainActivity extends AppCompatActivity {
         //startActivity(createStoryIntent);
 
         //Version 0.2
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Intent mapsIntent = new Intent(this, MapsActivity.class);
+        startActivity(mapsIntent);
+        finish();
     }
 }
