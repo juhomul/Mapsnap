@@ -20,15 +20,14 @@ const port = 3000;
 app.use(bodyParser.json({limit: '50mb'}));
 
 // Create MySQL connection
-var db = mysql.createConnection({
+var db = mysql.createPool({
+  connectionLimit: 10,
   host: dbconf.host,
   user: dbconf.user,
   password: dbconf.password,
   database: dbconf.database,
   timezone: 'UTC'
 });
-
-db.connect();
   
 // JWT authentication strategy
 let options = {};
