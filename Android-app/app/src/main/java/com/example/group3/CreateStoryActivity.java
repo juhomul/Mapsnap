@@ -9,10 +9,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -22,9 +23,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class CreateStoryActivity extends AppCompatActivity {
 
     Button btnSaveStory;
-    TextView textLocation;
+    EditText textDesc;
     FusedLocationProviderClient client;
-    String userLocationAPI;
+    String strLat, strLong, strDesc;
     ImageView displayImageView;
 
     @Override
@@ -34,7 +35,8 @@ public class CreateStoryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bitmap image = (Bitmap) intent.getParcelableExtra("BitmapImage");
         client = LocationServices.getFusedLocationProviderClient(this);
-        textLocation = findViewById(R.id.textViewLocation);
+
+        textDesc = findViewById(R.id.textSaveStory);
 
         displayImageView = findViewById(R.id.imageDisplayView);
         displayImageView.setImageBitmap(image);
@@ -43,17 +45,31 @@ public class CreateStoryActivity extends AppCompatActivity {
         btnSaveStory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // SAVE IMAGE //
+                // SAVE //
+                /* Apille:
+                    textDesc = "desc": "string",
+                    image = "image": {},
+                    strLat = "lat": "string",
+                    strLong = "long": "string"
+                 */
+
+                String token = SaveSharedPreference.getToken(CreateStoryActivity.this);
+                strDesc = textDesc.getText().toString();
+                String username = SaveSharedPreference.getUserName(CreateStoryActivity.this);
+
+                Log.d("CreateStory","username: " + username);
+                Log.d("CreateStory", "latitude: " + strLat);
+                Log.d("CreateStory", "longitude: " + strLong);
+                Log.d("CreateStory", "Description: " + strDesc);
             }
         });
 
-        //Display Latitude and Longitude when this activity opens
-        //so when picture has been taken and moved into this window
         getLocation();
-
     }
 
     private void getLocation() {
+        //Check permission and get location when picture has been taken
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -65,10 +81,9 @@ public class CreateStoryActivity extends AppCompatActivity {
                 if (location != null) {
                     double userLat = location.getLatitude();
                     double userLong = location.getLongitude();
-                    String userLocation = String.valueOf(userLat);
-                    userLocation = "Latitude: " +  userLocation + "\n" + "Longitude: " + String.valueOf(userLong);
-                    textLocation.setText(userLocation);
-                    userLocationAPI = userLocation;
+
+                    strLat = String.valueOf(userLat);
+                    strLong = String.valueOf(userLong);
                 }
             }
         });
