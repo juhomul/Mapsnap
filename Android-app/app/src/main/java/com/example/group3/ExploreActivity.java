@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,13 +35,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 
 
 public class ExploreActivity extends AppCompatActivity {
@@ -59,6 +56,8 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
+    boolean flag_loading = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +86,25 @@ public class ExploreActivity extends AppCompatActivity {
                 //Toast.makeText(ExploreActivity.this, ""+ timestamp.get(i), Toast.LENGTH_SHORT).show();
             }
         });
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+                if(i + i1 == i2 && i2 != 0) {
+                    if(flag_loading == false)
+                    {
+                        flag_loading = true;
+                        addItems();
+                    }
+                }
+            }
+        });
+
         searchBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -181,6 +199,11 @@ public class ExploreActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void addItems() {
+
+    }
+
     private void getStories(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -234,14 +257,6 @@ public class ExploreActivity extends AppCompatActivity {
             latitude.add(lat);
             longitude.add(lng);
             timestamp.add(asd); // tässä timestamp lisätään listviewiin
-
-            Collections.reverse(maintitle);
-            Collections.reverse(subtitle);
-            Collections.reverse(imgid);
-            Collections.reverse(usernameArraylist);
-            Collections.reverse(latitude);
-            Collections.reverse(longitude);
-            Collections.reverse(timestamp);
 
             arrayAdapt();
         }
