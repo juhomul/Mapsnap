@@ -102,7 +102,7 @@ public class ExploreActivity extends AppCompatActivity {
 
 
         drawer = findViewById(R.id.drawer_layout);
-        //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
       
         email = SaveSharedPreference.getEmail(ExploreActivity.this);
         username = SaveSharedPreference.getUserName(ExploreActivity.this);
@@ -153,6 +153,12 @@ public class ExploreActivity extends AppCompatActivity {
 
                     case R.id.map_view:
                         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.camera:
+                        startActivity(new Intent(getApplicationContext(), cameraActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;

@@ -9,41 +9,153 @@
     tools:context=".MainActivity"
     tools:openDrawer="start">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context=".MainActivity">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:padding="20dp"
+            android:id="@+id/header"
+            android:background="@color/yellow">
+
+            <ImageView
+                android:id="@+id/profile_picture"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@mipmap/ic_launcher_round" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:textSize="20sp"
+                android:layout_toRightOf="@id/profile_picture"
+                android:layout_marginTop="40dp"
+                android:includeFontPadding="false"
+                android:layout_marginLeft="10dp" />
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="0dp"
+            android:layout_marginTop="-80dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/yellow"
+                app:cardElevation="10dp"
+                android:layout_margin="10dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/followers_icon"
+                        android:src="@drawable/ic_person"
+                        android:layout_centerHorizontal="true"/>
+
+                    <TextView
+                        android:id="@+id/followers_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="123"
+                        android:layout_below="@+id/followers_icon"
+                        android:includeFontPadding="false"
+                        android:textSize="18sp"
+                        android:layout_centerInParent="true" />
+
+                    <TextView
+                        android:id="@+id/followers_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Followers"
+                        android:textSize="12sp"
+                        android:layout_below="@+id/followers_amount"
+                        android:layout_centerHorizontal="true" />
+
+                </RelativeLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/yellow"
+                app:cardElevation="10dp"
+                android:layout_margin="10dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/stories_icon"
+                        android:src="@drawable/ic_explore"
+                        android:layout_centerHorizontal="true"/>
+
+                    <TextView
+                        android:id="@+id/stories_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="123"
+                        android:layout_below="@+id/stories_icon"
+                        android:includeFontPadding="false"
+                        android:textSize="18sp"
+                        android:layout_centerInParent="true" />
+
+                    <TextView
+                        android:id="@+id/stories_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Stories"
+                        android:textSize="12sp"
+                        android:layout_below="@+id/stories_amount"
+                        android:layout_centerHorizontal="true" />
+
+                </RelativeLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/frame_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/navigation"
+            android:layout_gravity="bottom"
             app:itemIconTint="@drawable/bottom_navigation_selector"
             app:itemTextColor="@color/light_grey"
             android:background="@color/dark"
             app:menu="@menu/menu_bottom"
             android:layout_alignParentBottom="true" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Profile Activity"
-            android:gravity="center"
-            android:layout_marginTop="200dp"
-            android:layout_marginLeft="80dp"
-            android:textSize="40dp"
-            android:id="@+id/texti"/>
+    </LinearLayout>
 
-    </RelativeLayout>
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:id="@+id/nav_view"
-        app:headerLayout="@layout/side_menu_header"
-        app:menu="@menu/side_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
