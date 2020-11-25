@@ -154,7 +154,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         return true;
 
                     case R.id.explore:
-                        startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
+                        Intent camIntent = new Intent(getApplicationContext(), cameraActivity.class);
+                        startActivity(camIntent);
                         finish();
                         overridePendingTransition(0, 0);
                         return true;

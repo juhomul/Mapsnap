@@ -38,11 +38,12 @@ public class CreateStoryActivity extends AppCompatActivity {
 
         displayImageView = findViewById(R.id.imageDisplayView);
         displayImageView.setImageBitmap(image);
+
         btnSaveStory = findViewById(R.id.buttonSaveStory);
         btnSaveStory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //SAVE IMAGE
+                // SAVE IMAGE //
             }
         });
 
