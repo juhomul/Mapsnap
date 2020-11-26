@@ -4,11 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
@@ -43,7 +47,7 @@ public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username, description, title, image, postersUsername, lat, lng, isoTime;
+    String email, username, description, title, image, postersUsername, lat, lng, isoTime, search;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
@@ -56,7 +60,16 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
+
+    ArrayList<String> result = new ArrayList<>();
+    ArrayList<String> result2 = new ArrayList<>();
+    ArrayList<Bitmap> result3 = new ArrayList<>();
+    ArrayList<String> result4 = new ArrayList<>();
+    ArrayList<String> result5 = new ArrayList<>();
+
+    SwipeRefreshLayout swipeView;
     boolean flag_loading = false;
+    CustomListView adapter;
 
 
     @Override
@@ -68,9 +81,25 @@ public class ExploreActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
         listView = findViewById(R.id.storyListView);
         searchBar = findViewById(R.id.searchBar);
+        swipeView = findViewById(R.id.swiperefresh);
 
 
         getStories("http://100.26.132.75/story");
+
+        swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                maintitle.clear();
+                subtitle.clear();
+                imgid.clear();
+                usernameArraylist.clear();
+                latitude.clear();
+                longitude.clear();
+                timestamp.clear();
+                getStories("http://100.26.132.75/story");
+                swipeView.setRefreshing(false);
+            }
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -96,7 +125,7 @@ public class ExploreActivity extends AppCompatActivity {
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
                 if(i + i1 == i2 && i2 != 0) {
-                    if(flag_loading == false)
+                    if(!flag_loading)
                     {
                         flag_loading = true;
                         addItems();
@@ -106,6 +135,7 @@ public class ExploreActivity extends AppCompatActivity {
         });
 
         searchBar.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
 
@@ -113,14 +143,105 @@ public class ExploreActivity extends AppCompatActivity {
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
+                        result.clear();
+                        search = searchBar.getText().toString();
+                        for(int i=0; i<maintitle.size(); i++) {
+                            String titleString = maintitle.get(i);
+                            String subtitleString = subtitle.get(i);
+                            Bitmap imgidString = imgid.get(i);
+                            String usernameString = usernameArraylist.get(i);
+                            String timestampString = timestamp.get(i);
+                            if (titleString.contains(search)) {
+                                result.add(titleString);
+                                result2.add(subtitleString);
+                                result3.add(imgidString);
+                                result4.add(usernameString);
+                                result5.add(timestampString);
+                                searchAdapt();
+                            }
+                            else if(subtitleString.contains(search)) {
+                                result.add(titleString);
+                                result2.add(subtitleString);
+                                result3.add(imgidString);
+                                result4.add(usernameString);
+                                result5.add(timestampString);
+                                searchAdapt();
+                            }
+                            else if(usernameString.contains(search)) {
+                                result.add(titleString);
+                                result2.add(subtitleString);
+                                result3.add(imgidString);
+                                result4.add(usernameString);
+                                result5.add(timestampString);
+                                searchAdapt();
+                            }
+                        }
 
                         return true;
                     }
+
                 }
+
                 return false;
             }
+
         });
+
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                /*result.clear();
+                search = searchBar.getText().toString();
+                for(int i=0; i<maintitle.size(); i++) {
+                    String titleString = maintitle.get(i);
+                    String subtitleString = subtitle.get(i);
+                    Bitmap imgidString = imgid.get(i);
+                    String usernameString = usernameArraylist.get(i);
+                    String timestampString = timestamp.get(i);
+                    if (titleString.contains(search)) {
+                        result.add(titleString);
+                        result2.add(subtitleString);
+                        result3.add(imgidString);
+                        result4.add(usernameString);
+                        result5.add(timestampString);
+                        searchAdapt();
+                    }
+                    else if(subtitleString.contains(search)) {
+                        result.add(titleString);
+                        result2.add(subtitleString);
+                        result3.add(imgidString);
+                        result4.add(usernameString);
+                        result5.add(timestampString);
+                        searchAdapt();
+                    }
+                    else if(usernameString.contains(search)) {
+                        result.add(titleString);
+                        result2.add(subtitleString);
+                        result3.add(imgidString);
+                        result4.add(usernameString);
+                        result5.add(timestampString);
+                        searchAdapt();
+                    }
+                    else {
+
+                    }
+                }*/
+            }
+        });
+
+
 
 
 
@@ -201,7 +322,7 @@ public class ExploreActivity extends AppCompatActivity {
     }
 
     private void addItems() {
-
+        //todo
     }
 
     private void getStories(String url) {
@@ -262,7 +383,13 @@ public class ExploreActivity extends AppCompatActivity {
         }
     }
     private void arrayAdapt() {
-        CustomListView adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
+        adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+    }
+    private void searchAdapt() {
+        adapter = new CustomListView(ExploreActivity.this, result, result2, result3, result4, result5);
+        adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }
 
