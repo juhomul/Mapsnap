@@ -33,8 +33,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 
 public class ExploreActivity extends AppCompatActivity {
@@ -204,6 +209,7 @@ public class ExploreActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
     private void parseJSON(JSONArray json) {
+
         for(int i = 0; i < json.length(); i++) {
             try {
                 story = json.getJSONObject(i);
@@ -218,6 +224,7 @@ public class ExploreActivity extends AppCompatActivity {
                 lat = story.getString("lat");
                 lng = story.getString("lng");
                 isoTime = story.getString("timestamp");
+
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
@@ -231,7 +238,7 @@ public class ExploreActivity extends AppCompatActivity {
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
-            timestamp.add(isoTime);;
+            timestamp.add(isoTime);
 
             Collections.reverse(maintitle);
             Collections.reverse(subtitle);
