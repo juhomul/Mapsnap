@@ -17,18 +17,17 @@ const mysql = require("mysql");
 const app = express();
 const port = 3000;
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 
 // Create MySQL connection
-var db = mysql.createConnection({
+var db = mysql.createPool({
+  connectionLimit: 10,
   host: dbconf.host,
   user: dbconf.user,
   password: dbconf.password,
   database: dbconf.database,
   timezone: 'UTC'
 });
-
-db.connect();
   
 // JWT authentication strategy
 let options = {};
@@ -216,10 +215,6 @@ app.get("/story", (req, res) => {
   })
 });
 
-app.get("/images/:filename", (req, res) => {
-  res.status(200).sendFile(path.join(__dirname, "/images/" + req.params.filename));
-});
-
 // Get story by its id
 app.get("/story/id/:id", (req, res) => {
   // find story from database
@@ -306,14 +301,10 @@ app.post("/story",
       res.status(400).send("Bad Request: Missing lng");
       return;
     }
-    if ("file" in req == false) {
+    if ("image" in req.body == false) {
       res.status(400).send("Bad Request: Missing image");
       return;
     }
-
-    // upload image
-    let imagePath = "/images/" + req.file.filename + ".jpg";
-    fs.renameSync(req.file.path, "." + imagePath);
 
     // get datetime in correct timezone and format
     dateObj = new Date()
@@ -331,7 +322,7 @@ app.post("/story",
       req.body.lat,
       req.body.lng,
       isoDate,
-      imagePath
+      req.body.image
     ];
     db.query(sql_i, [values], function(err, data, fields) {
       if (err) {
@@ -348,7 +339,7 @@ app.post("/story",
         lat: req.body.lat,
         lng: req.body.lng,
         timestamp: isoDate,
-        image: imagePath
+        image: req.body.image.slice(0, 30) + "..."
       });
     })
   }

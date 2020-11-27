@@ -27,7 +27,7 @@ public class InfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_info);
 
         drawer = findViewById(R.id.drawer_layout);
-        //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
       
         email = SaveSharedPreference.getEmail(InfoActivity.this);
         username = SaveSharedPreference.getUserName(InfoActivity.this);
@@ -80,6 +80,15 @@ public class InfoActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.map_view:
+                        startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.camera:
+                        startActivity(new Intent(getApplicationContext(), cameraActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.explore:

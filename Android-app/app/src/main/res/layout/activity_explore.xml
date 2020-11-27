@@ -1,48 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/drawer_layout"
-    android:fitsSystemWindows="true"
-    tools:context=".MainActivity"
-    tools:openDrawer="start">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:id="@+id/drawer_layout"
+        android:fitsSystemWindows="true"
+        tools:context=".MainActivity"
+        tools:openDrawer="start">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
+
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".MainActivity">
+
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/navigation"
+                app:itemIconTint="@drawable/bottom_navigation_selector"
+                app:itemTextColor="@color/light_grey"
+                android:background="@color/dark"
+                app:menu="@menu/menu_bottom"
+                android:layout_alignParentBottom="true" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="55dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center">
+
+
+            <ListView
+                android:id="@+id/storyListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="55dp"
+                android:gravity="center" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/navigation"
-            app:itemIconTint="@drawable/bottom_navigation_selector"
-            app:itemTextColor="@color/light_grey"
-            android:background="@color/dark"
-            app:menu="@menu/menu_bottom"
-            android:layout_alignParentBottom="true" />
+            android:drawableRight="@drawable/ic_search"
+            android:hint="Search"
+            android:id="@+id/searchBar"/>
 
-        <TextView
+
+        </RelativeLayout>
+
+
+
+        <com.google.android.material.navigation.NavigationView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Explore Activity"
-            android:gravity="center"
-            android:layout_marginTop="200dp"
-            android:layout_marginLeft="80dp"
-            android:textSize="40dp"/>
-
-    </RelativeLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:id="@+id/nav_view"
-        app:headerLayout="@layout/side_menu_header"
-        app:menu="@menu/side_menu" />
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:id="@+id/nav_view"
+            app:headerLayout="@layout/side_menu_header"
+            app:menu="@menu/side_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
+

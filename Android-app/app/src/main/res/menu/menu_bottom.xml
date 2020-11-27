@@ -12,14 +12,15 @@
         android:icon="@drawable/ic_explore" />
 
     <item
+        android:title="Camera"
+        android:id="@+id/camera"
+        android:icon="@drawable/ic_camera" />
+
+    <item
         android:title="Map"
         android:id="@+id/map_view"
         android:icon="@drawable/ic_map" />
 
-    <item
-        android:title="Search"
-        android:id="@+id/search"
-        android:icon="@drawable/ic_search" />
 
     <item
         android:title="Profile"

@@ -2,29 +2,248 @@ package com.example.group3;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+
 
 public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username;
+    String email, username, description, title, image, postersUsername, lat, lng, isoTime, search;
+    RequestQueue requestQueue;
+    JSONArray stories;
+    JSONObject story;
+    ListView listView;
+    EditText searchBar;
+    ArrayList<String> maintitle = new ArrayList<String>();
+    ArrayList<String> subtitle = new ArrayList<String>();
+    ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
+    ArrayList<String> usernameArraylist = new ArrayList<String>();
+    ArrayList<String> latitude = new ArrayList<String>();
+    ArrayList<String> longitude = new ArrayList<String>();
+    ArrayList<String> timestamp = new ArrayList<>();
+
+    ArrayList<String> result = new ArrayList<>();
+    ArrayList<String> result2 = new ArrayList<>();
+    ArrayList<Bitmap> result3 = new ArrayList<>();
+    ArrayList<String> result4 = new ArrayList<>();
+    ArrayList<String> result5 = new ArrayList<>();
+
+    SwipeRefreshLayout swipeView;
+    boolean flag_loading = false;
+    CustomListView adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore);
+
+
+        requestQueue = Volley.newRequestQueue(this);
+        listView = findViewById(R.id.storyListView);
+        searchBar = findViewById(R.id.searchBar);
+        swipeView = findViewById(R.id.swiperefresh);
+
+
+        getStories("http://100.26.132.75/story");
+
+        swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                maintitle.clear();
+                subtitle.clear();
+                imgid.clear();
+                usernameArraylist.clear();
+                latitude.clear();
+                longitude.clear();
+                timestamp.clear();
+                getStories("http://100.26.132.75/story");
+                swipeView.setRefreshing(false);
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String lat = latitude.get(i);
+                String lng = longitude.get(i);
+                Intent mapsIntent = new Intent(ExploreActivity.this, MapsActivity.class);
+                mapsIntent.putExtra("latitude", lat);
+                mapsIntent.putExtra("longitude", lng);
+                //startActivity(mapsIntent);
+
+
+                //Toast.makeText(ExploreActivity.this, ""+ timestamp.get(i), Toast.LENGTH_SHORT).show();
+            }
+        });
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+                if(i + i1 == i2 && i2 != 0) {
+                    if(!flag_loading)
+                    {
+                        flag_loading = true;
+                        addItems();
+                    }
+                }
+            }
+        });
+
+        searchBar.setOnTouchListener(new View.OnTouchListener() {
+            @SuppressLint("ClickableViewAccessibility")
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                final int DRAWABLE_RIGHT = 2;
+
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        //Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
+                        result.clear();
+                        search = searchBar.getText().toString();
+                        for(int i=0; i<maintitle.size(); i++) {
+                            String titleString = maintitle.get(i);
+                            String subtitleString = subtitle.get(i);
+                            Bitmap imgidString = imgid.get(i);
+                            String usernameString = usernameArraylist.get(i);
+                            String timestampString = timestamp.get(i);
+                            if (titleString.contains(search)) {
+                                result.add(titleString);
+                                result2.add(subtitleString);
+                                result3.add(imgidString);
+                                result4.add(usernameString);
+                                result5.add(timestampString);
+                                searchAdapt();
+                            }
+                            else if(subtitleString.contains(search)) {
+                                result.add(titleString);
+                                result2.add(subtitleString);
+                                result3.add(imgidString);
+                                result4.add(usernameString);
+                                result5.add(timestampString);
+                                searchAdapt();
+                            }
+                            else if(usernameString.contains(search)) {
+                                result.add(titleString);
+                                result2.add(subtitleString);
+                                result3.add(imgidString);
+                                result4.add(usernameString);
+                                result5.add(timestampString);
+                                searchAdapt();
+                            }
+                        }
+
+                        return true;
+                    }
+
+                }
+
+                return false;
+            }
+
+        });
+
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                /*result.clear();
+                search = searchBar.getText().toString();
+                for(int i=0; i<maintitle.size(); i++) {
+                    String titleString = maintitle.get(i);
+                    String subtitleString = subtitle.get(i);
+                    Bitmap imgidString = imgid.get(i);
+                    String usernameString = usernameArraylist.get(i);
+                    String timestampString = timestamp.get(i);
+                    if (titleString.contains(search)) {
+                        result.add(titleString);
+                        result2.add(subtitleString);
+                        result3.add(imgidString);
+                        result4.add(usernameString);
+                        result5.add(timestampString);
+                        searchAdapt();
+                    }
+                    else if(subtitleString.contains(search)) {
+                        result.add(titleString);
+                        result2.add(subtitleString);
+                        result3.add(imgidString);
+                        result4.add(usernameString);
+                        result5.add(timestampString);
+                        searchAdapt();
+                    }
+                    else if(usernameString.contains(search)) {
+                        result.add(titleString);
+                        result2.add(subtitleString);
+                        result3.add(imgidString);
+                        result4.add(usernameString);
+                        result5.add(timestampString);
+                        searchAdapt();
+                    }
+                    else {
+
+                    }
+                }*/
+            }
+        });
+
+
+
+
 
         drawer = findViewById(R.id.drawer_layout);
         //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -42,6 +261,8 @@ public class ExploreActivity extends AppCompatActivity {
         showUsername = headerView.findViewById(R.id.showUsername);
         showEmail.setText(email);
         showUsername.setText(username);
+
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -69,11 +290,6 @@ public class ExploreActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.menu:
-                        showEmail = findViewById(R.id.showEmail);
-                        showEmail.setText(email);
-
-                        showUsername = findViewById(R.id.showUsername);
-                        showUsername.setText(username);
 
                         if(!drawer.isDrawerOpen(GravityCompat.START)) drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
@@ -81,6 +297,12 @@ public class ExploreActivity extends AppCompatActivity {
 
                     case R.id.map_view:
                         startActivity(new Intent(getApplicationContext(), MapsActivity.class));
+                        finish();
+                        overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.camera:
+                        startActivity(new Intent(getApplicationContext(), cameraActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
@@ -98,4 +320,77 @@ public class ExploreActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void addItems() {
+        //todo
+    }
+
+    private void getStories(String url) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            stories = response.getJSONArray("stories");
+                            parseJSON(stories);
+                        }
+                        catch(JSONException e) {
+                            Log.d("mytag", "" + e);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
+                    }
+                });
+
+        requestQueue.add(jsonObjectRequest);
+    }
+    private void parseJSON(JSONArray json) {
+        for(int i = 0; i < json.length(); i++) {
+            try {
+                story = json.getJSONObject(i);
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+            try {
+                description = story.getString("description");
+                title = story.getString("title");
+                image = story.getString("image");
+                postersUsername = story.getString("username");
+                lat = story.getString("lat");
+                lng = story.getString("lng");
+                isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+            byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
+            String asd = odt.toString();
+
+            maintitle.add(title);
+            subtitle.add(description);
+            imgid.add(decodedByte);
+            usernameArraylist.add(postersUsername);
+            latitude.add(lat);
+            longitude.add(lng);
+            timestamp.add(asd); // tässä timestamp lisätään listviewiin
+
+            arrayAdapt();
+        }
+    }
+    private void arrayAdapt() {
+        adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+    }
+    private void searchAdapt() {
+        adapter = new CustomListView(ExploreActivity.this, result, result2, result3, result4, result5);
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+    }
+
 }

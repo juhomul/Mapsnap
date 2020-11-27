@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -124,16 +125,21 @@ public class LoginActivity extends AppCompatActivity {
                         SaveSharedPreference.setEmail(LoginActivity.this, email);
 
 
-                        Intent profileIntent = new Intent(LoginActivity.this, ProfileActivity.class); //joku activity täs
-                        startActivity(profileIntent);
+                        Intent mapsIntent = new Intent(LoginActivity.this, MapsActivity.class);
+                        startActivity(mapsIntent);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("mytag", "" + error);
-                        Toast.makeText(getApplicationContext(),
-                                "Password or username incorrect", Toast.LENGTH_SHORT).show();
-                        //todo
+                        NetworkResponse networkResponse = error.networkResponse;
+                        if (networkResponse != null && networkResponse.data != null) {
+                            String jsonError = new String(networkResponse.data);
+                            Toast.makeText(getApplicationContext(),
+                                    "" + jsonError, Toast.LENGTH_SHORT).show();
+                        }
+                        /*Toast.makeText(getApplicationContext(),
+                                "Password or username incorrect", Toast.LENGTH_SHORT).show();*/
                     }
                 });
 
