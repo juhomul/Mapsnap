@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         //Version 0.4
     }
 
+    /*
     @Override
     protected void onResume() {
         super.onResume();
@@ -79,5 +80,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
+     */
 }
