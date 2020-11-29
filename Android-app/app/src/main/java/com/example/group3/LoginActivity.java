@@ -127,6 +127,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         Intent mapsIntent = new Intent(LoginActivity.this, MapsActivity.class);
                         startActivity(mapsIntent);
+                        finish();
                     }
                 }, new Response.ErrorListener() {
                     @Override

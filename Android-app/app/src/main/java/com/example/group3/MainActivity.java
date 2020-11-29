@@ -61,15 +61,24 @@ public class MainActivity extends AppCompatActivity {
         //Intent createStoryIntent = new Intent(this, CreateStoryActivity.class);
         //startActivity(createStoryIntent);
 
-        //Version 0.2
+        //Version 0.4
     }
 
+    /*
     @Override
     protected void onResume() {
         super.onResume();
 
-        Intent mapsIntent = new Intent(this, MapsActivity.class);
-        startActivity(mapsIntent);
-        finish();
+        if (SaveSharedPreference.getToken(MainActivity.this).length() == 0) {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+        } else {
+
+            Intent mapsIntent = new Intent(this, MapsActivity.class);
+            startActivity(mapsIntent);
+            //finish();
+        }
+
     }
+     */
 }

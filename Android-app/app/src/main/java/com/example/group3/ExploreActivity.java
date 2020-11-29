@@ -96,6 +96,7 @@ public class ExploreActivity extends AppCompatActivity {
                 latitude.clear();
                 longitude.clear();
                 timestamp.clear();
+                //finish();
                 getStories("http://100.26.132.75/story");
                 swipeView.setRefreshing(false);
             }
@@ -145,6 +146,10 @@ public class ExploreActivity extends AppCompatActivity {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         //Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
                         result.clear();
+                        result2.clear();
+                        result3.clear();
+                        result4.clear();
+                        result5.clear();
                         search = searchBar.getText().toString();
                         for(int i=0; i<maintitle.size(); i++) {
                             String titleString = maintitle.get(i);
@@ -235,7 +240,7 @@ public class ExploreActivity extends AppCompatActivity {
                         searchAdapt();
                     }
                     else {
-
+                        Toast.makeText(ExploreActivity.this, "ei toimi", Toast.LENGTH_SHORT).show();
                     }
                 }*/
             }
