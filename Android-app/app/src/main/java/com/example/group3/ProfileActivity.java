@@ -37,6 +37,9 @@ public class ProfileActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
 
+        profileUsername = findViewById(R.id.profile_username);
+        profileUsername.setText(username);
+
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         View headerView = navigationView.getHeaderView(0);
