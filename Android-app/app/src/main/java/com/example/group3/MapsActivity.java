@@ -251,31 +251,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
-    /*
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-    }
-
-    private void stopLocationUpdates() {
-        client.removeLocationUpdates(locationCallback);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        startLocationUpdates();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        stopLocationUpdates();
-    }
-     */
 
     public ArrayList<LatLng> getMarkers(){
         //Loops and adds new markers to the list
