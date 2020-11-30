@@ -223,9 +223,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public MapsActivity() {
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 

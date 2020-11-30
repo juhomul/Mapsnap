@@ -61,6 +61,8 @@ public class CreateStoryActivity extends AppCompatActivity {
         displayImageView.setImageBitmap(image);
 
         Log.d("CreateStory", "imagePath: " + intent.getStringExtra("imagePath"));
+        Log.d("CreateStory", "Latitude: " + strLat);
+        Log.d("CreateStory", "Longitude: " + strLong);
 
         Intent mapsIntent = new Intent(this, MapsActivity.class);
 
@@ -85,6 +87,9 @@ public class CreateStoryActivity extends AppCompatActivity {
                 }
 
                 uploadImage("http://100.26.132.75/story", jsonBody);
+
+                Log.d("CreateStory", "Latitude: " + strLat);
+                Log.d("CreateStory", "Longitude: " + strLong);
 
                 startActivity(mapsIntent);
                 finish();
