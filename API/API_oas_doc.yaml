@@ -1,0 +1,284 @@
+openapi: 3.0.0
+info:
+  title: ProdDes_Group3
+  version: "1.0"
+servers:
+  - url: "http://100.26.132.75"
+paths:
+  /user/register:
+    post:
+      summary: Register
+      tags: []
+      responses:
+        "201":
+          description: Created
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+        "400":
+          description: Bad Request
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      operationId: post-register
+      description: Register a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+    parameters: []
+  /user/login:
+    parameters: []
+    post:
+      summary: ""
+      operationId: post-user-login
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: Unauthorized
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      description: Create authorization token and login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: number
+                username:
+                  type: string
+                email:
+                  type: string
+                token:
+                  type: string
+  /story:
+    post:
+      summary: Create story
+      tags: []
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/story"
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      operationId: post-story
+      description: Create a new story. Needs token.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/story_without_id"
+      parameters: []
+    get:
+      summary: Get all stories
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/story"
+      operationId: get-story
+      description: ""
+      parameters:
+        - schema:
+            type: number
+          in: query
+          name: number
+          description: number of stories
+        - schema:
+            type: number
+          in: query
+          name: offset
+    parameters: []
+  "/story/id/{storyid}":
+    parameters:
+      - schema:
+          type: string
+        name: storyid
+        in: path
+        required: true
+    get:
+      summary: Get story by id
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/story"
+        "404":
+          description: Not Found
+      operationId: get-story-id
+      description: ""
+    delete:
+      summary: Delete a story
+      tags: []
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+      operationId: delete-story-id
+      description: Needs token.
+  /story/location:
+    get:
+      summary: Get story locations
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    lat:
+                      type: string
+                    lng:
+                      type: string
+      operationId: get-story-locations
+      description: Get all story locations and ids for map
+    parameters: []
+  /user:
+    get:
+      summary: Get all users
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+      operationId: get-user
+  "/user/id/{id}":
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: Delete a user
+      tags: []
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      operationId: delete-users-id
+  "/story/userid/{userId}":
+    parameters:
+      - schema:
+          type: string
+        name: userId
+        in: path
+        required: true
+    get:
+      summary: Get stories by userId
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/story"
+        "404":
+          description: Not Found
+      operationId: get-story-userId
+      description: Get all stories by a user
+components:
+  schemas:
+    user:
+      title: User
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    story:
+      title: Get_story
+      type: object
+      properties:
+        storyid:
+          type: number
+        userid:
+          type: number
+        username:
+          type: string
+        description:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        timestamp:
+          type: string
+        image:
+          type: string
+    story_without_id:
+      title: Post_story
+      type: object
+      properties:
+        desc:
+          type: string
+        lat:
+          type: number
+        long:
+          type: number
+        image:
+          type: string
+  securitySchemes: {}
