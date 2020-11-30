@@ -4,26 +4,69 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.regex.Pattern;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername, profileUsername;
-    String email, username;
+    String email, username, description, title, image, postersUsername, lat, lng, isoTime, search;
+    ListView listView;
+    RequestQueue requestQueue;
+    JSONArray stories;
+    JSONObject story;
+    ArrayList<String> maintitle = new ArrayList<String>();
+    ArrayList<String> subtitle = new ArrayList<String>();
+    ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
+    ArrayList<String> usernameArraylist = new ArrayList<String>();
+    ArrayList<String> latitude = new ArrayList<String>();
+    ArrayList<String> longitude = new ArrayList<String>();
+    ArrayList<String> timestamp = new ArrayList<>();
+    CustomListView adapter;
+    MyRecyclerViewAdapter feedAdapter;
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        requestQueue = Volley.newRequestQueue(this);
+
+        getStories("http://100.26.132.75/story");
 
         drawer = findViewById(R.id.drawer_layout);
         //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -31,14 +74,12 @@ public class ProfileActivity extends AppCompatActivity {
         email = SaveSharedPreference.getEmail(ProfileActivity.this);
         username = SaveSharedPreference.getUserName(ProfileActivity.this);
 
+
         profileUsername = findViewById(R.id.profile_username);
         profileUsername.setText(username);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
-
-        profileUsername = findViewById(R.id.profile_username);
-        profileUsername.setText(username);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -47,6 +88,19 @@ public class ProfileActivity extends AppCompatActivity {
         showUsername = headerView.findViewById(R.id.showUsername);
         showEmail.setText(email);
         showUsername.setText(username);
+
+        recyclerView = findViewById(R.id.rvFeed);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        recyclerView.setHasFixedSize(true);
+
+
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                return false;
+            }
+        });*/
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -103,5 +157,79 @@ public class ProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+    private void getStories(String url) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            stories = response.getJSONArray("stories");
+                            parseJSON(stories);
+                        }
+                        catch(JSONException e) {
+                            Log.d("mytag", "" + e);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
+                    }
+                });
+
+        requestQueue.add(jsonObjectRequest);
+    }
+    private void parseJSON(JSONArray json) {
+
+        for(int i = 0; i < json.length(); i++) {
+            try {
+                story = json.getJSONObject(i);
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+            try {
+                description = story.getString("description");
+                title = story.getString("title");
+                image = story.getString("image");
+                postersUsername = story.getString("username");
+                lat = story.getString("lat");
+                lng = story.getString("lng");
+                isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+            byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
+            String asd = odt.toString();
+
+            if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
+                /*
+                maintitle.add(title);
+                subtitle.add(description);
+                usernameArraylist.add(postersUsername);
+                latitude.add(lat);
+                longitude.add(lng);
+                timestamp.add(asd);// tässä timestamp lisätään listviewiin
+                */
+
+                imgid.add(decodedByte);
+                feedAdapt();
+            }
+
+        }
+        Collections.reverse(imgid);
+    }
+
+    private void arrayAdapt() {
+        adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
+        adapter.notifyDataSetChanged();
+        listView.setAdapter(adapter);
+    }
+    private void feedAdapt() {
+        feedAdapter = new MyRecyclerViewAdapter(this, imgid);
+        recyclerView.setAdapter(feedAdapter);
     }
 }
