@@ -13,14 +13,22 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationResult;
@@ -31,11 +39,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -49,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String email, username;
     Button camBtn;
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    Marker marker;
 
 
     public ArrayList<LatLng> markersList;
@@ -218,13 +232,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getCurrentLocation();
 
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
         for (int i = 0; i < markersList.size(); i++) {
-            mMap.addMarker(
+            marker = mMap.addMarker(
                     new MarkerOptions().
                             position(markersList.get(i)).
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
+
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
         }
@@ -281,6 +297,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         return markersList;
 
+    }
+
+    private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
+        String storyDesc = "Tässä on storyn description";
+
+        private View view;
+
+        public CustomInfoWindowAdapter() {
+            view = getLayoutInflater().inflate(R.layout.popup,null);
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+
+            if (MapsActivity.this.marker != null
+                    && MapsActivity.this.marker.isInfoWindowShown()) {
+                MapsActivity.this.marker.hideInfoWindow();
+                MapsActivity.this.marker.showInfoWindow();
+            }
+            return null;
+        }
+
+        @Override
+        public View getInfoWindow(final Marker marker) {
+            MapsActivity.this.marker = marker;
+
+            ImageView image = view.findViewById(R.id.image);
+            TextView desc = view.findViewById(R.id.textView);
+
+            desc.setText(storyDesc);
+
+            Picasso.get()
+                    .load(imageUri)
+                    .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
+                    .into(image);
+
+            //getInfoContents(marker);
+            return view;
+        }
     }
 
 }
