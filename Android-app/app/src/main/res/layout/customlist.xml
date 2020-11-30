@@ -13,7 +13,7 @@
         <TextView
             android:id="@+id/postersUsername"
             android:layout_width="239dp"
-            android:layout_height="35dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text="TextView" />
 

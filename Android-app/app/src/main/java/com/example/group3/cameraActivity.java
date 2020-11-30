@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.example.group3.MapsActivity.REQUEST_IMAGE_CAPTURE;
+//import static com.example.group3.MapsActivity.REQUEST_IMAGE_CAPTURE;
 
 public class cameraActivity extends AppCompatActivity {
 
@@ -48,6 +48,7 @@ public class cameraActivity extends AppCompatActivity {
     ImageView displayImageView;
     Button cameraBtn;
     Bitmap image;
+    String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class cameraActivity extends AppCompatActivity {
 
     private void sendImage() {
         Intent imageIntent = new Intent(this, CreateStoryActivity.class);
-        imageIntent.putExtra("BitmapImage", image);
+        imageIntent.putExtra("imagePath", currentPhotoPath);
         startActivity(imageIntent);
     }
 
@@ -91,9 +92,41 @@ public class cameraActivity extends AppCompatActivity {
         }
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
     private void openCamera() {
         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(camera, CAMERA_REQUEST_CODE);
+        if (camera.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                camera.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(camera, CAMERA_REQUEST_CODE);
+            }
+        }
     }
 
     @Override
@@ -101,10 +134,11 @@ public class cameraActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST_CODE) {
             // After image taken
-            image = (Bitmap) data.getExtras().get("data");
+            //image = (Bitmap) data.getExtras().get("data");
             Intent imageIntent = new Intent(this, CreateStoryActivity.class);
-            imageIntent.putExtra("BitmapImage", image);
+            imageIntent.putExtra("imagePath", currentPhotoPath);
             startActivity(imageIntent);
+            finish(); //Kun kuva "accept" niin sulkee cameraActivityn taustalta joten ei "back" nappia painaessa enää tulla cameraan :)
         }
     }
 }

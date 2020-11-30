@@ -39,7 +39,8 @@
                 android:layout_toRightOf="@id/profile_picture"
                 android:layout_marginTop="40dp"
                 android:includeFontPadding="false"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:id="@+id/profile_username"/>
 
 
         </RelativeLayout>
