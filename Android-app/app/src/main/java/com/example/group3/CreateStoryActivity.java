@@ -103,6 +103,25 @@ public class CreateStoryActivity extends AppCompatActivity {
             return;
         }
 
+        /**
+         * private final LocationListener mLocationListener = new LocationListener() {
+         *     @Override
+         *     public void onLocationChanged(final Location location) {
+         *         //your code here
+         *     }
+         * };
+         *
+         * @Override
+         * protected void onCreate(Bundle savedInstanceState) {
+         *     super.onCreate(savedInstanceState);
+         *
+         *     mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+         *
+         *     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+         *             LOCATION_REFRESH_DISTANCE, mLocationListener);
+         * }
+         */
+
         //TÄMÄ ON LAST LOCATION EI CURRENT!!!
         client.getLastLocation().addOnSuccessListener(CreateStoryActivity.this, new OnSuccessListener<Location>() {
             @Override
