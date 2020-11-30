@@ -183,6 +183,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+        ///TÄMÄ ON LAST LOCATION EI CURRENT
         Task<Location> task = client.getLastLocation();
         task.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override

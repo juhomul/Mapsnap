@@ -102,6 +102,8 @@ public class CreateStoryActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
+        //TÄMÄ ON LAST LOCATION EI CURRENT!!!
         client.getLastLocation().addOnSuccessListener(CreateStoryActivity.this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
