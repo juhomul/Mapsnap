@@ -41,6 +41,7 @@ import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 
 public class ExploreActivity extends AppCompatActivity {
@@ -89,15 +90,17 @@ public class ExploreActivity extends AppCompatActivity {
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                maintitle.clear();
+                /*maintitle.clear();
                 subtitle.clear();
                 imgid.clear();
                 usernameArraylist.clear();
                 latitude.clear();
                 longitude.clear();
                 timestamp.clear();
-                //finish();
-                getStories("http://100.26.132.75/story");
+                getStories("http://100.26.132.75/story");*/
+                finish();
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
                 swipeView.setRefreshing(false);
             }
         });
@@ -157,7 +160,7 @@ public class ExploreActivity extends AppCompatActivity {
                             Bitmap imgidString = imgid.get(i);
                             String usernameString = usernameArraylist.get(i);
                             String timestampString = timestamp.get(i);
-                            if (titleString.contains(search)) {
+                            if (Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(titleString).find()) {
                                 result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
@@ -165,7 +168,7 @@ public class ExploreActivity extends AppCompatActivity {
                                 result5.add(timestampString);
                                 searchAdapt();
                             }
-                            else if(subtitleString.contains(search)) {
+                            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
                                 result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
@@ -173,7 +176,7 @@ public class ExploreActivity extends AppCompatActivity {
                                 result5.add(timestampString);
                                 searchAdapt();
                             }
-                            else if(usernameString.contains(search)) {
+                            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
                                 result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
