@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:text="Username"
                 android:textSize="20sp"
+                android:id="@+id/profile_username"
                 android:layout_toRightOf="@id/profile_picture"
                 android:layout_marginTop="40dp"
                 android:includeFontPadding="false"
