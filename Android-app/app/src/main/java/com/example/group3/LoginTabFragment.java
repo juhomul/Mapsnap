@@ -98,7 +98,7 @@ public class LoginTabFragment extends Fragment {
 
                         Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
                         startActivity(mapsIntent);
-                        // finish();
+                        getActivity().finish();
                     }
                 }, new Response.ErrorListener() {
                     @Override
