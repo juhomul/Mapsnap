@@ -91,13 +91,14 @@ public class LoginTabFragment extends Fragment {
                             SaveSharedPreference.setStayLogged(getContext(), "yes"); //jos stayLogged string olemassa, pysyy kirjautuneena
                         }
 
-                        SaveSharedPreference.setUserName(getContext(), username); //tallentaa usernamen sharedpreferencee
+                        SaveSharedPreference.setUserName(getContext(), username);//tallentaa usernamen sharedpreferencee
                         SaveSharedPreference.setToken(getContext(), token); //tallentaa tokenin sharedpreferencee
                         SaveSharedPreference.setEmail(getContext(), email);
 
 
                         Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
                         startActivity(mapsIntent);
+                        // finish();
                     }
                 }, new Response.ErrorListener() {
                     @Override

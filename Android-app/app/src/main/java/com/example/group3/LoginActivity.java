@@ -62,37 +62,4 @@ public class LoginActivity extends AppCompatActivity {
 
         tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
     }
-
-                        CheckBox stayLoggedIn = findViewById(R.id.stayLoggedIn);
-
-                        if(stayLoggedIn.isChecked()) {
-                            SaveSharedPreference.setStayLogged(LoginActivity.this, "yes"); //jos stayLogged string olemassa, pysyy kirjautuneena
-                        }
-
-                        SaveSharedPreference.setUserName(LoginActivity.this, username); //tallentaa usernamen sharedpreferencee
-                        SaveSharedPreference.setToken(LoginActivity.this, token); //tallentaa tokenin sharedpreferencee
-                        SaveSharedPreference.setEmail(LoginActivity.this, email);
-
-
-                        Intent mapsIntent = new Intent(LoginActivity.this, MapsActivity.class);
-                        startActivity(mapsIntent);
-                        finish();
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("mytag", "" + error);
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Toast.makeText(getApplicationContext(),
-                                    "" + jsonError, Toast.LENGTH_SHORT).show();
-                        }
-                        /*Toast.makeText(getApplicationContext(),
-                                "Password or username incorrect", Toast.LENGTH_SHORT).show();*/
-                    }
-                });
-
-        requestQueue.add(jsonObjectRequest);
-    }
 }
