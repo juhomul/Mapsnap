@@ -160,22 +160,22 @@ public class ExploreActivity extends AppCompatActivity {
                         result4.clear();
                         result5.clear();
                         search = searchBar.getText().toString();
-                        for(int i=0; i<maintitle.size(); i++) {
-                            String titleString = maintitle.get(i);
+                        for(int i=0; i<subtitle.size(); i++) {
+                            //String titleString = maintitle.get(i);
                             String subtitleString = subtitle.get(i);
                             Bitmap imgidString = imgid.get(i);
                             String usernameString = usernameArraylist.get(i);
                             String timestampString = timestamp.get(i);
-                            if (Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(titleString).find()) {
+                            /*if (Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(titleString).find()) {
                                 result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
                                 result5.add(timestampString);
                                 searchAdapt();
-                            }
-                            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
-                                result.add(titleString);
+                            }*/
+                            if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
+                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
@@ -183,7 +183,7 @@ public class ExploreActivity extends AppCompatActivity {
                                 searchAdapt();
                             }
                             else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
-                                result.add(titleString);
+                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
@@ -386,7 +386,7 @@ public class ExploreActivity extends AppCompatActivity {
             OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
             String asd = odt.toString();
 
-            maintitle.add(title);
+            //maintitle.add(title);
             subtitle.add(description);
             imgid.add(decodedByte);
             usernameArraylist.add(postersUsername);
@@ -398,12 +398,12 @@ public class ExploreActivity extends AppCompatActivity {
         }
     }
     private void arrayAdapt() {
-        adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
+        adapter = new CustomListView(this, subtitle, imgid, usernameArraylist, timestamp);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }
     private void searchAdapt() {
-        adapter = new CustomListView(ExploreActivity.this, result, result2, result3, result4, result5);
+        adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }

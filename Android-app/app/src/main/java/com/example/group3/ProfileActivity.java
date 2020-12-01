@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,8 +46,8 @@ import java.util.regex.Pattern;
 public class ProfileActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
-    TextView showEmail, showUsername, profileUsername;
-    String email, username, description, title, image, postersUsername, lat, lng, isoTime, search;
+    TextView showEmail, showUsername, profileUsername, titleTextView, subtitleTextView, usernameTextView, timestampTextView, storyAmountTextView;
+    String email, username, description, title, image, postersUsername, lat, lng, isoTime;
     ListView listView;
     RequestQueue requestQueue;
     JSONArray stories;
@@ -64,6 +65,8 @@ public class ProfileActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ListView longPressList;
     ArrayAdapter<String> popupAdapter;
+    ImageView storyImage;
+    Integer storiesAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,8 @@ public class ProfileActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
 
         getStories("http://100.26.132.75/story");
+
+        storyAmountTextView = findViewById(R.id.stories_amount);
 
         drawer = findViewById(R.id.drawer_layout);
         //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -118,20 +123,35 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onItemLongClick(View view, int position) {
                 final Dialog dialog = new Dialog(ProfileActivity.this);
-                dialog.setContentView(R.layout.longpress_popup);
+                dialog.setContentView(R.layout.customlist); // R.layout.longpress_popup
                 dialog.setTitle(null);
-                longPressList = dialog.findViewById(R.id.pop_up);
-                popupAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, popUpArray);
-                longPressList.setAdapter(popupAdapter);
+                //String titleString = maintitle.get(position);
+                String subtitleString = subtitle.get(position);
+                Bitmap imgidString = imgid.get(position);
+                String usernameString = usernameArraylist.get(position);
+                String timestampString = timestamp.get(position);
+
+                storyImage = dialog.findViewById(R.id.image);
+                usernameTextView = dialog.findViewById(R.id.postersUsername);
+                //titleTextView = dialog.findViewById(R.id.title);
+                subtitleTextView = dialog.findViewById(R.id.description);
+                timestampTextView = dialog.findViewById(R.id.timestamp);
+
+                usernameTextView.setText(usernameString);
+                storyImage.setImageBitmap(imgidString);
+                //titleTextView.setText(titleString);
+                subtitleTextView.setText(subtitleString);
+                timestampTextView.setText(timestampString);
+
                 dialog.show();
 
-                longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                /*longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         String arrayText = popUpArray.get(i);
                         Toast.makeText(view.getContext(), "toimii " + arrayText + position, Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
             }
         });
 
@@ -225,26 +245,46 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.d("mytag", "" + e);
             }
             try {
-                //description = story.getString("description");
+                description = story.getString("description");
                 //title = story.getString("title");
                 image = story.getString("image");
                 postersUsername = story.getString("username");
-                //lat = story.getString("lat");
-                //lng = story.getString("lng");
-                //isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
+                lat = story.getString("lat");
+                lng = story.getString("lng");
+                isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
+            String asd = odt.toString();
+
             if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
 
                 feedAdapter.addNewItem(decodedByte);
+
+                imgid.add(decodedByte);
+                maintitle.add(title);
+                subtitle.add(description);
+                usernameArraylist.add(postersUsername);
+                latitude.add(lat);
+                longitude.add(lng);
+                timestamp.add(asd);
             }
 
         }
+        Collections.reverse(imgid);
+        //Collections.reverse(maintitle);
+        Collections.reverse(subtitle);
+        Collections.reverse(usernameArraylist);
+        Collections.reverse(latitude);
+        Collections.reverse(longitude);
+        Collections.reverse(timestamp);
 
         feedAdapter.reverseFeed();
+        storiesAmount = imgid.size();
+        storyAmountTextView.setText(String.valueOf(storiesAmount));
     }
 }

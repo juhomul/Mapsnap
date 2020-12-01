@@ -117,7 +117,7 @@
                         android:id="@+id/stories_amount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="123"
+                        android:text="Loading"
                         android:layout_below="@+id/stories_icon"
                         android:includeFontPadding="false"
                         android:textSize="18sp"

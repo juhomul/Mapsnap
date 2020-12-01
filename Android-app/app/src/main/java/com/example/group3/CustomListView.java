@@ -17,7 +17,7 @@ import java.util.Date;
 public class CustomListView extends ArrayAdapter<String> {
 
     private final Activity context;
-    private final ArrayList maintitle;
+    //private final ArrayList maintitle;
     private final ArrayList subtitle;
     private final ArrayList imgid;
     private final ArrayList usernameArraylist;
@@ -25,15 +25,14 @@ public class CustomListView extends ArrayAdapter<String> {
 
 
     public CustomListView(Context context,
-                          ArrayList<String> maintitle,
                           ArrayList<String> subtitle,
                           ArrayList<Bitmap> imgid,
                           ArrayList<String> usernameArraylist,
                           ArrayList<String> timestamp) {
-        super(context, R.layout.customlist, maintitle);
+        super(context, R.layout.customlist, subtitle);
 
         this.context= (Activity) getContext();
-        this.maintitle=maintitle;
+        //this.maintitle=maintitle;
         this.subtitle=subtitle;
         this.imgid=imgid;
         this.usernameArraylist=usernameArraylist;
@@ -42,9 +41,9 @@ public class CustomListView extends ArrayAdapter<String> {
     }
 
 
-    public int getCountMaintitle() {
+    /*public int getCountMaintitle() {
         return maintitle.size();
-    }
+    }*/
     public int getCountImgid() {
         return imgid.size();
     }
@@ -77,7 +76,7 @@ public class CustomListView extends ArrayAdapter<String> {
         postersUsername.setText((CharSequence) usernameArraylist.get(position));
         timestampTextView.setText((CharSequence) timestamp.get(position));*/
 
-        titleText.setText((CharSequence) maintitle.get(getCountMaintitle() - position - 1));
+        //titleText.setText((CharSequence) maintitle.get(getCountMaintitle() - position - 1));
         imageView.setImageBitmap((Bitmap) imgid.get(getCountImgid() - position - 1));
         subtitleText.setText((CharSequence) subtitle.get(getCountSubtitle() - position - 1));
         postersUsername.setText((CharSequence) usernameArraylist.get(getCountUsernameArraylist() - position - 1));
