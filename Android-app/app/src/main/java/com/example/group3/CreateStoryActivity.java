@@ -56,13 +56,15 @@ public class CreateStoryActivity extends AppCompatActivity {
         displayImageView = findViewById(R.id.imageDisplayView);
         requestQueue = Volley.newRequestQueue(this);
 
+        getLocation();
+        Log.d("CreateStory", "Latitude Start: " + strLat);
+        Log.d("CreateStory", "Longitude Start: " + strLong);
+
         // get image path from extras and convert to bitmap
         Bitmap image = BitmapFactory.decodeFile(intent.getStringExtra("imagePath"));
         displayImageView.setImageBitmap(image);
 
         Log.d("CreateStory", "imagePath: " + intent.getStringExtra("imagePath"));
-        Log.d("CreateStory", "Latitude: " + strLat);
-        Log.d("CreateStory", "Longitude: " + strLong);
 
         Intent mapsIntent = new Intent(this, MapsActivity.class);
 
@@ -85,18 +87,11 @@ public class CreateStoryActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 uploadImage("http://100.26.132.75/story", jsonBody);
-
-                Log.d("CreateStory", "Latitude: " + strLat);
-                Log.d("CreateStory", "Longitude: " + strLong);
-
                 startActivity(mapsIntent);
                 finish();
             }
         });
-
-        getLocation();
     }
 
     private void getLocation() {
@@ -108,26 +103,7 @@ public class CreateStoryActivity extends AppCompatActivity {
             return;
         }
 
-        /**
-         * private final LocationListener mLocationListener = new LocationListener() {
-         *     @Override
-         *     public void onLocationChanged(final Location location) {
-         *         //your code here
-         *     }
-         * };
-         *
-         * @Override
-         * protected void onCreate(Bundle savedInstanceState) {
-         *     super.onCreate(savedInstanceState);
-         *
-         *     mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-         *
-         *     mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
-         *             LOCATION_REFRESH_DISTANCE, mLocationListener);
-         * }
-         */
 
-        //TÄMÄ ON LAST LOCATION EI CURRENT!!!
         client.getLastLocation().addOnSuccessListener(CreateStoryActivity.this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
