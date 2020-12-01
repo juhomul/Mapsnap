@@ -2,6 +2,7 @@ package com.example.group3;
 
 import android.app.Activity;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,7 @@ public class CustomListView extends ArrayAdapter<String> {
     private final ArrayList timestamp;
 
 
-    public CustomListView(ExploreActivity context,
+    public CustomListView(Context context,
                           ArrayList<String> maintitle,
                           ArrayList<String> subtitle,
                           ArrayList<Bitmap> imgid,
@@ -31,7 +32,7 @@ public class CustomListView extends ArrayAdapter<String> {
                           ArrayList<String> timestamp) {
         super(context, R.layout.customlist, maintitle);
 
-        this.context=context;
+        this.context= (Activity) getContext();
         this.maintitle=maintitle;
         this.subtitle=subtitle;
         this.imgid=imgid;
@@ -39,6 +40,8 @@ public class CustomListView extends ArrayAdapter<String> {
         this.timestamp=timestamp;
 
     }
+
+
     public int getCountMaintitle() {
         return maintitle.size();
     }
