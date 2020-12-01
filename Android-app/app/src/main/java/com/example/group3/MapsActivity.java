@@ -13,28 +13,45 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -45,10 +62,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView showEmail, showUsername;
     String email, username;
     Marker marker;
+    JSONObject markerObject;
+    JSONArray markers;
+    RequestQueue requestQueue;
     static final int REQUEST_IMAGE_CAPTURE = 1; //Tarviiko Juho ? Voi poistaa jos ei
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
+    public ArrayList<Integer> markerStoryIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +98,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         showUsername = headerView.findViewById(R.id.showUsername);
         showEmail.setText(email);
         showUsername.setText(username);
+
+        requestQueue = Volley.newRequestQueue(this);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -142,6 +165,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+
+        getMarkers("http://100.26.132.75/story/location");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
         == PackageManager.PERMISSION_GRANTED) {
@@ -178,24 +204,63 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     
 
-    public ArrayList<LatLng> getMarkers(){
-        //Loops and adds new markers to the list
+    private void getMarkers(String url) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        markers = response.getJSONArray("locations");
+                        addMarkers(markers);
+                    }
+                    catch(JSONException e) {
+                        Log.d("mytag", "" + e);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.d("mytag", "" + error);
+                }
+            });
+        Log.d("mytag", "" + jsonObjectRequest);
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void addMarkers(JSONArray json) {
         markersList = new ArrayList<LatLng>();
 
-        LatLng oulu1 = new LatLng(65.0121, 25.4651);
-        LatLng hukassa = new LatLng(5.0000, 15.0000);
-        LatLng oulu3 = new LatLng(15.1241, 25.2121);
-        LatLng oulu4 = new LatLng(64.0021, 37.1201);
-        LatLng oulu5 = new LatLng(65.0822, 1.1002);
+        // Parse JSONObject to arraylist
+        for(int i = 0; i < json.length(); i++) {
+            try {
+                markerObject = json.getJSONObject(i);
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+            try {
+                // Saving story ids later use
+                markerStoryIds.add(markerObject.getInt("storyId"));
 
-        markersList.add(oulu1);
-        markersList.add(hukassa);
-        markersList.add(oulu3);
-        markersList.add(oulu4);
-        markersList.add(oulu5);
+                double lat = markerObject.getDouble("lat");
+                double lng = markerObject.getDouble("lng");
+                LatLng coordinates = new LatLng(lat, lng);
+                markersList.add(coordinates);
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+        }
 
-        return markersList;
+        // Add markers to map
+        for (int i = 0; i < markersList.size(); i++) {
+            marker = mMap.addMarker(
+                    new MarkerOptions().
+                            position(markersList.get(i)).
+                            icon(BitmapDescriptorFactory.fromResource(R.drawable.)).
+                            title("Marker" + i));
 
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
+        }
     }
 
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
