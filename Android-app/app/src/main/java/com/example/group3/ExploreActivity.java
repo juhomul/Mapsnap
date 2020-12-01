@@ -371,7 +371,7 @@ public class ExploreActivity extends AppCompatActivity {
             }
             try {
                 description = story.getString("description");
-                title = story.getString("title");
+                //title = story.getString("title");
                 image = story.getString("image");
                 postersUsername = story.getString("username");
                 lat = story.getString("lat");
