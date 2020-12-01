@@ -69,7 +69,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
-    public ArrayList<Integer> markerStoryIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,13 +233,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for(int i = 0; i < json.length(); i++) {
             try {
                 markerObject = json.getJSONObject(i);
-            } catch (JSONException e) {
-                Log.d("mytag", "" + e);
-            }
-            try {
-                // Saving story ids later use
-                markerStoryIds.add(markerObject.getInt("storyId"));
-
                 double lat = markerObject.getDouble("lat");
                 double lng = markerObject.getDouble("lng");
                 LatLng coordinates = new LatLng(lat, lng);
@@ -255,7 +247,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             marker = mMap.addMarker(
                     new MarkerOptions().
                             position(markersList.get(i)).
-                            icon(BitmapDescriptorFactory.fromResource(R.drawable.)).
+                            icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
 
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
