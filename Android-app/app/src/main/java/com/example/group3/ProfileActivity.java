@@ -7,6 +7,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,7 +17,9 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,9 +58,12 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
+    ArrayList<String> popUpArray = new ArrayList<>();
     CustomListView adapter;
     MyRecyclerViewAdapter feedAdapter;
     RecyclerView recyclerView;
+    ListView longPressList;
+    ArrayAdapter<String> popupAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +83,14 @@ public class ProfileActivity extends AppCompatActivity {
 
         profileUsername = findViewById(R.id.profile_username);
         profileUsername.setText(username);
+        popUpArray.add("delete story");
+        popUpArray.add("asd");
+
+        /*longPressList = findViewById(R.id.pop_up);
+        popUpArray.add("delete story");
+        popUpArray.add("asd");
+        ArrayAdapter<String> popupAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, popUpArray);
+        longPressList.setAdapter(popupAdapter);*/
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
@@ -93,14 +107,36 @@ public class ProfileActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         recyclerView.setHasFixedSize(true);
 
-
-        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        feedAdapter = new MyRecyclerViewAdapter(ProfileActivity.this);
+        recyclerView.setAdapter(feedAdapter);
+        feedAdapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(View view, int position) {
 
-                return false;
             }
-        });*/
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                final Dialog dialog = new Dialog(ProfileActivity.this);
+                dialog.setContentView(R.layout.longpress_popup);
+                dialog.setTitle(null);
+                longPressList = dialog.findViewById(R.id.pop_up);
+                popupAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, popUpArray);
+                longPressList.setAdapter(popupAdapter);
+                dialog.show();
+
+                longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        String arrayText = popUpArray.get(i);
+                        Toast.makeText(view.getContext(), "toimii " + arrayText + position, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -189,47 +225,26 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.d("mytag", "" + e);
             }
             try {
-                description = story.getString("description");
-                title = story.getString("title");
+                //description = story.getString("description");
+                //title = story.getString("title");
                 image = story.getString("image");
                 postersUsername = story.getString("username");
-                lat = story.getString("lat");
-                lng = story.getString("lng");
-                isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
+                //lat = story.getString("lat");
+                //lng = story.getString("lng");
+                //isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
-            String asd = odt.toString();
-
             if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
-                /*
-                maintitle.add(title);
-                subtitle.add(description);
-                usernameArraylist.add(postersUsername);
-                latitude.add(lat);
-                longitude.add(lng);
-                timestamp.add(asd);// tässä timestamp lisätään listviewiin
-                */
 
-                imgid.add(decodedByte);
-                feedAdapt();
+                feedAdapter.addNewItem(decodedByte);
             }
 
         }
-        Collections.reverse(imgid);
-    }
 
-    private void arrayAdapt() {
-        adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
-    }
-    private void feedAdapt() {
-        feedAdapter = new MyRecyclerViewAdapter(this, imgid);
-        recyclerView.setAdapter(feedAdapter);
+        feedAdapter.reverseFeed();
     }
 }

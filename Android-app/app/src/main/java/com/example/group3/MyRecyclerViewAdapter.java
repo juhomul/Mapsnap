@@ -12,18 +12,19 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<Bitmap> bmData;
+    private ArrayList<Bitmap> bmData = new ArrayList<>();
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private View headerView;
 
     // data is passed into the constructor
-    MyRecyclerViewAdapter(Context context, ArrayList<Bitmap> data) {
+    MyRecyclerViewAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
-        this.bmData = data;
+        //this.bmData = data;
     }
 
 
@@ -88,6 +89,15 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     }
     public void setHeader(View view) {
         this.headerView = view;
+    }
+
+    public void addNewItem(Bitmap item) {
+        bmData.add(item);
+        this.notifyDataSetChanged();
+    }
+
+    public void reverseFeed() {
+        Collections.reverse(bmData);
     }
 
 
