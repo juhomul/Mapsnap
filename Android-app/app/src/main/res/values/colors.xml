@@ -10,4 +10,5 @@
     <color name="yellow">#ECC700</color>
     <color name="dark">#141414</color>
     <color name="light_grey">#E0E0E0</color>
+    <color name="grey">#666666</color>
 </resources>
