@@ -68,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
+    public ArrayList<Integer> markerIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,14 +228,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void addMarkers(JSONArray json) {
         markersList = new ArrayList<LatLng>();
+        markerIds = new ArrayList<Integer>();
 
         // Parse JSONObject to arraylist
         for(int i = 0; i < json.length(); i++) {
             try {
                 markerObject = json.getJSONObject(i);
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+            try {
                 double lat = markerObject.getDouble("lat");
                 double lng = markerObject.getDouble("lng");
                 LatLng coordinates = new LatLng(lat, lng);
+                markerIds.add(markerObject.getInt("storyId"));
                 markersList.add(coordinates);
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
