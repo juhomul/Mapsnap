@@ -69,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
-    public ArrayList<Integer> markerStoryIds;
+    public ArrayList<Integer> markerIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,6 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void addMarkers(JSONArray json) {
         markersList = new ArrayList<LatLng>();
+        markerIds = new ArrayList<Integer>();
 
         // Parse JSONObject to arraylist
         for(int i = 0; i < json.length(); i++) {
@@ -238,12 +239,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.d("mytag", "" + e);
             }
             try {
-                // Saving story ids later use
-                markerStoryIds.add(markerObject.getInt("storyId"));
-
                 double lat = markerObject.getDouble("lat");
                 double lng = markerObject.getDouble("lng");
                 LatLng coordinates = new LatLng(lat, lng);
+                markerIds.add(markerObject.getInt("storyId"));
                 markersList.add(coordinates);
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
@@ -255,7 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             marker = mMap.addMarker(
                     new MarkerOptions().
                             position(markersList.get(i)).
-                            icon(BitmapDescriptorFactory.fromResource(R.drawable.)).
+                            icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
 
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
