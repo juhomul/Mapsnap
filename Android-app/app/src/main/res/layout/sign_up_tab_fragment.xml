@@ -16,6 +16,7 @@
         android:textColorHint="@color/grey"
         app:layout_constraintHorizontal_bias=".5"
         android:hint="Email"
+        android:inputType="textEmailAddress"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"

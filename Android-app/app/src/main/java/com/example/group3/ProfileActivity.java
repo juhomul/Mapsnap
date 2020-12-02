@@ -47,7 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername, profileUsername, titleTextView, subtitleTextView, usernameTextView, timestampTextView, storyAmountTextView;
-    String email, username, description, title, image, postersUsername, lat, lng, isoTime;
+    String email, username, description, title, image, postersUsername, lat, lng, isoTime, URL, userId;
     ListView listView;
     RequestQueue requestQueue;
     JSONArray stories;
@@ -73,9 +73,12 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        userId = SaveSharedPreference.getUserId(getApplicationContext());
+        URL = "http://100.26.132.75/story/userid/" + userId;
+
         requestQueue = Volley.newRequestQueue(this);
 
-        getStories("http://100.26.132.75/story");
+        getStories(URL);
 
         storyAmountTextView = findViewById(R.id.stories_amount);
 
@@ -263,18 +266,18 @@ public class ProfileActivity extends AppCompatActivity {
             OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
             String asd = odt.toString();
 
-            if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
+            // if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
 
-                feedAdapter.addNewItem(decodedByte);
+            feedAdapter.addNewItem(decodedByte);
 
-                imgid.add(decodedByte);
-                //maintitle.add(title);
-                subtitle.add(description);
-                usernameArraylist.add(postersUsername);
-                latitude.add(lat);
-                longitude.add(lng);
-                timestamp.add(asd);
-            }
+            imgid.add(decodedByte);
+            //maintitle.add(title);
+            subtitle.add(description);
+            usernameArraylist.add(postersUsername);
+            latitude.add(lat);
+            longitude.add(lng);
+            timestamp.add(asd);
+        //  }
 
         }
         Collections.reverse(imgid);

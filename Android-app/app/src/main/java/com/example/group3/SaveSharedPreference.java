@@ -10,6 +10,7 @@ public class SaveSharedPreference
     static final String PREF_TOKEN = "token";
     static final String PREF_EMAIL = "email";
     static final String PREF_STAY_LOGGED = "staylogged";
+    static final String PREF_USER_ID = "userid";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -49,6 +50,18 @@ public class SaveSharedPreference
     public static String getEmail(Context ctx)
     {
         return getSharedPreferences(ctx).getString(PREF_EMAIL, "");
+    }
+
+    public static void setUserId(Context ctx, String userId)
+    {
+        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+        editor.putString(PREF_USER_ID, userId);
+        editor.apply();
+    }
+
+    public static String getUserId(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString(PREF_USER_ID, "");
     }
 
     public static void setStayLogged(Context ctx, String stayLogged)
