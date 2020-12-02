@@ -206,14 +206,14 @@ app.get("/story", (req, res) => {
   let sql = null;
   // Return all stories
   if(number === undefined) {
-    sql = "SELECT * FROM story";
+    sql = "SELECT * FROM story ORDER BY storyid DESC";
   } 
   // Return specific stories
   else {
     // Offset defaults to 0
     if(offset === undefined) { offset = 0 }
 
-    sql = `SELECT * FROM story LIMIT ${offset}, ${number}`
+    sql = `SELECT * FROM story ORDER BY storyid DESC LIMIT ${offset}, ${number}`
   }
 
   db.query(sql, function(err, stories, fields) {
