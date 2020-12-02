@@ -60,6 +60,7 @@ public class ExploreActivity extends AppCompatActivity {
     JSONObject story;
     ListView listView;
     EditText searchBar;
+    private int loadCount = 0;
     ArrayList<String> maintitle = new ArrayList<String>();
     ArrayList<String> subtitle = new ArrayList<String>();
     ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
@@ -76,7 +77,9 @@ public class ExploreActivity extends AppCompatActivity {
 
     SwipeRefreshLayout swipeView;
     boolean flag_loading = false;
+    boolean allStoriesLoaded = false;
     CustomListView adapter;
+    int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount, currentScrollState;
 
 
     @Override
@@ -126,23 +129,33 @@ public class ExploreActivity extends AppCompatActivity {
             }
         });
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                currentFirstVisibleItem = firstVisibleItem;
+                currentVisibleItemCount = visibleItemCount;
+                currentTotalItemCount = totalItemCount;
             }
 
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                Log.d("mytag", "firstVisibleItem:" + i);
-                Log.d("mytag", "visibleItemCount:" + i1);
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                currentScrollState = scrollState;
+                this.isScrollCompleted();
+            }
 
+            private void isScrollCompleted() {
 
-                if(i + i1 == i2 && i2 != 0) {
-                    if(!flag_loading)
-                    {
-                        flag_loading = true;
-                        addItems();
+                if (currentFirstVisibleItem + currentVisibleItemCount >= currentTotalItemCount) {
+                    if (currentVisibleItemCount > 0
+                            && currentScrollState == SCROLL_STATE_IDLE) {
+
+                        if(currentFirstVisibleItem + currentVisibleItemCount == currentTotalItemCount
+                                && currentTotalItemCount != 0) {
+                            if(!flag_loading)
+                            {
+                                flag_loading = true;
+                                loadCount++;
+                                addItems(loadCount);
+                            }
+                        }
                     }
                 }
             }
@@ -339,8 +352,10 @@ public class ExploreActivity extends AppCompatActivity {
         });
     }
 
-    private void addItems() {
-        //todo
+    private void addItems(int loadCount) {
+        if(!allStoriesLoaded) {
+            getStories("http://100.26.132.75/story?number=10&offset=" + loadCount * 10);
+        }
     }
 
     private void getStories(String url) {
@@ -350,7 +365,15 @@ public class ExploreActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             stories = response.getJSONArray("stories");
-                            parseJSON(stories);
+                            Log.d("mytag", "stories: " + stories);
+
+                            if(stories.isNull(0)) {
+                                allStoriesLoaded = true;
+                            }
+                            else {
+                                parseJSON(stories);
+                                flag_loading = false;
+                            }
                         }
                         catch(JSONException e) {
                             Log.d("mytag", "" + e);
@@ -405,6 +428,7 @@ public class ExploreActivity extends AppCompatActivity {
         adapter = new CustomListView(this, subtitle, imgid, usernameArraylist, timestamp);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
+        listView.setSelectionFromTop(currentFirstVisibleItem + 1, 0);
     }
     private void searchAdapt() {
         adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);

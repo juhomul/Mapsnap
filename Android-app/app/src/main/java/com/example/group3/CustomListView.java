@@ -70,17 +70,17 @@ public class CustomListView extends ArrayAdapter<String> {
         TextView timestampTextView = (TextView) rowView.findViewById(R.id.timestamp);
 
 
-        /*titleText.setText((CharSequence) maintitle.get(position));
+        //titleText.setText((CharSequence) maintitle.get(position));
         imageView.setImageBitmap((Bitmap) imgid.get(position));
         subtitleText.setText((CharSequence) subtitle.get(position));
         postersUsername.setText((CharSequence) usernameArraylist.get(position));
-        timestampTextView.setText((CharSequence) timestamp.get(position));*/
+        timestampTextView.setText((CharSequence) timestamp.get(position));
 
         //titleText.setText((CharSequence) maintitle.get(getCountMaintitle() - position - 1));
-        imageView.setImageBitmap((Bitmap) imgid.get(getCountImgid() - position - 1));
+        /*imageView.setImageBitmap((Bitmap) imgid.get(getCountImgid() - position - 1));
         subtitleText.setText((CharSequence) subtitle.get(getCountSubtitle() - position - 1));
         postersUsername.setText((CharSequence) usernameArraylist.get(getCountUsernameArraylist() - position - 1));
-        timestampTextView.setText((CharSequence) timestamp.get(getCountTimestamp() - position - 1));
+        timestampTextView.setText((CharSequence) timestamp.get(getCountTimestamp() - position - 1));*/
 
         return rowView;
 
