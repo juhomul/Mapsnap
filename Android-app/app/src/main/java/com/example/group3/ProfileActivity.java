@@ -111,11 +111,6 @@ public class ProfileActivity extends AppCompatActivity {
         feedAdapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
                 final Dialog dialog = new Dialog(ProfileActivity.this);
                 dialog.setContentView(R.layout.customlist); // R.layout.longpress_popup
                 dialog.setTitle(null);
@@ -138,14 +133,27 @@ public class ProfileActivity extends AppCompatActivity {
                 timestampTextView.setText(timestampString);
 
                 dialog.show();
+            }
 
-                /*longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemLongClick(View view, int position) {
+                final Dialog dialog = new Dialog(ProfileActivity.this);
+                dialog.setContentView(R.layout.longpress_popup); // R.layout.longpress_popup
+                dialog.setTitle(null);
+                longPressList = dialog.findViewById(R.id.pop_up);
+
+                ArrayAdapter<String> popupAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_list_item_1, popUpArray);
+                longPressList.setAdapter(popupAdapter);
+
+                dialog.show();
+
+                longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         String arrayText = popUpArray.get(i);
                         Toast.makeText(view.getContext(), "toimii " + arrayText + position, Toast.LENGTH_SHORT).show();
                     }
-                });*/
+                });
             }
         });
 
