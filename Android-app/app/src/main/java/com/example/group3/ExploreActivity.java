@@ -91,7 +91,7 @@ public class ExploreActivity extends AppCompatActivity {
         swipeView = findViewById(R.id.swiperefresh);
 
 
-        getStories("http://100.26.132.75/story");
+        getStories("http://100.26.132.75/story?number=10");
 
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -134,6 +134,10 @@ public class ExploreActivity extends AppCompatActivity {
 
             @Override
             public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+                Log.d("mytag", "firstVisibleItem:" + i);
+                Log.d("mytag", "visibleItemCount:" + i1);
+
+
                 if(i + i1 == i2 && i2 != 0) {
                     if(!flag_loading)
                     {
