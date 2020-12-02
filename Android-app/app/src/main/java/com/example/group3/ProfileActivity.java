@@ -52,7 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
-    ArrayList<String> maintitle = new ArrayList<String>();
+    //ArrayList<String> maintitle = new ArrayList<String>();
     ArrayList<String> subtitle = new ArrayList<String>();
     ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
     ArrayList<String> usernameArraylist = new ArrayList<String>();
@@ -85,17 +85,11 @@ public class ProfileActivity extends AppCompatActivity {
         email = SaveSharedPreference.getEmail(ProfileActivity.this);
         username = SaveSharedPreference.getUserName(ProfileActivity.this);
 
-
         profileUsername = findViewById(R.id.profile_username);
         profileUsername.setText(username);
-        popUpArray.add("delete story");
-        popUpArray.add("asd");
 
-        /*longPressList = findViewById(R.id.pop_up);
         popUpArray.add("delete story");
         popUpArray.add("asd");
-        ArrayAdapter<String> popupAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, popUpArray);
-        longPressList.setAdapter(popupAdapter);*/
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
@@ -266,7 +260,7 @@ public class ProfileActivity extends AppCompatActivity {
                 feedAdapter.addNewItem(decodedByte);
 
                 imgid.add(decodedByte);
-                maintitle.add(title);
+                //maintitle.add(title);
                 subtitle.add(description);
                 usernameArraylist.add(postersUsername);
                 latitude.add(lat);
