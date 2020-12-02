@@ -65,7 +65,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     JSONObject markerObject;
     JSONArray markers;
     RequestQueue requestQueue;
-    static final int REQUEST_IMAGE_CAPTURE = 1; //Tarviiko Juho ? Voi poistaa jos ei
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;

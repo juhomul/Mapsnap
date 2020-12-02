@@ -52,7 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
-    ArrayList<String> maintitle = new ArrayList<String>();
+    //ArrayList<String> maintitle = new ArrayList<String>();
     ArrayList<String> subtitle = new ArrayList<String>();
     ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
     ArrayList<String> usernameArraylist = new ArrayList<String>();
@@ -85,17 +85,11 @@ public class ProfileActivity extends AppCompatActivity {
         email = SaveSharedPreference.getEmail(ProfileActivity.this);
         username = SaveSharedPreference.getUserName(ProfileActivity.this);
 
-
         profileUsername = findViewById(R.id.profile_username);
         profileUsername.setText(username);
-        popUpArray.add("delete story");
-        popUpArray.add("asd");
 
-        /*longPressList = findViewById(R.id.pop_up);
         popUpArray.add("delete story");
         popUpArray.add("asd");
-        ArrayAdapter<String> popupAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, popUpArray);
-        longPressList.setAdapter(popupAdapter);*/
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
@@ -117,11 +111,6 @@ public class ProfileActivity extends AppCompatActivity {
         feedAdapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-
-            }
-
-            @Override
-            public void onItemLongClick(View view, int position) {
                 final Dialog dialog = new Dialog(ProfileActivity.this);
                 dialog.setContentView(R.layout.customlist); // R.layout.longpress_popup
                 dialog.setTitle(null);
@@ -144,14 +133,27 @@ public class ProfileActivity extends AppCompatActivity {
                 timestampTextView.setText(timestampString);
 
                 dialog.show();
+            }
 
-                /*longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemLongClick(View view, int position) {
+                final Dialog dialog = new Dialog(ProfileActivity.this);
+                dialog.setContentView(R.layout.longpress_popup); // R.layout.longpress_popup
+                dialog.setTitle(null);
+                longPressList = dialog.findViewById(R.id.pop_up);
+
+                ArrayAdapter<String> popupAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_list_item_1, popUpArray);
+                longPressList.setAdapter(popupAdapter);
+
+                dialog.show();
+
+                longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         String arrayText = popUpArray.get(i);
                         Toast.makeText(view.getContext(), "toimii " + arrayText + position, Toast.LENGTH_SHORT).show();
                     }
-                });*/
+                });
             }
         });
 
@@ -266,7 +268,7 @@ public class ProfileActivity extends AppCompatActivity {
                 feedAdapter.addNewItem(decodedByte);
 
                 imgid.add(decodedByte);
-                maintitle.add(title);
+                //maintitle.add(title);
                 subtitle.add(description);
                 usernameArraylist.add(postersUsername);
                 latitude.add(lat);
