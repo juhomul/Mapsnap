@@ -7,9 +7,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ClipData;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,13 +18,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -40,13 +35,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -62,13 +56,12 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<String> usernameArraylist = new ArrayList<String>();
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
-    ArrayList<String> timestamp = new ArrayList<>();
-    ArrayList<String> popUpArray = new ArrayList<>();
+    ArrayList<String> timestamp = new ArrayList<String>();
     MyRecyclerViewAdapter feedAdapter;
     RecyclerView recyclerView;
-    ListView longPressList;
     ImageView storyImage;
     Integer storiesAmount;
+    AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +85,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         profileUsername = findViewById(R.id.profile_username);
         profileUsername.setText(username);
-
-        popUpArray.add("delete story");
-        popUpArray.add("asd");
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
@@ -139,38 +129,41 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClick(View view, int position) {
-                final Dialog dialog = new Dialog(ProfileActivity.this);
-                dialog.setContentView(R.layout.longpress_popup); // R.layout.longpress_popup
-                dialog.setTitle(null);
-
                 String storyIdfromList = storyIdlist.get(position);
 
-                longPressList = dialog.findViewById(R.id.pop_up);
+                ImageView image = new ImageView(getApplicationContext());
+                Bitmap originalPic = imgid.get(position);
+                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 275, 400, false);
+                image.setImageBitmap(newSize);
 
-                ArrayAdapter<String> popupAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_list_item_1, popUpArray);
-                longPressList.setAdapter(popupAdapter);
+                builder = new AlertDialog.Builder(ProfileActivity.this);
+                builder.setMessage("Do you want to delete this story?")
+                        .setCancelable(true)
+                        .setView(image)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                deleteStory("http://100.26.132.75/story/id/" + storyIdfromList);
+                                imgid.remove(position); // poistaa kuvan listasta
+                                feedAdapter.notifyItemRemoved(position); //päivittää listan, mutta tulee duplicate emt miks
 
-                dialog.show();
+                                storiesAmount = imgid.size();
+                                storyAmountTextView.setText(String.valueOf(storiesAmount));
 
-                longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String arrayText = popUpArray.get(i);
-                        Toast.makeText(view.getContext(), "toimii " + " i: " + i + arrayText + position + ": " + storyIdfromList, Toast.LENGTH_SHORT).show();
-                        if(i == 0) {
-                            deleteStory("http://100.26.132.75/story/id/" + storyIdfromList);
-                            imgid.remove(position);
-                            feedAdapter.notifyItemRemoved(position);
-                            //feedAdapter.notifyItemRangeChanged(position, imgid.size());
+                                finish(); //jostain syystä tulee duplicate tonne listaan jos ei käynnistä uuellee activityä
+                                startActivity(getIntent());
+                                overridePendingTransition(0, 0);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
 
-                            dialog.dismiss();
-
-                            finish(); //jostain syystä tulee duplicate tonne listaan jos ei käynnistä uuellee activityä
-                            startActivity(getIntent());
-                            overridePendingTransition(0, 0);
-                        }
-                    }
-                });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 
@@ -318,8 +311,6 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("mytag", "" + error);
-                        //String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                        //Log.d("mytag", error.networkResponse.statusCode + ": " + responseBody);
                     }
                 }) {
             @Override

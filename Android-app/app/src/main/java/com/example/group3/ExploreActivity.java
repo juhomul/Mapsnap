@@ -54,14 +54,13 @@ public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username, description, title, image, postersUsername, lat, lng, isoTime, search;
+    String email, username, description, image, postersUsername, lat, lng, isoTime, search;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
     ListView listView;
     EditText searchBar;
     private int loadCount = 0;
-    ArrayList<String> maintitle = new ArrayList<String>();
     ArrayList<String> subtitle = new ArrayList<String>();
     ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
     ArrayList<String> usernameArraylist = new ArrayList<String>();
@@ -69,7 +68,6 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
 
-    ArrayList<String> result = new ArrayList<>();
     ArrayList<String> result2 = new ArrayList<>();
     ArrayList<Bitmap> result3 = new ArrayList<>();
     ArrayList<String> result4 = new ArrayList<>();
@@ -171,28 +169,18 @@ public class ExploreActivity extends AppCompatActivity {
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         //Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
-                        result.clear();
                         result2.clear();
                         result3.clear();
                         result4.clear();
                         result5.clear();
                         search = searchBar.getText().toString();
                         for(int i=0; i<subtitle.size(); i++) {
-                            //String titleString = maintitle.get(i);
                             String subtitleString = subtitle.get(i);
                             Bitmap imgidString = imgid.get(i);
                             String usernameString = usernameArraylist.get(i);
                             String timestampString = timestamp.get(i);
-                            /*if (Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(titleString).find()) {
-                                result.add(titleString);
-                                result2.add(subtitleString);
-                                result3.add(imgidString);
-                                result4.add(usernameString);
-                                result5.add(timestampString);
-                                searchAdapt();
-                            }*/
+
                             if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
-                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
@@ -200,7 +188,6 @@ public class ExploreActivity extends AppCompatActivity {
                                 searchAdapt();
                             }
                             else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
-                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
@@ -398,7 +385,6 @@ public class ExploreActivity extends AppCompatActivity {
             }
             try {
                 description = story.getString("description");
-                //title = story.getString("title");
                 image = story.getString("image");
                 postersUsername = story.getString("username");
                 lat = story.getString("lat");
@@ -413,7 +399,6 @@ public class ExploreActivity extends AppCompatActivity {
             OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
             String asd = odt.toString();
 
-            //maintitle.add(title);
             subtitle.add(description);
             imgid.add(decodedByte);
             usernameArraylist.add(postersUsername);
