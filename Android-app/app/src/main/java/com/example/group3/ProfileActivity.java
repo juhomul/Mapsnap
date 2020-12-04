@@ -133,7 +133,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 ImageView image = new ImageView(getApplicationContext());
                 Bitmap originalPic = imgid.get(position);
-                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 275, 400, false);
+                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 300, 400, false);
                 image.setImageBitmap(newSize);
 
                 builder = new AlertDialog.Builder(ProfileActivity.this);
