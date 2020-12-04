@@ -158,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
-    
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -166,10 +166,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
+
         getMarkers("http://100.26.132.75/story/location");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED) {
             enableUserLocation();
             zoomToUserLocation();
         } else {
@@ -201,27 +202,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-    
+
 
     private void getMarkers(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        markers = response.getJSONArray("locations");
-                        addMarkers(markers);
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            markers = response.getJSONArray("locations");
+                            addMarkers(markers);
+                        }
+                        catch(JSONException e) {
+                            Log.d("mytag", "" + e);
+                        }
                     }
-                    catch(JSONException e) {
-                        Log.d("mytag", "" + e);
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("mytag", "" + error);
-                }
-            });
+                });
         Log.d("mytag", "" + jsonObjectRequest);
         requestQueue.add(jsonObjectRequest);
     }
@@ -264,7 +265,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
-        String storyDesc = "Tässä on storyn description";
 
         private View view;
 
@@ -288,9 +288,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             MapsActivity.this.marker = marker;
 
             ImageView image = view.findViewById(R.id.image);
-            TextView desc = view.findViewById(R.id.textView);
-
-            desc.setText(storyDesc);
 
             Picasso.get()
                     .load(imageUri)
@@ -298,6 +295,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .into(image);
 
             //getInfoContents(marker);
+
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Intent viewStoryIntent = new Intent(MapsActivity.this, ViewStoryActivity.class);
+                    viewStoryIntent.putExtra("imagePath", imageUri);
+                    startActivity(viewStoryIntent);
+                }
+            });
+
             return view;
         }
     }
