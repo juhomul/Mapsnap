@@ -76,6 +76,7 @@ public class ExploreActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeView;
     boolean flag_loading = false;
     boolean allStoriesLoaded = false;
+    int firstItemLoaded = 0;
     CustomListView adapter;
     int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount, currentScrollState;
 
@@ -405,15 +406,15 @@ public class ExploreActivity extends AppCompatActivity {
             latitude.add(lat);
             longitude.add(lng);
             timestamp.add(asd); // tässä timestamp lisätään listviewiin
-
-            arrayAdapt();
         }
+        arrayAdapt();
     }
     private void arrayAdapt() {
         adapter = new CustomListView(this, subtitle, imgid, usernameArraylist, timestamp);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
-        listView.setSelectionFromTop(currentFirstVisibleItem + 1, 0);
+        listView.setSelectionFromTop(currentFirstVisibleItem + firstItemLoaded, 0);
+        firstItemLoaded = 1;
     }
     private void searchAdapt() {
         adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);

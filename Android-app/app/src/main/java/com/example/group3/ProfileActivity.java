@@ -27,6 +27,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -36,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -301,27 +303,34 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void deleteStory(String delUrl) {
-        JsonObjectRequest jsonDeleteRequest = new JsonObjectRequest
-                (Request.Method.DELETE, delUrl, null, new Response.Listener<JSONObject>() {
+        StringRequest deleteRequest = new StringRequest(Request.Method.DELETE, delUrl,
+                new Response.Listener<String>()
+                {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("mytag", "" + response);
+                    public void onResponse(String response) {
+                        Log.d("mytag", "deleteStory onResponse: " + response);
                     }
-                }, new Response.ErrorListener() {
+                },
+                new Response.ErrorListener()
+                {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("mytag", "" + error);
+                        Log.d("mytag", "deleteStory onErrorResponse: " + error);
+                        String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                        Log.d("mytag", error.networkResponse.statusCode + ": " + responseBody);
                     }
-                }) {
+                }
+        ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
+                Map<String, String>  headers = new HashMap<String, String> ();
                 // authorization token
                 headers.put("Authorization", "Bearer " + SaveSharedPreference.getToken(ProfileActivity.this));
                 return headers;
-
             }
+
         };
-        requestQueue.add(jsonDeleteRequest);
+
+        requestQueue.add(deleteRequest);
     }
 }
