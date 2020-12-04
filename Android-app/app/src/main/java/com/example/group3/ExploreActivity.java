@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.Time;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
@@ -39,7 +40,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
@@ -397,15 +401,18 @@ public class ExploreActivity extends AppCompatActivity {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
-            String asd = odt.toString();
+           // OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
+            //String asd = odt.toString();
+            Instant instant = Instant.parse(isoTime);
+            Date myDate = Date.from(instant);
+            String formatDateTime = DateFormat.getDateInstance(DateFormat.LONG).format(myDate);
 
             subtitle.add(description);
             imgid.add(decodedByte);
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
-            timestamp.add(asd); // tässä timestamp lisätään listviewiin
+            timestamp.add(formatDateTime); // tässä timestamp lisätään listviewiin
         }
         arrayAdapt();
     }
