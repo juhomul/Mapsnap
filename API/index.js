@@ -1,9 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
-const { v4: uuidv4 } = require('uuid');
-const fs = require("fs");
-const path = require("path");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const jwtStrategy = require("passport-jwt").Strategy,
@@ -40,7 +37,8 @@ passport.use(
     // test if the token is expired
     const now = Date.now() / 1000;
 
-    if (jwt_payload.exp > now) {
+    // for testing tokens don't expire
+    if (true) {
       done(null, jwt_payload.user);
     } else {
       done(null, false);
@@ -68,7 +66,7 @@ app.post("/user/register", (req, res) => {
   }
 
   // Test that username is not taken
-  let sql_f = "SELECT * FROM user WHERE userName = '" + req.body.username + "'";
+  let sql_f = "SELECT * FROM user WHERE username = '" + req.body.username + "'";
   db.query(sql_f, function(err, data, fields) {
     if (err) {
       console.log(err);
@@ -83,7 +81,7 @@ app.post("/user/register", (req, res) => {
     }
 
     // New query to insert user into database
-    let sql_i = "INSERT INTO user(userName, email, password) VALUES (?)";
+    let sql_i = "INSERT INTO user(username, email, password) VALUES (?)";
     const hashedPassword = bcrypt.hashSync(req.body.password, 6);
     let values = [
       req.body.username,
@@ -103,7 +101,7 @@ app.post("/user/register", (req, res) => {
 
 app.post("/user/login", (req, res) => {
   // find user from database
-  let sql_f = "SELECT * FROM user WHERE userName = '" + req.body.username + "' LIMIT 1";
+  let sql_f = "SELECT * FROM user WHERE username = '" + req.body.username + "' LIMIT 1";
   db.query(sql_f, function(err, data, fields) {
     if (err) {
       console.log(err);
@@ -135,7 +133,7 @@ app.post("/user/login", (req, res) => {
     };
 
     const options = {
-      expiresIn: "6000s",
+      expiresIn: "1209600s", // two weeks
     };
 
     // create and return token
@@ -203,7 +201,21 @@ app.get("/user", (req, res) => {
  ********************************************/
 
 app.get("/story", (req, res) => {
-  let sql = "SELECT * FROM story";
+  let number = req.query.number;
+  let offset = req.query.offset;
+  let sql = null;
+  // Return all stories
+  if(number === undefined) {
+    sql = "SELECT * FROM story ORDER BY storyid DESC";
+  } 
+  // Return specific stories
+  else {
+    // Offset defaults to 0
+    if(offset === undefined) { offset = 0 }
+
+    sql = `SELECT * FROM story ORDER BY storyid DESC LIMIT ${offset}, ${number}`
+  }
+
   db.query(sql, function(err, stories, fields) {
     if (err) {
       console.log(err);
@@ -213,7 +225,9 @@ app.get("/story", (req, res) => {
 
     res.status(200).json({ stories })
   })
+  
 });
+
 
 // Get story by its id
 app.get("/story/id/:id", (req, res) => {
@@ -285,10 +299,6 @@ app.post("/story",
   passport.authenticate("jwt", { session: false }),
   multerUpload.single("image"),
   (req, res) => {
-    if ("title" in req.body == false) {
-      res.status(400).send("Bad Request: Missing title");
-      return;
-    }
     if ("desc" in req.body == false) {
       res.status(400).send("Bad Request: Missing desc");
       return;
@@ -313,11 +323,10 @@ app.post("/story",
     isoDate = dateObj.toISOString();
 
     // add story to the database
-    let sql_i = "INSERT INTO story(userid, username, title, description, lat, lng, timestamp, image) VALUES (?)";
+    let sql_i = "INSERT INTO story(userid, username, description, lat, lng, timestamp, image) VALUES (?)";
     let values = [
       req.user.id,
       req.user.username,
-      req.body.title,
       req.body.desc,
       req.body.lat,
       req.body.lng,
@@ -334,7 +343,6 @@ app.post("/story",
       res.status(201).send({
         userId: req.user.id,
         username: req.user.username,
-        title: req.body.title,
         desc: req.body.desc,
         lat: req.body.lat,
         lng: req.body.lng,
