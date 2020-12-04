@@ -61,9 +61,10 @@ public class MainActivity extends AppCompatActivity {
         //Intent createStoryIntent = new Intent(this, CreateStoryActivity.class);
         //startActivity(createStoryIntent);
 
-        //Version 0.4
+        //Version 0.5
     }
 
+    /*
     @Override
     protected void onResume() {
         super.onResume();
@@ -79,5 +80,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
+     */
 }

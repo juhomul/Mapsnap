@@ -1,6 +1,8 @@
 package com.example.group3;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.tabs.TabLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
     String getUsernameText, getPasswordText, token, email, username;
     RequestQueue requestQueue;
     JSONObject jsonBody;
+    TabLayout tabLayout;
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,105 +49,17 @@ public class LoginActivity extends AppCompatActivity {
         signUp = findViewById(R.id.signUpButton);
         editUsername = findViewById(R.id.usernameEdit);
         editPassword = findViewById(R.id.passwordEdit);
+        tabLayout = findViewById(R.id.tab_layout);
+        viewPager = findViewById(R.id.view_pager);
 
+        tabLayout.addTab(tabLayout.newTab().setText("Login"));
+        tabLayout.addTab(tabLayout.newTab().setText("Sign Up"));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getUsernameText = editUsername.getText().toString();
-                getPasswordText = editPassword.getText().toString();
+        final LoginAdapter adapter = new LoginAdapter(getSupportFragmentManager(), this, tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-                jsonBody = new JSONObject();
-                try {
-                    jsonBody.put("username", getUsernameText);
-                    jsonBody.put("password", getPasswordText);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                login("http://100.26.132.75/user/login");
-
-                if(TextUtils.isEmpty(getUsernameText)) {
-                    editUsername.setError("This cannot be empty");
-                }
-                if(TextUtils.isEmpty(getPasswordText)) {
-                    editPassword.setError("This cannot be empty");
-                }
-
-
-                /*Bundle extras = getIntent().getExtras();
-                if (extras != null) {
-                    String userName = extras.getString("username");
-                    String passWord = extras.getString("password");
-                    if(getUsernameText.equals(userName) &&
-                            getPasswordText.equals(passWord)) {
-                        //todo
-                        Toast.makeText(getApplicationContext(),
-                                "Redirecting...", Toast.LENGTH_SHORT).show();
-                    }
-                    else if(getUsernameText.equals(userName) &&
-                            !getPasswordText.equals(passWord)) {
-                        editPassword.setError("Incorrect password");
-                    }
-                    else if(getPasswordText.equals(passWord) &&
-                            !getUsernameText.equals(userName)) {
-                        editUsername.setError("Incorrect username");
-                    }*/
-            }
-
-        });
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent signUpIntent = new Intent(LoginActivity.this, SignUpActivity.class);
-                startActivity(signUpIntent);
-            }
-        });
-    }
-    private void login(String url) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, url, jsonBody, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("mytag", "" + response);  // printtaan vaa vastauksen
-                        try {
-                            token = response.getString("token"); // hakee tokenin APIsta
-                            email = response.getString("email");
-                            username = response.getString("username");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        CheckBox stayLoggedIn = findViewById(R.id.stayLoggedIn);
-
-                        if(stayLoggedIn.isChecked()) {
-                            SaveSharedPreference.setStayLogged(LoginActivity.this, "yes"); //jos stayLogged string olemassa, pysyy kirjautuneena
-                        }
-
-                        SaveSharedPreference.setUserName(LoginActivity.this, username); //tallentaa usernamen sharedpreferencee
-                        SaveSharedPreference.setToken(LoginActivity.this, token); //tallentaa tokenin sharedpreferencee
-                        SaveSharedPreference.setEmail(LoginActivity.this, email);
-
-
-                        Intent mapsIntent = new Intent(LoginActivity.this, MapsActivity.class);
-                        startActivity(mapsIntent);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("mytag", "" + error);
-                        NetworkResponse networkResponse = error.networkResponse;
-                        if (networkResponse != null && networkResponse.data != null) {
-                            String jsonError = new String(networkResponse.data);
-                            Toast.makeText(getApplicationContext(),
-                                    "" + jsonError, Toast.LENGTH_SHORT).show();
-                        }
-                        /*Toast.makeText(getApplicationContext(),
-                                "Password or username incorrect", Toast.LENGTH_SHORT).show();*/
-                    }
-                });
-
-        requestQueue.add(jsonObjectRequest);
+        tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
     }
 }

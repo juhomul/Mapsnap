@@ -6,13 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -20,29 +15,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.camerakit.CameraKitView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-//import static com.example.group3.MapsActivity.REQUEST_IMAGE_CAPTURE;
 
 public class cameraActivity extends AppCompatActivity {
 
-    public static final int REQUEST_IMAGE_CAPTURE = 1;
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     ImageView displayImageView;
@@ -138,7 +124,7 @@ public class cameraActivity extends AppCompatActivity {
             Intent imageIntent = new Intent(this, CreateStoryActivity.class);
             imageIntent.putExtra("imagePath", currentPhotoPath);
             startActivity(imageIntent);
-            finish(); //Kun kuva "accept" niin sulkee cameraActivityn taustalta joten ei "back" nappia painaessa enää tulla cameraan :)
+            finish();
         }
     }
 }
