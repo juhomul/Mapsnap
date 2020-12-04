@@ -46,6 +46,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation 'com.zolad:zoominimageview:1.0.0'
+    implementation 'gr.pantrif:easy-android-splash-screen:0.0.1'
     testImplementation 'junit:junit:4.+'
     implementation 'com.camerakit:camerakit:1.0.0-beta3.10'
     implementation 'com.camerakit:jpegkit:0.1.0'

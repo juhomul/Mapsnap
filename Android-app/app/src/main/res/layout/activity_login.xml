@@ -69,13 +69,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Wecome to snapchat-instagram!"
-        android:textStyle="bold"
+        android:text="Mapsnap"
+        android:textColor="#000000"
         android:textSize="17sp"
-        app:layout_constraintVertical_bias=".2"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintVertical_bias=".2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -65,6 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     JSONObject markerObject;
     JSONArray markers;
     RequestQueue requestQueue;
+    LatLng userLatLng;
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
@@ -80,6 +81,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        //userLatLng = new LatLng(0, 0);
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -165,8 +168,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
-
-
         getMarkers("http://100.26.132.75/story/location");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -181,8 +182,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                         ACCESS_LOCATION_CODE);
             }
-
-
         }
     }
 
@@ -196,9 +195,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                userLatLng = new LatLng(0,0);
+                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
 
+                //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
             }
         });
     }
@@ -256,9 +259,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             position(markersList.get(i)).
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
-
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
         }
     }
 
