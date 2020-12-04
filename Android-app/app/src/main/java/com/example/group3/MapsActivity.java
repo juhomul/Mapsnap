@@ -166,6 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
+
         getMarkers("http://100.26.132.75/story/location");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -294,10 +295,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .into(image);
 
             //getInfoContents(marker);
-            image.setOnClickListener(new View.OnClickListener() {
+
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
-                public void onClick(View view) {
-                    Toast.makeText(MapsActivity.this,"IMAGE KLIKATTU", Toast.LENGTH_LONG).show();
+                public void onInfoWindowClick(Marker marker) {
+                    Intent viewStoryIntent = new Intent(MapsActivity.this, ViewStoryActivity.class);
+                    viewStoryIntent.putExtra("imagePath", imageUri);
+                    startActivity(viewStoryIntent);
                 }
             });
 
