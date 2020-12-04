@@ -54,13 +54,13 @@ public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username, description, title, image, postersUsername, lat, lng, isoTime, search;
+    String email, username, description, image, postersUsername, lat, lng, isoTime, search;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
     ListView listView;
     EditText searchBar;
-    ArrayList<String> maintitle = new ArrayList<String>();
+    private int loadCount = 0;
     ArrayList<String> subtitle = new ArrayList<String>();
     ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
     ArrayList<String> usernameArraylist = new ArrayList<String>();
@@ -68,7 +68,6 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
 
-    ArrayList<String> result = new ArrayList<>();
     ArrayList<String> result2 = new ArrayList<>();
     ArrayList<Bitmap> result3 = new ArrayList<>();
     ArrayList<String> result4 = new ArrayList<>();
@@ -76,7 +75,9 @@ public class ExploreActivity extends AppCompatActivity {
 
     SwipeRefreshLayout swipeView;
     boolean flag_loading = false;
+    boolean allStoriesLoaded = false;
     CustomListView adapter;
+    int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount, currentScrollState;
 
 
     @Override
@@ -91,7 +92,7 @@ public class ExploreActivity extends AppCompatActivity {
         swipeView = findViewById(R.id.swiperefresh);
 
 
-        getStories("http://100.26.132.75/story");
+        getStories("http://100.26.132.75/story?number=10");
 
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -126,19 +127,33 @@ public class ExploreActivity extends AppCompatActivity {
             }
         });
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+                currentFirstVisibleItem = firstVisibleItem;
+                currentVisibleItemCount = visibleItemCount;
+                currentTotalItemCount = totalItemCount;
             }
 
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-                if(i + i1 == i2 && i2 != 0) {
-                    if(!flag_loading)
-                    {
-                        flag_loading = true;
-                        addItems();
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                currentScrollState = scrollState;
+                this.isScrollCompleted();
+            }
+
+            private void isScrollCompleted() {
+
+                if (currentFirstVisibleItem + currentVisibleItemCount >= currentTotalItemCount) {
+                    if (currentVisibleItemCount > 0
+                            && currentScrollState == SCROLL_STATE_IDLE) {
+
+                        if(currentFirstVisibleItem + currentVisibleItemCount == currentTotalItemCount
+                                && currentTotalItemCount != 0) {
+                            if(!flag_loading)
+                            {
+                                flag_loading = true;
+                                loadCount++;
+                                addItems(loadCount);
+                            }
+                        }
                     }
                 }
             }
@@ -154,28 +169,18 @@ public class ExploreActivity extends AppCompatActivity {
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         //Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
-                        result.clear();
                         result2.clear();
                         result3.clear();
                         result4.clear();
                         result5.clear();
                         search = searchBar.getText().toString();
                         for(int i=0; i<subtitle.size(); i++) {
-                            //String titleString = maintitle.get(i);
                             String subtitleString = subtitle.get(i);
                             Bitmap imgidString = imgid.get(i);
                             String usernameString = usernameArraylist.get(i);
                             String timestampString = timestamp.get(i);
-                            /*if (Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(titleString).find()) {
-                                result.add(titleString);
-                                result2.add(subtitleString);
-                                result3.add(imgidString);
-                                result4.add(usernameString);
-                                result5.add(timestampString);
-                                searchAdapt();
-                            }*/
+
                             if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
-                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
@@ -183,7 +188,6 @@ public class ExploreActivity extends AppCompatActivity {
                                 searchAdapt();
                             }
                             else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
-                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
@@ -335,8 +339,10 @@ public class ExploreActivity extends AppCompatActivity {
         });
     }
 
-    private void addItems() {
-        //todo
+    private void addItems(int loadCount) {
+        if(!allStoriesLoaded) {
+            getStories("http://100.26.132.75/story?number=10&offset=" + loadCount * 10);
+        }
     }
 
     private void getStories(String url) {
@@ -346,7 +352,15 @@ public class ExploreActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             stories = response.getJSONArray("stories");
-                            parseJSON(stories);
+                            Log.d("mytag", "stories: " + stories);
+
+                            if(stories.isNull(0)) {
+                                allStoriesLoaded = true;
+                            }
+                            else {
+                                parseJSON(stories);
+                                flag_loading = false;
+                            }
                         }
                         catch(JSONException e) {
                             Log.d("mytag", "" + e);
@@ -371,7 +385,6 @@ public class ExploreActivity extends AppCompatActivity {
             }
             try {
                 description = story.getString("description");
-                //title = story.getString("title");
                 image = story.getString("image");
                 postersUsername = story.getString("username");
                 lat = story.getString("lat");
@@ -386,7 +399,6 @@ public class ExploreActivity extends AppCompatActivity {
             OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
             String asd = odt.toString();
 
-            //maintitle.add(title);
             subtitle.add(description);
             imgid.add(decodedByte);
             usernameArraylist.add(postersUsername);
@@ -401,6 +413,7 @@ public class ExploreActivity extends AppCompatActivity {
         adapter = new CustomListView(this, subtitle, imgid, usernameArraylist, timestamp);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
+        listView.setSelectionFromTop(currentFirstVisibleItem + 1, 0);
     }
     private void searchAdapt() {
         adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
