@@ -7,8 +7,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,14 +18,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,44 +35,45 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
-    TextView showEmail, showUsername, profileUsername, titleTextView, subtitleTextView, usernameTextView, timestampTextView, storyAmountTextView;
-    String email, username, description, title, image, postersUsername, lat, lng, isoTime;
-    ListView listView;
+    TextView showEmail, showUsername, profileUsername, subtitleTextView, usernameTextView, timestampTextView, storyAmountTextView;
+    String email, username, description, image, postersUsername, lat, lng, isoTime, URL, userId, storyId;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
-    //ArrayList<String> maintitle = new ArrayList<String>();
+    ArrayList<String> storyIdlist = new ArrayList<String>();
     ArrayList<String> subtitle = new ArrayList<String>();
     ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
     ArrayList<String> usernameArraylist = new ArrayList<String>();
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
-    ArrayList<String> timestamp = new ArrayList<>();
-    ArrayList<String> popUpArray = new ArrayList<>();
-    CustomListView adapter;
+    ArrayList<String> timestamp = new ArrayList<String>();
     MyRecyclerViewAdapter feedAdapter;
     RecyclerView recyclerView;
-    ListView longPressList;
-    ArrayAdapter<String> popupAdapter;
     ImageView storyImage;
     Integer storiesAmount;
+    AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        userId = SaveSharedPreference.getUserId(getApplicationContext());
+        URL = "http://100.26.132.75/story/userid/" + userId;
+
         requestQueue = Volley.newRequestQueue(this);
 
-        getStories("http://100.26.132.75/story");
+        getStories(URL);
 
         storyAmountTextView = findViewById(R.id.stories_amount);
 
@@ -87,9 +85,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         profileUsername = findViewById(R.id.profile_username);
         profileUsername.setText(username);
-
-        popUpArray.add("delete story");
-        popUpArray.add("asd");
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.navigation);
         bottomNavigationView.setSelectedItemId(R.id.profile);
@@ -114,7 +109,6 @@ public class ProfileActivity extends AppCompatActivity {
                 final Dialog dialog = new Dialog(ProfileActivity.this);
                 dialog.setContentView(R.layout.customlist); // R.layout.longpress_popup
                 dialog.setTitle(null);
-                //String titleString = maintitle.get(position);
                 String subtitleString = subtitle.get(position);
                 Bitmap imgidString = imgid.get(position);
                 String usernameString = usernameArraylist.get(position);
@@ -122,13 +116,11 @@ public class ProfileActivity extends AppCompatActivity {
 
                 storyImage = dialog.findViewById(R.id.image);
                 usernameTextView = dialog.findViewById(R.id.postersUsername);
-                //titleTextView = dialog.findViewById(R.id.title);
                 subtitleTextView = dialog.findViewById(R.id.description);
                 timestampTextView = dialog.findViewById(R.id.timestamp);
 
                 usernameTextView.setText(usernameString);
                 storyImage.setImageBitmap(imgidString);
-                //titleTextView.setText(titleString);
                 subtitleTextView.setText(subtitleString);
                 timestampTextView.setText(timestampString);
 
@@ -137,23 +129,41 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onItemLongClick(View view, int position) {
-                final Dialog dialog = new Dialog(ProfileActivity.this);
-                dialog.setContentView(R.layout.longpress_popup); // R.layout.longpress_popup
-                dialog.setTitle(null);
-                longPressList = dialog.findViewById(R.id.pop_up);
+                String storyIdfromList = storyIdlist.get(position);
 
-                ArrayAdapter<String> popupAdapter = new ArrayAdapter<String>(ProfileActivity.this, android.R.layout.simple_list_item_1, popUpArray);
-                longPressList.setAdapter(popupAdapter);
+                ImageView image = new ImageView(getApplicationContext());
+                Bitmap originalPic = imgid.get(position);
+                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 300, 400, false);
+                image.setImageBitmap(newSize);
 
-                dialog.show();
+                builder = new AlertDialog.Builder(ProfileActivity.this);
+                builder.setMessage("Do you want to delete this story?")
+                        .setCancelable(true)
+                        .setView(image)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                deleteStory("http://100.26.132.75/story/id/" + storyIdfromList);
+                                imgid.remove(position); // poistaa kuvan listasta
+                                feedAdapter.notifyItemRemoved(position); //päivittää listan, mutta tulee duplicate emt miks
 
-                longPressList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String arrayText = popUpArray.get(i);
-                        Toast.makeText(view.getContext(), "toimii " + arrayText + position, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                                storiesAmount = imgid.size();
+                                storyAmountTextView.setText(String.valueOf(storiesAmount));
+
+                                finish(); //jostain syystä tulee duplicate tonne listaan jos ei käynnistä uuellee activityä
+                                startActivity(getIntent());
+                                overridePendingTransition(0, 0);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 
@@ -247,8 +257,8 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.d("mytag", "" + e);
             }
             try {
+                storyId = story.getString("storyid");
                 description = story.getString("description");
-                //title = story.getString("title");
                 image = story.getString("image");
                 postersUsername = story.getString("username");
                 lat = story.getString("lat");
@@ -263,22 +273,22 @@ public class ProfileActivity extends AppCompatActivity {
             OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
             String asd = odt.toString();
 
-            if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
+            // if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
 
-                feedAdapter.addNewItem(decodedByte);
+            feedAdapter.addNewItem(decodedByte);
 
-                imgid.add(decodedByte);
-                //maintitle.add(title);
-                subtitle.add(description);
-                usernameArraylist.add(postersUsername);
-                latitude.add(lat);
-                longitude.add(lng);
-                timestamp.add(asd);
-            }
+            imgid.add(decodedByte);
+            storyIdlist.add(storyId);
+            subtitle.add(description);
+            usernameArraylist.add(postersUsername);
+            latitude.add(lat);
+            longitude.add(lng);
+            timestamp.add(asd);
+        //  }
 
         }
         Collections.reverse(imgid);
-        //Collections.reverse(maintitle);
+        Collections.reverse(storyIdlist);
         Collections.reverse(subtitle);
         Collections.reverse(usernameArraylist);
         Collections.reverse(latitude);
@@ -288,5 +298,30 @@ public class ProfileActivity extends AppCompatActivity {
         feedAdapter.reverseFeed();
         storiesAmount = imgid.size();
         storyAmountTextView.setText(String.valueOf(storiesAmount));
+    }
+
+    private void deleteStory(String delUrl) {
+        JsonObjectRequest jsonDeleteRequest = new JsonObjectRequest
+                (Request.Method.DELETE, delUrl, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("mytag", "" + response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                // authorization token
+                headers.put("Authorization", "Bearer " + SaveSharedPreference.getToken(ProfileActivity.this));
+                return headers;
+
+            }
+        };
+        requestQueue.add(jsonDeleteRequest);
     }
 }

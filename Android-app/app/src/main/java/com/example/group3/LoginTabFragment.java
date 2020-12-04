@@ -27,9 +27,9 @@ import org.json.JSONObject;
 
 public class LoginTabFragment extends Fragment {
 
-    Button login, signUp;
+    Button login;
     EditText editUsername, editPassword;
-    String getUsernameText, getPasswordText, token, email, username;
+    String getUsernameText, getPasswordText, token, email, username, userId;
     RequestQueue requestQueue;
     JSONObject jsonBody;
     CheckBox checkBox;
@@ -83,6 +83,7 @@ public class LoginTabFragment extends Fragment {
                             token = response.getString("token"); // hakee tokenin APIsta
                             email = response.getString("email");
                             username = response.getString("username");
+                            userId = response.getString("userId");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -94,6 +95,7 @@ public class LoginTabFragment extends Fragment {
                         SaveSharedPreference.setUserName(getContext(), username);//tallentaa usernamen sharedpreferencee
                         SaveSharedPreference.setToken(getContext(), token); //tallentaa tokenin sharedpreferencee
                         SaveSharedPreference.setEmail(getContext(), email);
+                        SaveSharedPreference.setUserId(getContext(), userId);
 
 
                         Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
