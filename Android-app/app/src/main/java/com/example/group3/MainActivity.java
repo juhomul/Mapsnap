@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         //Intent createStoryIntent = new Intent(this, CreateStoryActivity.class);
         //startActivity(createStoryIntent);
 
-        //Version 0.4
+        //Version 0.5
     }
 
     /*
