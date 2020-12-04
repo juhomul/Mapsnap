@@ -182,8 +182,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                         ACCESS_LOCATION_CODE);
             }
-
-
         }
     }
 
@@ -199,7 +197,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onSuccess(Location location) {
                 userLatLng = new LatLng(0,0);
                 userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+
+                //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                //mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
             }
         });
     }
@@ -257,9 +259,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             position(markersList.get(i)).
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
-
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
         }
     }
 
