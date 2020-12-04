@@ -24,8 +24,6 @@
         <activity android:name=".ViewStoryActivity"></activity>
         <activity android:name=".CreateStoryActivity" />
         <activity android:name=".cameraActivity" />
-        <activity android:name=".ExampleProfile" />
-        <activity android:name=".ExampleExplore" />
         <activity android:name=".InfoActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".ExploreActivity" />

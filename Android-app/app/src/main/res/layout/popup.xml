@@ -23,20 +23,6 @@
             android:onClick="onClick"
             tools:srcCompat="@tools:sample/avatars" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="173dp"
-            android:layout_height="21dp"
-            android:layout_marginTop="4dp"
-            android:text="TextView"
-            android:textColor="#FFFFFF" />
-
-        <Button
-            android:id="@+id/openStory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Open"
-            app:strokeColor="#2C1616" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -39,8 +39,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.time.OffsetDateTime;
+import java.util.regex.Pattern;
 
 
 public class ExploreActivity extends AppCompatActivity {
@@ -89,15 +96,17 @@ public class ExploreActivity extends AppCompatActivity {
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                maintitle.clear();
+                /*maintitle.clear();
                 subtitle.clear();
                 imgid.clear();
                 usernameArraylist.clear();
                 latitude.clear();
                 longitude.clear();
                 timestamp.clear();
-                //finish();
-                getStories("http://100.26.132.75/story");
+                getStories("http://100.26.132.75/story");*/
+                finish();
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
                 swipeView.setRefreshing(false);
             }
         });
@@ -151,30 +160,30 @@ public class ExploreActivity extends AppCompatActivity {
                         result4.clear();
                         result5.clear();
                         search = searchBar.getText().toString();
-                        for(int i=0; i<maintitle.size(); i++) {
-                            String titleString = maintitle.get(i);
+                        for(int i=0; i<subtitle.size(); i++) {
+                            //String titleString = maintitle.get(i);
                             String subtitleString = subtitle.get(i);
                             Bitmap imgidString = imgid.get(i);
                             String usernameString = usernameArraylist.get(i);
                             String timestampString = timestamp.get(i);
-                            if (titleString.contains(search)) {
+                            /*if (Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(titleString).find()) {
                                 result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
                                 result5.add(timestampString);
                                 searchAdapt();
-                            }
-                            else if(subtitleString.contains(search)) {
-                                result.add(titleString);
+                            }*/
+                            if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
+                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
                                 result5.add(timestampString);
                                 searchAdapt();
                             }
-                            else if(usernameString.contains(search)) {
-                                result.add(titleString);
+                            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
+                                //result.add(titleString);
                                 result2.add(subtitleString);
                                 result3.add(imgidString);
                                 result4.add(usernameString);
@@ -353,6 +362,7 @@ public class ExploreActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
     private void parseJSON(JSONArray json) {
+
         for(int i = 0; i < json.length(); i++) {
             try {
                 story = json.getJSONObject(i);
@@ -361,7 +371,7 @@ public class ExploreActivity extends AppCompatActivity {
             }
             try {
                 description = story.getString("description");
-                title = story.getString("title");
+                //title = story.getString("title");
                 image = story.getString("image");
                 postersUsername = story.getString("username");
                 lat = story.getString("lat");
@@ -376,7 +386,7 @@ public class ExploreActivity extends AppCompatActivity {
             OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
             String asd = odt.toString();
 
-            maintitle.add(title);
+            //maintitle.add(title);
             subtitle.add(description);
             imgid.add(decodedByte);
             usernameArraylist.add(postersUsername);
@@ -388,12 +398,12 @@ public class ExploreActivity extends AppCompatActivity {
         }
     }
     private void arrayAdapt() {
-        adapter = new CustomListView(this, maintitle, subtitle, imgid, usernameArraylist, timestamp);
+        adapter = new CustomListView(this, subtitle, imgid, usernameArraylist, timestamp);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }
     private void searchAdapt() {
-        adapter = new CustomListView(ExploreActivity.this, result, result2, result3, result4, result5);
+        adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
     }

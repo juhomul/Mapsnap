@@ -56,6 +56,10 @@ public class CreateStoryActivity extends AppCompatActivity {
         displayImageView = findViewById(R.id.imageDisplayView);
         requestQueue = Volley.newRequestQueue(this);
 
+        getLocation();
+        Log.d("CreateStory", "Latitude Start: " + strLat);
+        Log.d("CreateStory", "Longitude Start: " + strLong);
+
         // get image path from extras and convert to bitmap
         Bitmap image = BitmapFactory.decodeFile(intent.getStringExtra("imagePath"));
         displayImageView.setImageBitmap(image);
@@ -83,15 +87,11 @@ public class CreateStoryActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 uploadImage("http://100.26.132.75/story", jsonBody);
-
                 startActivity(mapsIntent);
                 finish();
             }
         });
-
-        getLocation();
     }
 
     private void getLocation() {
@@ -102,6 +102,8 @@ public class CreateStoryActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
+
         client.getLastLocation().addOnSuccessListener(CreateStoryActivity.this, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {

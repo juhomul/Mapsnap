@@ -2,6 +2,7 @@ package com.example.group3;
 
 import android.app.Activity;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,32 +17,33 @@ import java.util.Date;
 public class CustomListView extends ArrayAdapter<String> {
 
     private final Activity context;
-    private final ArrayList maintitle;
+    //private final ArrayList maintitle;
     private final ArrayList subtitle;
     private final ArrayList imgid;
     private final ArrayList usernameArraylist;
     private final ArrayList timestamp;
 
 
-    public CustomListView(ExploreActivity context,
-                          ArrayList<String> maintitle,
+    public CustomListView(Context context,
                           ArrayList<String> subtitle,
                           ArrayList<Bitmap> imgid,
                           ArrayList<String> usernameArraylist,
                           ArrayList<String> timestamp) {
-        super(context, R.layout.customlist, maintitle);
+        super(context, R.layout.customlist, subtitle);
 
-        this.context=context;
-        this.maintitle=maintitle;
+        this.context= (Activity) getContext();
+        //this.maintitle=maintitle;
         this.subtitle=subtitle;
         this.imgid=imgid;
         this.usernameArraylist=usernameArraylist;
         this.timestamp=timestamp;
 
     }
-    public int getCountMaintitle() {
+
+
+    /*public int getCountMaintitle() {
         return maintitle.size();
-    }
+    }*/
     public int getCountImgid() {
         return imgid.size();
     }
@@ -74,7 +76,7 @@ public class CustomListView extends ArrayAdapter<String> {
         postersUsername.setText((CharSequence) usernameArraylist.get(position));
         timestampTextView.setText((CharSequence) timestamp.get(position));*/
 
-        titleText.setText((CharSequence) maintitle.get(getCountMaintitle() - position - 1));
+        //titleText.setText((CharSequence) maintitle.get(getCountMaintitle() - position - 1));
         imageView.setImageBitmap((Bitmap) imgid.get(getCountImgid() - position - 1));
         subtitleText.setText((CharSequence) subtitle.get(getCountSubtitle() - position - 1));
         postersUsername.setText((CharSequence) usernameArraylist.get(getCountUsernameArraylist() - position - 1));

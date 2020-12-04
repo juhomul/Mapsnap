@@ -1,11 +1,12 @@
 package com.example.group3;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 
 import androidx.core.app.ActivityCompat;
@@ -13,29 +14,24 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.text.Layout;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,34 +45,41 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    FusedLocationProviderClient fusedLocationProviderClient;
     private DrawerLayout drawer;
-    SupportMapFragment supportMapFragment;
-    FusedLocationProviderClient client;
     TextView showEmail, showUsername;
     String email, username;
-    Button camBtn;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     Marker marker;
-
+    JSONObject markerObject;
+    JSONArray markers;
+    RequestQueue requestQueue;
+    static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
-    //LocationRequest locationRequest;
+    public ArrayList<Integer> markerIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.google_map);
+        mapFragment.getMapAsync(this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -95,32 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         showEmail.setText(email);
         showUsername.setText(username);
 
-        /*
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(500);
-        locationRequest.setFastestInterval(500);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-         */
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.google_map);
-        supportMapFragment.getMapAsync(this);
-
-        //Initialize fuse location
-        client = LocationServices.getFusedLocationProviderClient(this);
-
-        //Check permission
-        if (ActivityCompat.checkSelfPermission(MapsActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getCurrentLocation();
-        } else {
-            //If permission denied request again
-            ActivityCompat.requestPermissions(MapsActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
-        }
-        //Get and build markers Arraylist!
-        getMarkers();
+        requestQueue = Volley.newRequestQueue(this);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -181,63 +159,96 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        Task<Location> task = client.getLastLocation();
-        task.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    supportMapFragment.getMapAsync((new OnMapReadyCallback() {
-                        @Override
-                        public void onMapReady(GoogleMap googleMap) {
-                            LatLng latLng = new LatLng(location.getLatitude()
-                                    , location.getLongitude());
-
-                            //Add marker
-                            MarkerOptions options = new MarkerOptions().position(latLng)
-                                    .title("You are here!");
-                            //Zoom map
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-
-                            //Add marker on map
-                            googleMap.addMarker(options);
-
-                        }
-                    }));
-                }
-            }
-        });
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == 44) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //When permission granted
-                //Call method
-                getCurrentLocation();
-            }
-        }
-    }
-
-    public MapsActivity() {
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
-        getMarkers();
-        getCurrentLocation();
-
         mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
+        getMarkers("http://100.26.132.75/story/location");
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            enableUserLocation();
+            zoomToUserLocation();
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                        ACCESS_LOCATION_CODE);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                        ACCESS_LOCATION_CODE);
+            }
+
+
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void enableUserLocation() {
+        mMap.setMyLocationEnabled(true);
+    }
+
+    private void zoomToUserLocation() {
+        @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+
+            }
+        });
+    }
+
+
+    private void getMarkers(String url) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            markers = response.getJSONArray("locations");
+                            addMarkers(markers);
+                        }
+                        catch(JSONException e) {
+                            Log.d("mytag", "" + e);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
+                    }
+                });
+        Log.d("mytag", "" + jsonObjectRequest);
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    private void addMarkers(JSONArray json) {
+        markersList = new ArrayList<LatLng>();
+        markerIds = new ArrayList<Integer>();
+
+        // Parse JSONObject to arraylist
+        for(int i = 0; i < json.length(); i++) {
+            try {
+                markerObject = json.getJSONObject(i);
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+            try {
+                double lat = markerObject.getDouble("lat");
+                double lng = markerObject.getDouble("lng");
+                LatLng coordinates = new LatLng(lat, lng);
+                markerIds.add(markerObject.getInt("storyId"));
+                markersList.add(coordinates);
+            } catch (JSONException e) {
+                Log.d("mytag", "" + e);
+            }
+        }
+
+        // Add markers to map
         for (int i = 0; i < markersList.size(); i++) {
             marker = mMap.addMarker(
                     new MarkerOptions().
@@ -245,69 +256,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
 
-            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
         }
     }
 
-    LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            super.onLocationResult(locationResult);
-        }
-    };
-
-    /*
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        client.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-    }
-
-    private void stopLocationUpdates() {
-        client.removeLocationUpdates(locationCallback);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        startLocationUpdates();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        stopLocationUpdates();
-    }
-     */
-
-    public ArrayList<LatLng> getMarkers(){
-        //Loops and adds new markers to the list
-        markersList = new ArrayList<LatLng>();
-
-        LatLng oulu1 = new LatLng(65.0121, 25.4651);
-        LatLng hukassa = new LatLng(5.0000, 15.0000);
-        LatLng oulu3 = new LatLng(15.1241, 25.2121);
-        LatLng oulu4 = new LatLng(64.0021, 37.1201);
-        LatLng oulu5 = new LatLng(65.0822, 1.1002);
-
-        markersList.add(oulu1);
-        markersList.add(hukassa);
-        markersList.add(oulu3);
-        markersList.add(oulu4);
-        markersList.add(oulu5);
-
-        return markersList;
-    }
-
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
-        private View view;
         String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
-        String storyDesc = "Description here";
+
+        private View view;
 
         public CustomInfoWindowAdapter() {
             view = getLayoutInflater().inflate(R.layout.popup,null);
@@ -329,36 +287,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             MapsActivity.this.marker = marker;
 
             ImageView image = view.findViewById(R.id.image);
-            TextView desc = view.findViewById(R.id.textView);
-            Button open = view.findViewById(R.id.openStory);
-            LinearLayout layout = view.findViewById(R.id.linearLayout);
-            desc.setText(storyDesc);
 
-            if (image != null) {
-                Picasso.get()
-                        .load(imageUri)
-                        .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                        .resize(160, 160)
-                        .centerCrop()
-                        .into(image);
-            }
-            layout.setClickable(true);
-            layout.bringToFront();
-            layout.setOnClickListener(new View.OnClickListener() {
+            Picasso.get()
+                    .load(imageUri)
+                    .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
+                    .into(image);
+
+            //getInfoContents(marker);
+            image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    storyDesc = "CLICKED";
-                    desc.setText(storyDesc);
-                    Toast.makeText(MapsActivity.this,
-                            "IMAGE CLICKED",
-                            Toast.LENGTH_SHORT).show();
-                    //Intent viewStoryIntent = new Intent(MapsActivity.this, ViewStoryActivity.class);
-                    //startActivity(viewStoryIntent);
+                    Toast.makeText(MapsActivity.this,"IMAGE KLIKATTU", Toast.LENGTH_LONG).show();
                 }
             });
-            //getInfoContents(marker);
+
             return view;
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == ACCESS_LOCATION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enableUserLocation();
+                zoomToUserLocation();
+            } else {
+                //Shows dialog if permission is not granted
+                Toast.makeText(MapsActivity.this,"LOCATION PERMISSION NOT GRANTED", Toast.LENGTH_LONG);
+            }
+        }
+    }
 }
