@@ -137,7 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     case R.id.camera:
                         startActivity(new Intent(getApplicationContext(), cameraActivity.class));
-                        //finish();
+                        finish(); //Tämä sulkee maps activityn joten ku kamera/CreateStory activitysta tullaan niin mennäänki suoraan mainActivityyn.
                         overridePendingTransition(0, 0);
                         return true;
 

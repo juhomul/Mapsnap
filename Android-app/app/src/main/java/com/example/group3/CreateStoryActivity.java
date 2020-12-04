@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -46,7 +45,6 @@ public class CreateStoryActivity extends AppCompatActivity {
     String strLat, strLong, strDesc;
     ImageView displayImageView;
     RequestQueue requestQueue;
-    Bitmap image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +61,8 @@ public class CreateStoryActivity extends AppCompatActivity {
         Log.d("CreateStory", "Longitude Start: " + strLong);
 
         // get image path from extras and convert to bitmap
-        image = BitmapFactory.decodeFile(intent.getStringExtra("imagePath"));
+        Bitmap image = BitmapFactory.decodeFile(intent.getStringExtra("imagePath"));
         displayImageView.setImageBitmap(image);
-
-        checkImage();
 
         Log.d("CreateStory", "imagePath: " + intent.getStringExtra("imagePath"));
 
@@ -179,14 +175,5 @@ public class CreateStoryActivity extends AppCompatActivity {
         Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
                 height, filter);
         return newBitmap;
-    }
-
-    public void checkImage() {
-        if (image != null) {
-            Toast.makeText(this, "Image found", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "No image found, returning", Toast.LENGTH_LONG).show();
-            finish();
-        }
     }
 }
