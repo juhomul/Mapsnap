@@ -21,7 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Group3">
-        <activity android:name=".CreateStoryActivity"></activity>
+        <activity android:name=".ViewStoryActivity"></activity>
+        <activity android:name=".CreateStoryActivity" />
         <activity android:name=".cameraActivity" />
         <activity android:name=".ExampleProfile" />
         <activity android:name=".ExampleExplore" />
@@ -47,7 +48,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
         <activity
@@ -70,7 +71,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
 

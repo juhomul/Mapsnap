@@ -1,6 +1,7 @@
 package com.example.group3;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
@@ -16,13 +17,16 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -45,6 +49,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -232,7 +237,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getCurrentLocation();
 
         mMap = googleMap;
-        mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 
         for (int i = 0; i < markersList.size(); i++) {
             marker = mMap.addMarker(
@@ -241,6 +245,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
 
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
         }
@@ -296,15 +301,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markersList.add(oulu5);
 
         return markersList;
-
     }
 
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
-        String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
-        String storyDesc = "Tässä on storyn description";
-
         private View view;
+        String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
+        String storyDesc = "Description here";
 
         public CustomInfoWindowAdapter() {
             view = getLayoutInflater().inflate(R.layout.popup,null);
@@ -327,14 +330,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             ImageView image = view.findViewById(R.id.image);
             TextView desc = view.findViewById(R.id.textView);
-
+            Button open = view.findViewById(R.id.openStory);
+            LinearLayout layout = view.findViewById(R.id.linearLayout);
             desc.setText(storyDesc);
 
-            Picasso.get()
-                    .load(imageUri)
-                    .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                    .into(image);
-
+            if (image != null) {
+                Picasso.get()
+                        .load(imageUri)
+                        .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
+                        .resize(160, 160)
+                        .centerCrop()
+                        .into(image);
+            }
+            layout.setClickable(true);
+            layout.bringToFront();
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    storyDesc = "CLICKED";
+                    desc.setText(storyDesc);
+                    Toast.makeText(MapsActivity.this,
+                            "IMAGE CLICKED",
+                            Toast.LENGTH_SHORT).show();
+                    //Intent viewStoryIntent = new Intent(MapsActivity.this, ViewStoryActivity.class);
+                    //startActivity(viewStoryIntent);
+                }
+            });
             //getInfoContents(marker);
             return view;
         }
