@@ -401,11 +401,12 @@ public class ExploreActivity extends AppCompatActivity {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-           // OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
-            //String asd = odt.toString();
             Instant instant = Instant.parse(isoTime);
             Date myDate = Date.from(instant);
-            String formatDateTime = DateFormat.getDateInstance(DateFormat.LONG).format(myDate);
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat sdfDate = new SimpleDateFormat("MMM d, yyyy HH:mm");
+            sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+            String formatDateTime = sdfDate.format(myDate);
 
             subtitle.add(description);
             imgid.add(decodedByte);

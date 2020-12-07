@@ -17,7 +17,6 @@ import java.util.Date;
 public class CustomListView extends ArrayAdapter<String> {
 
     private final Activity context;
-    //private final ArrayList maintitle;
     private final ArrayList subtitle;
     private final ArrayList imgid;
     private final ArrayList usernameArraylist;
@@ -32,7 +31,6 @@ public class CustomListView extends ArrayAdapter<String> {
         super(context, R.layout.customlist, subtitle);
 
         this.context= (Activity) getContext();
-        //this.maintitle=maintitle;
         this.subtitle=subtitle;
         this.imgid=imgid;
         this.usernameArraylist=usernameArraylist;
@@ -41,9 +39,6 @@ public class CustomListView extends ArrayAdapter<String> {
     }
 
 
-    /*public int getCountMaintitle() {
-        return maintitle.size();
-    }*/
     public int getCountImgid() {
         return imgid.size();
     }
@@ -63,14 +58,12 @@ public class CustomListView extends ArrayAdapter<String> {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.customlist, null,true);
 
-        TextView titleText = (TextView) rowView.findViewById(R.id.title);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.image);
         TextView subtitleText = (TextView) rowView.findViewById(R.id.description);
         TextView postersUsername = (TextView) rowView.findViewById(R.id.postersUsername);
         TextView timestampTextView = (TextView) rowView.findViewById(R.id.timestamp);
 
 
-        //titleText.setText((CharSequence) maintitle.get(position));
         imageView.setImageBitmap((Bitmap) imgid.get(position));
         subtitleText.setText((CharSequence) subtitle.get(position));
         postersUsername.setText((CharSequence) usernameArraylist.get(position));
