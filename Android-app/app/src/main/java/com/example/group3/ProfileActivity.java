@@ -271,8 +271,6 @@ public class ProfileActivity extends AppCompatActivity {
             sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
             String formatDateTime = sdfDate.format(myDate);
 
-            // if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
-
             feedAdapter.addNewItem(decodedByte);
 
             imgid.add(decodedByte);
@@ -282,7 +280,7 @@ public class ProfileActivity extends AppCompatActivity {
             latitude.add(lat);
             longitude.add(lng);
             timestamp.add(formatDateTime);
-        //  }
+
 
         }
         Collections.reverse(imgid);
