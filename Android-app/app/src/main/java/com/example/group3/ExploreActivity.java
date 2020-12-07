@@ -212,62 +212,6 @@ public class ExploreActivity extends AppCompatActivity {
         });
 
 
-        searchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                /*result.clear();
-                search = searchBar.getText().toString();
-                for(int i=0; i<maintitle.size(); i++) {
-                    String titleString = maintitle.get(i);
-                    String subtitleString = subtitle.get(i);
-                    Bitmap imgidString = imgid.get(i);
-                    String usernameString = usernameArraylist.get(i);
-                    String timestampString = timestamp.get(i);
-                    if (titleString.contains(search)) {
-                        result.add(titleString);
-                        result2.add(subtitleString);
-                        result3.add(imgidString);
-                        result4.add(usernameString);
-                        result5.add(timestampString);
-                        searchAdapt();
-                    }
-                    else if(subtitleString.contains(search)) {
-                        result.add(titleString);
-                        result2.add(subtitleString);
-                        result3.add(imgidString);
-                        result4.add(usernameString);
-                        result5.add(timestampString);
-                        searchAdapt();
-                    }
-                    else if(usernameString.contains(search)) {
-                        result.add(titleString);
-                        result2.add(subtitleString);
-                        result3.add(imgidString);
-                        result4.add(usernameString);
-                        result5.add(timestampString);
-                        searchAdapt();
-                    }
-                    else {
-                        Toast.makeText(ExploreActivity.this, "ei toimi", Toast.LENGTH_SHORT).show();
-                    }
-                }*/
-            }
-        });
-
-
-
-
-
         drawer = findViewById(R.id.drawer_layout);
         //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
       
