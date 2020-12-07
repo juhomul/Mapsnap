@@ -7,6 +7,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.core.app.ActivityCompat;
@@ -72,13 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        //userLatLng = new LatLng(0, 0);
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -164,17 +163,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
-        //getMarkers("http://100.26.132.75/story/location");
+        getMarkers("http://100.26.132.75/story/location");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Location enabled!", Toast.LENGTH_SHORT).show();
-            getMarkers("http://100.26.132.75/story/location");
             enableUserLocation();
             zoomToUserLocation();
         } else {
-            //Toast.makeText(this,"Location is needed to uses Maps", Toast.LENGTH_LONG).show();
-
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                         ACCESS_LOCATION_CODE);
@@ -190,17 +186,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
+    @SuppressLint("MissingPermission")
     private void zoomToUserLocation() {
-        @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+        LocationServices.getFusedLocationProviderClient(this).getLastLocation().addOnSuccessListener(
+                new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                    }
+                }
+        );
+
+
+        /** //TÄMÄ VANHA EI KERKEÄ HAKEMAAN LOCATION
+        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                userLatLng = new LatLng(0,0);
                 userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
             }
         });
+
+         */
     }
 
 
@@ -306,6 +317,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public void openDialogNoPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("ssdsdsdsds")
+                .setMessage("Tämdsdsdsdsse")
+                .setPositiveButton("OKe vittu", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+        builder.create();
+    }
+
+    public void checkPermission(int requestCode) {
+        if (requestCode == ACCESS_LOCATION_CODE) {
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_LOCATION_CODE);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_LOCATION_CODE) {
@@ -314,7 +345,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 zoomToUserLocation();
             } else {
                 //Shows dialog if permission is not granted
-                Toast.makeText(MapsActivity.this,"LOCATION PERMISSION NOT GRANTED", Toast.LENGTH_LONG);
+                Toast.makeText(MapsActivity.this,"LOCATION PERMISSION NOT GRANTED", Toast.LENGTH_LONG).show();
+                openDialogNoPermission();
             }
         }
     }
