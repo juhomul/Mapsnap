@@ -164,15 +164,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+        //getMarkers("http://100.26.132.75/story/location");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Location enabled!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Location enabled!", Toast.LENGTH_SHORT).show();
             getMarkers("http://100.26.132.75/story/location");
             enableUserLocation();
             zoomToUserLocation();
         } else {
-            Toast.makeText(this,"Location is needed to uses Maps", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this,"Location is needed to uses Maps", Toast.LENGTH_LONG).show();
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
@@ -198,9 +199,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-
-                //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-                //mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
             }
         });
     }
