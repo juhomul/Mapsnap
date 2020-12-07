@@ -16,9 +16,11 @@ import android.text.TextWatcher;
 import android.text.format.Time;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -173,7 +175,7 @@ public class ExploreActivity extends AppCompatActivity {
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        //Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
+                        /*//Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
                         result2.clear();
                         result3.clear();
                         result4.clear();
@@ -201,7 +203,8 @@ public class ExploreActivity extends AppCompatActivity {
                             }
                         }
 
-                        return true;
+                        return true;*/
+                        performSearch();
                     }
 
                 }
@@ -209,6 +212,16 @@ public class ExploreActivity extends AppCompatActivity {
                 return false;
             }
 
+        });
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch();
+                    return true;
+                }
+                return false;
+            }
         });
 
 
@@ -372,6 +385,34 @@ public class ExploreActivity extends AppCompatActivity {
         adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
+    }
+    private void performSearch() {
+        result2.clear();
+        result3.clear();
+        result4.clear();
+        result5.clear();
+        search = searchBar.getText().toString();
+        for(int i=0; i<subtitle.size(); i++) {
+            String subtitleString = subtitle.get(i);
+            Bitmap imgidString = imgid.get(i);
+            String usernameString = usernameArraylist.get(i);
+            String timestampString = timestamp.get(i);
+
+            if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
+                result2.add(subtitleString);
+                result3.add(imgidString);
+                result4.add(usernameString);
+                result5.add(timestampString);
+                searchAdapt();
+            }
+            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
+                result2.add(subtitleString);
+                result3.add(imgidString);
+                result4.add(usernameString);
+                result5.add(timestampString);
+                searchAdapt();
+            }
+        }
     }
 
 }
