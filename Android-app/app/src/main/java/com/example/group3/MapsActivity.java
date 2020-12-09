@@ -265,7 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             marker = mMap.addMarker(
                     new MarkerOptions().
                             position(markersList.get(i)).
-                            icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
+                            icon(BitmapDescriptorFactory.fromResource(R.drawable.logo_small)).
                             title("Marker" + i));
         }
     }
