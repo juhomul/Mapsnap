@@ -54,6 +54,7 @@
             android:background="@drawable/searchbar"
             android:imeOptions="actionSearch"
             android:inputType="text"
+            android:maxLines="1"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"

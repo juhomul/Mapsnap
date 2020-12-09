@@ -9,12 +9,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Base64;
 import android.util.Log;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -45,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -52,6 +56,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.time.OffsetDateTime;
@@ -177,35 +182,6 @@ public class ExploreActivity extends AppCompatActivity {
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        /*//Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
-                        result2.clear();
-                        result3.clear();
-                        result4.clear();
-                        result5.clear();
-                        search = searchBar.getText().toString();
-                        for(int i=0; i<subtitle.size(); i++) {
-                            String subtitleString = subtitle.get(i);
-                            Bitmap imgidString = imgid.get(i);
-                            String usernameString = usernameArraylist.get(i);
-                            String timestampString = timestamp.get(i);
-
-                            if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
-                                result2.add(subtitleString);
-                                result3.add(imgidString);
-                                result4.add(usernameString);
-                                result5.add(timestampString);
-                                searchAdapt();
-                            }
-                            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
-                                result2.add(subtitleString);
-                                result3.add(imgidString);
-                                result4.add(usernameString);
-                                result5.add(timestampString);
-                                searchAdapt();
-                            }
-                        }
-
-                        return true;*/
                         performSearch();
                     }
 
@@ -379,19 +355,20 @@ public class ExploreActivity extends AppCompatActivity {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            Instant instant = Instant.parse(isoTime);
-            Date myDate = Date.from(instant);
-            @SuppressLint("SimpleDateFormat")
-            SimpleDateFormat sdfDate = new SimpleDateFormat("MMM d, yyyy HH:mm");
-            sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-            String formatDateTime = sdfDate.format(myDate);
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            try {
+                Date date = inputFormat.parse(isoTime);
+                String niceDateStr = (String) DateUtils.getRelativeTimeSpanString(date.getTime() , Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS);
+                timestamp.add(niceDateStr);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             subtitle.add(description);
             imgid.add(decodedByte);
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
-            timestamp.add(formatDateTime); // tässä timestamp lisätään listviewiin
         }
         arrayAdapt();
     }
@@ -408,6 +385,9 @@ public class ExploreActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
     private void performSearch() {
+        searchBar.clearFocus();
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
         result2.clear();
         result3.clear();
         result4.clear();
