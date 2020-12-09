@@ -57,6 +57,7 @@ public class cameraActivity extends AppCompatActivity {
         Intent imageIntent = new Intent(this, CreateStoryActivity.class);
         imageIntent.putExtra("imagePath", currentPhotoPath);
         startActivity(imageIntent);
+        finish();
     }
 
     private void askCameraPermissions() {

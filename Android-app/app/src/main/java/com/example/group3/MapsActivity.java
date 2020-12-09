@@ -75,10 +75,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        userLatLng = new LatLng(0,0);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -155,7 +158,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     case R.id.camera:
                         startActivity(new Intent(getApplicationContext(), cameraActivity.class));
-                        finish(); //Tämä sulkee maps activityn joten ku kamera/CreateStory activitysta tullaan niin mennäänki suoraan mainActivityyn.
+                        //finish(); //Tämä sulkee maps activityn joten ku kamera/CreateStory activitysta tullaan niin mennäänki suoraan mainActivityyn.
                         overridePendingTransition(0, 0);
                         return true;
 
@@ -347,14 +350,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
         builder.create();
-    }
-
-    public void checkPermission(int requestCode) {
-        if (requestCode == ACCESS_LOCATION_CODE) {
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                    ACCESS_LOCATION_CODE);
-        }
     }
 
     @Override
