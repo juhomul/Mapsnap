@@ -22,12 +22,10 @@ public class SplashScreenActivity extends AppCompatActivity {
                     //.withHeaderText("Header")
                     //.withFooterText("Footer")
                     //.withBeforeLogoText("Vitun mättö android projekti")
-                    .withAfterLogoText("Mapsnap")
-                    .withLogo(R.drawable.icon_pika);
+                    .withLogo(R.drawable.logo_text);
             //config.getHeaderTextView().setTextColor(Color.WHITE);
             //config.getFooterTextView().setTextColor(Color.WHITE);
             //config.getBeforeLogoTextView().setTextColor(Color.BLACK);
-            config.getAfterLogoTextView().setTextColor(Color.BLACK);
             View easySplashScreen = config.create();
             setContentView(easySplashScreen);
         }
