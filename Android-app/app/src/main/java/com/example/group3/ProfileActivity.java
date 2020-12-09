@@ -7,6 +7,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -27,6 +28,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -36,9 +38,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,25 +112,13 @@ public class ProfileActivity extends AppCompatActivity {
         feedAdapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                final Dialog dialog = new Dialog(ProfileActivity.this);
-                dialog.setContentView(R.layout.customlist); // R.layout.longpress_popup
-                dialog.setTitle(null);
-                String subtitleString = subtitle.get(position);
-                Bitmap imgidString = imgid.get(position);
-                String usernameString = usernameArraylist.get(position);
-                String timestampString = timestamp.get(position);
+                String storyIdString = storyIdlist.get(position);
 
-                storyImage = dialog.findViewById(R.id.image);
-                usernameTextView = dialog.findViewById(R.id.postersUsername);
-                subtitleTextView = dialog.findViewById(R.id.description);
-                timestampTextView = dialog.findViewById(R.id.timestamp);
+                Intent viewStoryIntent = new Intent(ProfileActivity.this, ViewStoryActivity.class);
+                viewStoryIntent.putExtra("storyid", storyIdString);
+                startActivity(viewStoryIntent);
+                //finish();
 
-                usernameTextView.setText(usernameString);
-                storyImage.setImageBitmap(imgidString);
-                subtitleTextView.setText(subtitleString);
-                timestampTextView.setText(timestampString);
-
-                dialog.show();
             }
 
             @Override
@@ -270,10 +264,12 @@ public class ProfileActivity extends AppCompatActivity {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
-            String asd = odt.toString();
-
-            // if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
+            Instant instant = Instant.parse(isoTime);
+            Date myDate = Date.from(instant);
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat sdfDate = new SimpleDateFormat("MMM d, yyyy HH:mm");
+            sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+            String formatDateTime = sdfDate.format(myDate);
 
             feedAdapter.addNewItem(decodedByte);
 
@@ -283,8 +279,8 @@ public class ProfileActivity extends AppCompatActivity {
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
-            timestamp.add(asd);
-        //  }
+            timestamp.add(formatDateTime);
+
 
         }
         Collections.reverse(imgid);
@@ -301,27 +297,34 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void deleteStory(String delUrl) {
-        JsonObjectRequest jsonDeleteRequest = new JsonObjectRequest
-                (Request.Method.DELETE, delUrl, null, new Response.Listener<JSONObject>() {
+        StringRequest deleteRequest = new StringRequest(Request.Method.DELETE, delUrl,
+                new Response.Listener<String>()
+                {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("mytag", "" + response);
+                    public void onResponse(String response) {
+                        Log.d("mytag", "deleteStory onResponse: " + response);
                     }
-                }, new Response.ErrorListener() {
+                },
+                new Response.ErrorListener()
+                {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("mytag", "" + error);
+                        Log.d("mytag", "deleteStory onErrorResponse: " + error);
+                        String responseBody = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                        Log.d("mytag", error.networkResponse.statusCode + ": " + responseBody);
                     }
-                }) {
+                }
+        ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
+                Map<String, String>  headers = new HashMap<String, String> ();
                 // authorization token
                 headers.put("Authorization", "Bearer " + SaveSharedPreference.getToken(ProfileActivity.this));
                 return headers;
-
             }
+
         };
-        requestQueue.add(jsonDeleteRequest);
+
+        requestQueue.add(deleteRequest);
     }
 }

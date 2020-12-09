@@ -33,6 +33,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/edit_text_bg"
         android:hint="Username"
+        android:inputType="textPersonName"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"

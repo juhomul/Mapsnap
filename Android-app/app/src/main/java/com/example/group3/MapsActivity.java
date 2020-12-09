@@ -7,17 +7,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,7 +50,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -65,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     JSONObject markerObject;
     JSONArray markers;
     RequestQueue requestQueue;
+    LatLng userLatLng;
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
@@ -75,7 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
@@ -158,18 +156,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
-    
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
-
         getMarkers("http://100.26.132.75/story/location");
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Location enabled!", Toast.LENGTH_SHORT).show();
             enableUserLocation();
             zoomToUserLocation();
         } else {
@@ -180,8 +178,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                         ACCESS_LOCATION_CODE);
             }
-
-
         }
     }
 
@@ -190,38 +186,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
+    @SuppressLint("MissingPermission")
     private void zoomToUserLocation() {
-        @SuppressLint("MissingPermission") Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
+        LocationServices.getFusedLocationProviderClient(this).getLastLocation().addOnSuccessListener(
+                new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                    }
+                }
+        );
+
+
+        /** //TÄMÄ VANHA EI KERKEÄ HAKEMAAN LOCATION
+        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
         locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
-                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-
             }
         });
+
+         */
     }
-    
+
 
     private void getMarkers(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        markers = response.getJSONArray("locations");
-                        addMarkers(markers);
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            markers = response.getJSONArray("locations");
+                            addMarkers(markers);
+                        }
+                        catch(JSONException e) {
+                            Log.d("mytag", "" + e);
+                        }
                     }
-                    catch(JSONException e) {
-                        Log.d("mytag", "" + e);
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.d("mytag", "" + error);
-                }
-            });
+                });
         Log.d("mytag", "" + jsonObjectRequest);
         requestQueue.add(jsonObjectRequest);
     }
@@ -255,16 +267,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             position(markersList.get(i)).
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_pika)).
                             title("Marker" + i));
-
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(markersList.get(i)));
         }
     }
 
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
         String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
-        String storyDesc = "Tässä on storyn description";
 
         private View view;
 
@@ -288,9 +296,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             MapsActivity.this.marker = marker;
 
             ImageView image = view.findViewById(R.id.image);
-            TextView desc = view.findViewById(R.id.textView);
-
-            desc.setText(storyDesc);
 
             Picasso.get()
                     .load(imageUri)
@@ -298,7 +303,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .into(image);
 
             //getInfoContents(marker);
+
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Intent viewStoryIntent = new Intent(MapsActivity.this, ViewStoryActivity.class);
+                    viewStoryIntent.putExtra("imagePath", imageUri);
+                    startActivity(viewStoryIntent);
+                }
+            });
+
             return view;
+        }
+    }
+
+    public void openDialogNoPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("ssdsdsdsds")
+                .setMessage("Tämdsdsdsdsse")
+                .setPositiveButton("OKe vittu", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+        builder.create();
+    }
+
+    public void checkPermission(int requestCode) {
+        if (requestCode == ACCESS_LOCATION_CODE) {
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_LOCATION_CODE);
         }
     }
 
@@ -310,7 +345,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 zoomToUserLocation();
             } else {
                 //Shows dialog if permission is not granted
-                Toast.makeText(MapsActivity.this,"LOCATION PERMISSION NOT GRANTED", Toast.LENGTH_LONG);
+                Toast.makeText(MapsActivity.this,"LOCATION PERMISSION NOT GRANTED", Toast.LENGTH_LONG).show();
+                openDialogNoPermission();
             }
         }
     }
