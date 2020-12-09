@@ -9,6 +9,11 @@
         <item android:id="@+id/side_logout"
             android:icon="@drawable/ic_logout"
             android:title="Logout" />
+
+        <item
+            android:id="@+id/side_delete_user"
+            android:icon="@android:drawable/ic_delete"
+            android:title="Delete your account" />
     </group>
 
 </menu>
