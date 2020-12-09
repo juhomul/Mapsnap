@@ -15,8 +15,11 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,12 +62,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient fusedLocationProviderClient;
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username;
+    String email, username, imageInMarker;
     Marker marker;
-    JSONObject markerObject;
-    JSONArray markers;
+    JSONObject markerObject, story;
+    JSONArray markers, storyArray;
     RequestQueue requestQueue;
     LatLng userLatLng;
+    ImageView imageView;
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
@@ -287,6 +291,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             position(markersList.get(i)).
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.logo_small)).
                             title("Marker" + i));
+            marker.setTag(markerIds.get(i));
         }
     }
 
@@ -315,12 +320,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public View getInfoWindow(final Marker marker) {
             MapsActivity.this.marker = marker;
 
-            ImageView image = view.findViewById(R.id.image);
+            String storyId = marker.getTag().toString();
+            imageView = view.findViewById(R.id.image);
 
-            Picasso.get()
+            getStory("http://100.26.132.75/story/id/" + storyId);
+
+            /*Picasso.get()
                     .load(imageUri)
                     .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                    .into(image);
+                    .into(image);*/
+
+            //Toast.makeText(getApplicationContext(), ""+ marker.getTag(), Toast.LENGTH_SHORT).show();
+
 
             //getInfoContents(marker);
 
@@ -328,7 +339,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     Intent viewStoryIntent = new Intent(MapsActivity.this, ViewStoryActivity.class);
-                    viewStoryIntent.putExtra("imagePath", imageUri);
+                    viewStoryIntent.putExtra("storyid", storyId);
                     startActivity(viewStoryIntent);
                 }
             });
@@ -369,5 +380,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 openDialogNoPermission();
             }
         }
+    }
+    private void getStory(String url) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            storyArray = response.getJSONArray("story");
+
+                            story = storyArray.getJSONObject(0);
+                            imageInMarker = story.getString("image");
+
+                        } catch (JSONException e) {
+                            Log.d("mytag", "" + e);
+                            e.printStackTrace();
+                        }
+                        byte[] decodedString = Base64.decode(imageInMarker, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                        imageView.setImageBitmap(decodedByte);
+
+
+
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
+                    }
+                });
+        requestQueue.add(jsonObjectRequest);
     }
 }
