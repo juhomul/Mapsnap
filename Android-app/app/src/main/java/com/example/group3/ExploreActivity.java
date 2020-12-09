@@ -7,6 +7,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -259,6 +261,25 @@ public class ExploreActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.side_delete_user:
+                        new AlertDialog.Builder(ExploreActivity.this)
+                                .setTitle("Are you sure")
+                                .setMessage("Your account and stories will be permanently deleted")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        DeleteUser deleteUser = new DeleteUser();
+                                        deleteUser.deleteUserRequest("http://100.26.132.75/user/id/" + SaveSharedPreference.getUserId(ExploreActivity.this), ExploreActivity.this);
+                                        finish();
+                                        overridePendingTransition(0, 0);
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
                         return true;
                 }
                 return false;

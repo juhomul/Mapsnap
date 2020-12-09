@@ -51,6 +51,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -113,6 +114,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.side_delete_user:
+                        new AlertDialog.Builder(MapsActivity.this)
+                                .setTitle("Are you sure")
+                                .setMessage("Your account and stories will be permanently deleted")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        DeleteUser deleteUser = new DeleteUser();
+                                        deleteUser.deleteUserRequest("http://100.26.132.75/user/id/" + SaveSharedPreference.getUserId(MapsActivity.this), MapsActivity.this);
+                                        finish();
+                                        overridePendingTransition(0, 0);
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
                         return true;
                 }
                 return false;
