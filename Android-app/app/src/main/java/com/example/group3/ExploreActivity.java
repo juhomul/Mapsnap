@@ -334,6 +334,7 @@ public class ExploreActivity extends AppCompatActivity {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+            @SuppressLint("SimpleDateFormat")
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             try {
                 Date date = inputFormat.parse(isoTime);
