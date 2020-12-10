@@ -7,7 +7,7 @@
     android:background="#2C2C2C"
     tools:context=".ViewStoryActivity">
 
-    <ImageView
+    <com.zolad.zoominimageview.ZoomInImageView
         android:id="@+id/storyImage"
         android:layout_width="410dp"
         android:layout_height="397dp"
