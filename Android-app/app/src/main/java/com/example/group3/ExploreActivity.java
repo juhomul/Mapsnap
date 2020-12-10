@@ -67,7 +67,7 @@ public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username, description, image, postersUsername, lat, lng, isoTime, search;
+    String email, username, description, image, postersUsername, lat, lng, isoTime, search, storyId;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
@@ -80,6 +80,7 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
+    ArrayList<String> storyIdList = new ArrayList<String>();
 
     ArrayList<String> result2 = new ArrayList<>();
     ArrayList<Bitmap> result3 = new ArrayList<>();
@@ -94,6 +95,7 @@ public class ExploreActivity extends AppCompatActivity {
     int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount, currentScrollState;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,13 +131,15 @@ public class ExploreActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String lat = latitude.get(i);
+                /*String lat = latitude.get(i);
                 String lng = longitude.get(i);
                 Intent mapsIntent = new Intent(ExploreActivity.this, MapsActivity.class);
                 mapsIntent.putExtra("latitude", lat);
-                mapsIntent.putExtra("longitude", lng);
+                mapsIntent.putExtra("longitude", lng);*/
                 //startActivity(mapsIntent);
-
+                Intent viewStoryIntent = new Intent(getApplicationContext(), ViewStoryActivity.class);
+                viewStoryIntent.putExtra("storyid", storyIdList.get(i));
+                startActivity(viewStoryIntent);
 
                 //Toast.makeText(ExploreActivity.this, ""+ timestamp.get(i), Toast.LENGTH_SHORT).show();
             }
@@ -349,6 +353,8 @@ public class ExploreActivity extends AppCompatActivity {
                 lat = story.getString("lat");
                 lng = story.getString("lng");
                 isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
+                storyId = story.getString("storyid");
+
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
@@ -370,6 +376,7 @@ public class ExploreActivity extends AppCompatActivity {
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
+            storyIdList.add(storyId);
         }
         arrayAdapt();
     }

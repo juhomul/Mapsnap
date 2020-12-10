@@ -326,16 +326,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             imageView = view.findViewById(R.id.image);
 
             getStory("http://100.26.132.75/story/id/" + storyId);
-            /*Picasso.get()
-                    .load(imageUri)
-                    .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                    .into(image);*/
 
-            //Toast.makeText(getApplicationContext(), ""+ marker.getTag(), Toast.LENGTH_SHORT).show();
-
-
-            //getInfoContents(marker);
-
+            
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
