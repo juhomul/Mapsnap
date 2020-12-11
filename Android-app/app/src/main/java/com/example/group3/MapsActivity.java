@@ -15,8 +15,11 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +47,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -51,6 +55,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -58,13 +63,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient fusedLocationProviderClient;
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username;
+    String email, username, imageInMarker;
     Marker marker;
-    JSONObject markerObject;
-    JSONArray markers;
+    JSONObject markerObject, story;
+    JSONArray markers, storyArray;
     RequestQueue requestQueue;
     LatLng userLatLng;
+    ImageView imageView;
     static int ACCESS_LOCATION_CODE = 1001;
+    boolean not_first_time_showing_info_window = false;
 
     public ArrayList<LatLng> markersList;
     public ArrayList<Integer> markerIds;
@@ -113,6 +120,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.side_delete_user:
+                        new AlertDialog.Builder(MapsActivity.this)
+                                .setTitle("Are you sure")
+                                .setMessage("Your account and stories will be permanently deleted")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        DeleteUser deleteUser = new DeleteUser();
+                                        deleteUser.deleteUserRequest("http://100.26.132.75/user/id/" + SaveSharedPreference.getUserId(MapsActivity.this), MapsActivity.this);
+                                        finish();
+                                        overridePendingTransition(0, 0);
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
                         return true;
                 }
                 return false;
@@ -267,6 +293,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             position(markersList.get(i)).
                             icon(BitmapDescriptorFactory.fromResource(R.drawable.logo_small)).
                             title("Marker" + i));
+            marker.setTag(markerIds.get(i));
         }
     }
 
@@ -295,20 +322,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public View getInfoWindow(final Marker marker) {
             MapsActivity.this.marker = marker;
 
-            ImageView image = view.findViewById(R.id.image);
+            String storyId = marker.getTag().toString();
+            imageView = view.findViewById(R.id.image);
 
-            Picasso.get()
-                    .load(imageUri)
-                    .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                    .into(image);
+            getStory("http://100.26.132.75/story/id/" + storyId);
 
-            //getInfoContents(marker);
-
+            
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     Intent viewStoryIntent = new Intent(MapsActivity.this, ViewStoryActivity.class);
-                    viewStoryIntent.putExtra("imagePath", imageUri);
+                    viewStoryIntent.putExtra("storyid", storyId);
                     startActivity(viewStoryIntent);
                 }
             });
@@ -349,5 +373,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 openDialogNoPermission();
             }
         }
+    }
+
+    private void getStory(String url) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            storyArray = response.getJSONArray("story");
+
+                            story = storyArray.getJSONObject(0);
+                            imageInMarker = story.getString("image");
+
+                        } catch (JSONException e) {
+                            Log.d("mytag", "" + e);
+                            e.printStackTrace();
+                        }
+                        byte[] decodedString = Base64.decode(imageInMarker, Base64.DEFAULT);
+                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                        imageView.setImageBitmap(decodedByte);
+                        if (not_first_time_showing_info_window == false) {
+                            marker.showInfoWindow();
+                            not_first_time_showing_info_window = true;
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("mytag", "" + error);
+                    }
+                });
+        requestQueue.add(jsonObjectRequest);
     }
 }

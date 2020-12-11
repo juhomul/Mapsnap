@@ -7,6 +7,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -65,7 +67,7 @@ public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username, description, image, postersUsername, lat, lng, isoTime, search;
+    String email, username, description, image, postersUsername, lat, lng, isoTime, search, storyId;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
@@ -78,6 +80,7 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
+    ArrayList<String> storyIdList = new ArrayList<String>();
 
     ArrayList<String> result2 = new ArrayList<>();
     ArrayList<Bitmap> result3 = new ArrayList<>();
@@ -92,6 +95,7 @@ public class ExploreActivity extends AppCompatActivity {
     int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount, currentScrollState;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,13 +131,15 @@ public class ExploreActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String lat = latitude.get(i);
+                /*String lat = latitude.get(i);
                 String lng = longitude.get(i);
                 Intent mapsIntent = new Intent(ExploreActivity.this, MapsActivity.class);
                 mapsIntent.putExtra("latitude", lat);
-                mapsIntent.putExtra("longitude", lng);
+                mapsIntent.putExtra("longitude", lng);*/
                 //startActivity(mapsIntent);
-
+                Intent viewStoryIntent = new Intent(getApplicationContext(), ViewStoryActivity.class);
+                viewStoryIntent.putExtra("storyid", storyIdList.get(i));
+                startActivity(viewStoryIntent);
 
                 //Toast.makeText(ExploreActivity.this, ""+ timestamp.get(i), Toast.LENGTH_SHORT).show();
             }
@@ -236,6 +242,25 @@ public class ExploreActivity extends AppCompatActivity {
                         finish();
                         overridePendingTransition(0, 0);
                         return true;
+
+                    case R.id.side_delete_user:
+                        new AlertDialog.Builder(ExploreActivity.this)
+                                .setTitle("Are you sure")
+                                .setMessage("Your account and stories will be permanently deleted")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        DeleteUser deleteUser = new DeleteUser();
+                                        deleteUser.deleteUserRequest("http://100.26.132.75/user/id/" + SaveSharedPreference.getUserId(ExploreActivity.this), ExploreActivity.this);
+                                        finish();
+                                        overridePendingTransition(0, 0);
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
+                        return true;
                 }
                 return false;
             }
@@ -328,12 +353,15 @@ public class ExploreActivity extends AppCompatActivity {
                 lat = story.getString("lat");
                 lng = story.getString("lng");
                 isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
+                storyId = story.getString("storyid");
+
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
+            @SuppressLint("SimpleDateFormat")
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             try {
                 Date date = inputFormat.parse(isoTime);
@@ -348,6 +376,7 @@ public class ExploreActivity extends AppCompatActivity {
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
+            storyIdList.add(storyId);
         }
         arrayAdapt();
     }
