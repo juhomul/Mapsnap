@@ -192,7 +192,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Location enabled!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Permission OK", Toast.LENGTH_LONG).show();
             enableUserLocation();
             zoomToUserLocation();
         } else {
@@ -217,22 +217,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-                                Toast.makeText(MapsActivity.this,"Location found", Toast.LENGTH_LONG).show();
-                            }
-                        }, 5000);
+                        if (location == null) {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                                    Toast.makeText(MapsActivity.this,"IF LOCATION NULL", Toast.LENGTH_LONG).show();
+                                }
+                            }, 5000);
+                        } else {
+                            userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                            Toast.makeText(MapsActivity.this,"ELSE TOAST", Toast.LENGTH_LONG).show();
+                        }
                         //userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                         //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-                        Toast.makeText(MapsActivity.this,"LOADING LOCATION", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MapsActivity.this,"AFTER SUCCESS", Toast.LENGTH_LONG).show();
                     }
-
                 }
         );
 
