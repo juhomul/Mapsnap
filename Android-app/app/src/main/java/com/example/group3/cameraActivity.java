@@ -11,17 +11,21 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -121,10 +125,50 @@ public class cameraActivity extends AppCompatActivity {
         if (requestCode == CAMERA_REQUEST_CODE) {
             // After image taken
             //image = (Bitmap) data.getExtras().get("data");
+            String strNewName = "resizedImage.jpg";
+            String newPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + strNewName;
+
+            try {
+                ResizeImages(currentPhotoPath, newPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Log.d("bitmap", "" + newPath);
             Intent imageIntent = new Intent(this, CreateStoryActivity.class);
-            imageIntent.putExtra("imagePath", currentPhotoPath);
+            imageIntent.putExtra("imagePath", newPath);
             startActivity(imageIntent);
             finish();
         }
+    }
+
+    public static void ResizeImages(String sPath, String sTo) throws IOException {
+        Bitmap image = BitmapFactory.decodeFile(sPath);
+
+        if (image.getWidth() >= image.getHeight()) {
+            image = Bitmap.createBitmap(image,
+                    image.getWidth() / 2 - image.getHeight() / 2,
+                    0,
+                    image.getHeight(),
+                    image.getHeight());
+        } else {
+            image = Bitmap.createBitmap(image,
+                    0,
+                    image.getHeight() / 2 - image.getWidth() / 2,
+                    image.getWidth(),
+                    image.getWidth());
+        }
+        
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+        File f = new File(sTo);
+        f.createNewFile();
+        FileOutputStream fo = new FileOutputStream(f);
+        fo.write(bytes.toByteArray());
+        fo.close();
+
+        File file = new File(sPath);
+        file.delete();
     }
 }

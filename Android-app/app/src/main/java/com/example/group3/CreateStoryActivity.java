@@ -64,7 +64,7 @@ public class CreateStoryActivity extends AppCompatActivity {
         Bitmap image = BitmapFactory.decodeFile(intent.getStringExtra("imagePath"));
         displayImageView.setImageBitmap(image);
 
-        Log.d("CreateStory", "imagePath: " + intent.getStringExtra("imagePath"));
+        // Log.d("CreateStory", "imagePath: " + intent.getStringExtra("imagePath"));
 
         Intent mapsIntent = new Intent(this, MapsActivity.class);
 
