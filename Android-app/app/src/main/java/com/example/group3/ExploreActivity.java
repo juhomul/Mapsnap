@@ -67,12 +67,8 @@ public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-<<<<<<< HEAD
     String email, username, description, image, postersUsername, lat, lng, isoTime, search;
     String niceDateStr;
-=======
-    String email, username, description, image, postersUsername, lat, lng, isoTime, search, storyId;
->>>>>>> 1a7f24acea85935c36713c2b34c259f36638725d
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
@@ -377,18 +373,8 @@ public class ExploreActivity extends AppCompatActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-<<<<<<< HEAD
             ListViewItem l = new ListViewItem(description, decodedByte, postersUsername, lat, lng, niceDateStr);
             listViewItems.add(l);
-=======
-
-            subtitle.add(description);
-            imgid.add(decodedByte);
-            usernameArraylist.add(postersUsername);
-            latitude.add(lat);
-            longitude.add(lng);
-            storyIdList.add(storyId);
->>>>>>> 1a7f24acea85935c36713c2b34c259f36638725d
         }
         ListViewItem l = new ListViewItem("", null, "Loading...", "", "", "");
         listViewItems.add(l);
