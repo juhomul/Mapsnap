@@ -17,6 +17,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,6 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     JSONArray markers;
     RequestQueue requestQueue;
     LatLng userLatLng;
+    //Location location;
     static int ACCESS_LOCATION_CODE = 1001;
 
     public ArrayList<LatLng> markersList;
@@ -75,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        userLatLng = new LatLng(0,0);
+        //userLatLng = new LatLng(0,0);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -164,7 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     case R.id.explore:
                         startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
-                        finish();
+                        //finish();
                         overridePendingTransition(0, 0);
                         return true;
 
@@ -215,10 +217,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                                Toast.makeText(MapsActivity.this,"Location found", Toast.LENGTH_LONG).show();
+                            }
+                        }, 5000);
+                        //userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                        Toast.makeText(MapsActivity.this,"LOADING LOCATION", Toast.LENGTH_LONG).show();
                     }
+
                 }
         );
 
@@ -236,7 +250,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
          */
     }
-
 
     private void getMarkers(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
