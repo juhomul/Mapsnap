@@ -158,7 +158,7 @@ public class cameraActivity extends AppCompatActivity {
                     image.getWidth(),
                     image.getWidth());
         }
-        
+
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 
