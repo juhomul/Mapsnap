@@ -369,7 +369,8 @@ public class ExploreActivity extends AppCompatActivity {
 
             try {
                 Date date = inputFormat.parse(isoTime);
-                niceDateStr = (String) DateUtils.getRelativeTimeSpanString(date.getTime() , Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS);
+                niceDateStr = (String) DateUtils.getRelativeTimeSpanString(date.getTime() ,
+                        Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
