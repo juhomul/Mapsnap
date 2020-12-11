@@ -47,6 +47,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -70,6 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng userLatLng;
     ImageView imageView;
     static int ACCESS_LOCATION_CODE = 1001;
+    boolean not_first_time_showing_info_window = false;
 
     public ArrayList<LatLng> markersList;
     public ArrayList<Integer> markerIds;
@@ -325,16 +327,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             getStory("http://100.26.132.75/story/id/" + storyId);
 
-            /*Picasso.get()
-                    .load(imageUri)
-                    .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                    .into(image);*/
-
-            //Toast.makeText(getApplicationContext(), ""+ marker.getTag(), Toast.LENGTH_SHORT).show();
-
-
-            //getInfoContents(marker);
-
+            
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -381,6 +374,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
     private void getStory(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -400,9 +394,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
                         imageView.setImageBitmap(decodedByte);
-
-
-
+                        if (not_first_time_showing_info_window == false) {
+                            marker.showInfoWindow();
+                            not_first_time_showing_info_window = true;
+                        }
 
                     }
                 }, new Response.ErrorListener() {
