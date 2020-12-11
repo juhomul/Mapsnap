@@ -348,7 +348,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             getStory("http://100.26.132.75/story/id/" + storyId);
 
-
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -362,18 +361,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void openDialogNoPermission() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("ssdsdsdsds")
-                .setMessage("Tämdsdsdsdsse")
-                .setPositiveButton("OKe vittu", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        builder.create();
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_LOCATION_CODE) {
@@ -383,7 +370,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else {
                 //Shows dialog if permission is not granted
                 Toast.makeText(MapsActivity.this,"LOCATION PERMISSION NOT GRANTED", Toast.LENGTH_LONG).show();
-                openDialogNoPermission();
             }
         }
     }
@@ -409,7 +395,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         imageView.setImageBitmap(decodedByte);
                         if (not_first_time_showing_info_window == false) {
                             marker.showInfoWindow();
-                            not_first_time_showing_info_window = true;
+                            //not_first_time_showing_info_window = true;
                         }
 
                     }
