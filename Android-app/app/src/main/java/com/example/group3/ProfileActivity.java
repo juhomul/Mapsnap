@@ -7,6 +7,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -38,9 +39,12 @@ import org.json.JSONObject;
 
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -108,25 +112,13 @@ public class ProfileActivity extends AppCompatActivity {
         feedAdapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                final Dialog dialog = new Dialog(ProfileActivity.this);
-                dialog.setContentView(R.layout.customlist); // R.layout.longpress_popup
-                dialog.setTitle(null);
-                String subtitleString = subtitle.get(position);
-                Bitmap imgidString = imgid.get(position);
-                String usernameString = usernameArraylist.get(position);
-                String timestampString = timestamp.get(position);
+                String storyIdString = storyIdlist.get(position);
 
-                storyImage = dialog.findViewById(R.id.image);
-                usernameTextView = dialog.findViewById(R.id.postersUsername);
-                subtitleTextView = dialog.findViewById(R.id.description);
-                timestampTextView = dialog.findViewById(R.id.timestamp);
+                Intent viewStoryIntent = new Intent(ProfileActivity.this, ViewStoryActivity.class);
+                viewStoryIntent.putExtra("storyid", storyIdString);
+                startActivity(viewStoryIntent);
+                //finish();
 
-                usernameTextView.setText(usernameString);
-                storyImage.setImageBitmap(imgidString);
-                subtitleTextView.setText(subtitleString);
-                timestampTextView.setText(timestampString);
-
-                dialog.show();
             }
 
             @Override
@@ -187,6 +179,25 @@ public class ProfileActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.side_delete_user:
+                        new AlertDialog.Builder(ProfileActivity.this)
+                                .setTitle("Are you sure")
+                                .setMessage("Your account and stories will be permanently deleted")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        DeleteUser deleteUser = new DeleteUser();
+                                        deleteUser.deleteUserRequest("http://100.26.132.75/user/id/" + SaveSharedPreference.getUserId(ProfileActivity.this), ProfileActivity.this);
+                                        finish();
+                                        overridePendingTransition(0, 0);
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
                         return true;
                 }
                 return false;
@@ -272,10 +283,12 @@ public class ProfileActivity extends AppCompatActivity {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
-            String asd = odt.toString();
-
-            // if (Pattern.compile(Pattern.quote(postersUsername), Pattern.CASE_INSENSITIVE).matcher(username).find()) {
+            Instant instant = Instant.parse(isoTime);
+            Date myDate = Date.from(instant);
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat sdfDate = new SimpleDateFormat("MMM d, yyyy HH:mm");
+            sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+            String formatDateTime = sdfDate.format(myDate);
 
             feedAdapter.addNewItem(decodedByte);
 
@@ -285,8 +298,8 @@ public class ProfileActivity extends AppCompatActivity {
             usernameArraylist.add(postersUsername);
             latitude.add(lat);
             longitude.add(lng);
-            timestamp.add(asd);
-        //  }
+            timestamp.add(formatDateTime);
+
 
         }
         Collections.reverse(imgid);

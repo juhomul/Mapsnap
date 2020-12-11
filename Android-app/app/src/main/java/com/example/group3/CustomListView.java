@@ -14,67 +14,31 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class CustomListView extends ArrayAdapter<String> {
-
+public class CustomListView extends ArrayAdapter<ListViewItem> {
     private final Activity context;
-    //private final ArrayList maintitle;
-    private final ArrayList subtitle;
-    private final ArrayList imgid;
-    private final ArrayList usernameArraylist;
-    private final ArrayList timestamp;
-
 
     public CustomListView(Context context,
-                          ArrayList<String> subtitle,
-                          ArrayList<Bitmap> imgid,
-                          ArrayList<String> usernameArraylist,
-                          ArrayList<String> timestamp) {
-        super(context, R.layout.customlist, subtitle);
+                          ArrayList<ListViewItem> listViewItems) {
+        super(context, R.layout.customlist, listViewItems);
 
         this.context= (Activity) getContext();
-        //this.maintitle=maintitle;
-        this.subtitle=subtitle;
-        this.imgid=imgid;
-        this.usernameArraylist=usernameArraylist;
-        this.timestamp=timestamp;
-
     }
-
-
-    /*public int getCountMaintitle() {
-        return maintitle.size();
-    }*/
-    public int getCountImgid() {
-        return imgid.size();
-    }
-    public int getCountSubtitle() {
-        return subtitle.size();
-    }
-    public int getCountUsernameArraylist() {
-        return usernameArraylist.size();
-    }
-    public int getCountTimestamp() {
-        return timestamp.size();
-    }
-
-
 
     public View getView(int position,View view,ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
         View rowView=inflater.inflate(R.layout.customlist, null,true);
 
-        TextView titleText = (TextView) rowView.findViewById(R.id.title);
         ImageView imageView = (ImageView) rowView.findViewById(R.id.image);
         TextView subtitleText = (TextView) rowView.findViewById(R.id.description);
         TextView postersUsername = (TextView) rowView.findViewById(R.id.postersUsername);
         TextView timestampTextView = (TextView) rowView.findViewById(R.id.timestamp);
 
+        ListViewItem l = getItem(position);
 
-        //titleText.setText((CharSequence) maintitle.get(position));
-        imageView.setImageBitmap((Bitmap) imgid.get(position));
-        subtitleText.setText((CharSequence) subtitle.get(position));
-        postersUsername.setText((CharSequence) usernameArraylist.get(position));
-        timestampTextView.setText((CharSequence) timestamp.get(position));
+        imageView.setImageBitmap((Bitmap) l.getImgid());
+        subtitleText.setText((CharSequence) l.getSubtitle());
+        postersUsername.setText((CharSequence) l.getUsernameArrayList());
+        timestampTextView.setText((CharSequence) l.getTimestamp());
 
         //titleText.setText((CharSequence) maintitle.get(getCountMaintitle() - position - 1));
         /*imageView.setImageBitmap((Bitmap) imgid.get(getCountImgid() - position - 1));

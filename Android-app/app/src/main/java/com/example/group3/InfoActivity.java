@@ -1,25 +1,41 @@
 package com.example.group3;
 
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.icu.text.IDNA;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class InfoActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
     String email, username;
+    RequestQueue requestQueue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +59,8 @@ public class InfoActivity extends AppCompatActivity {
         showEmail.setText(email);
         showUsername.setText(username);
 
+        requestQueue = Volley.newRequestQueue(this);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -58,6 +76,25 @@ public class InfoActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.side_delete_user:
+                        new AlertDialog.Builder(InfoActivity.this)
+                                .setTitle("Are you sure")
+                                .setMessage("Your account and stories will be permanently deleted")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        DeleteUser deleteUser = new DeleteUser();
+                                        deleteUser.deleteUserRequest("http://100.26.132.75/user/id/" + SaveSharedPreference.getUserId(InfoActivity.this), InfoActivity.this);
+                                        finish();
+                                        overridePendingTransition(0, 0);
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
                         return true;
                 }
                 return false;

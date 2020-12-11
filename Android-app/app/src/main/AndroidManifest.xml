@@ -21,18 +21,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Group3">
-        <activity android:name=".ViewStoryActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".CreateStoryActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".cameraActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".InfoActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ProfileActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ExploreActivity"
-            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"> </activity>
+        <activity
+            android:name=".ViewStoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CreateStoryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".cameraActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".InfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ExploreActivity"
+            android:screenOrientation="portrait" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -58,12 +65,15 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".LoginActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SignUpActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignUpActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SplashScreenActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

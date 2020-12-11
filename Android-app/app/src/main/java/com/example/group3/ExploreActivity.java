@@ -7,17 +7,25 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateUtils;
+import android.text.format.Time;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -39,11 +47,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.time.OffsetDateTime;
@@ -54,7 +67,8 @@ public class ExploreActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
-    String email, username, description, image, postersUsername, lat, lng, isoTime, search;
+    String email, username, description, image, postersUsername, lat, lng, isoTime, search, storyId;
+    String niceDateStr;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
@@ -67,11 +81,13 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<String> latitude = new ArrayList<String>();
     ArrayList<String> longitude = new ArrayList<String>();
     ArrayList<String> timestamp = new ArrayList<>();
+    ArrayList<String> storyIdList = new ArrayList<String>();
 
     ArrayList<String> result2 = new ArrayList<>();
     ArrayList<Bitmap> result3 = new ArrayList<>();
     ArrayList<String> result4 = new ArrayList<>();
     ArrayList<String> result5 = new ArrayList<>();
+    ArrayList<ListViewItem> listViewItems = new ArrayList<>();
 
     SwipeRefreshLayout swipeView;
     boolean flag_loading = false;
@@ -81,6 +97,7 @@ public class ExploreActivity extends AppCompatActivity {
     int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount, currentScrollState;
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,13 +133,15 @@ public class ExploreActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String lat = latitude.get(i);
+                /*String lat = latitude.get(i);
                 String lng = longitude.get(i);
                 Intent mapsIntent = new Intent(ExploreActivity.this, MapsActivity.class);
                 mapsIntent.putExtra("latitude", lat);
-                mapsIntent.putExtra("longitude", lng);
+                mapsIntent.putExtra("longitude", lng);*/
                 //startActivity(mapsIntent);
-
+                Intent viewStoryIntent = new Intent(getApplicationContext(), ViewStoryActivity.class);
+                viewStoryIntent.putExtra("storyid", storyIdList.get(i));
+                startActivity(viewStoryIntent);
 
                 //Toast.makeText(ExploreActivity.this, ""+ timestamp.get(i), Toast.LENGTH_SHORT).show();
             }
@@ -142,12 +161,11 @@ public class ExploreActivity extends AppCompatActivity {
 
             private void isScrollCompleted() {
 
-                if (currentFirstVisibleItem + currentVisibleItemCount >= currentTotalItemCount) {
+                if (currentFirstVisibleItem + currentVisibleItemCount >= currentTotalItemCount - 3) {
                     if (currentVisibleItemCount > 0
                             && currentScrollState == SCROLL_STATE_IDLE) {
 
-                        if(currentFirstVisibleItem + currentVisibleItemCount == currentTotalItemCount
-                                && currentTotalItemCount != 0) {
+                        if(currentTotalItemCount != 0) {
                             if(!flag_loading)
                             {
                                 flag_loading = true;
@@ -169,35 +187,7 @@ public class ExploreActivity extends AppCompatActivity {
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        //Toast.makeText(ExploreActivity.this, "toimii", Toast.LENGTH_SHORT).show();
-                        result2.clear();
-                        result3.clear();
-                        result4.clear();
-                        result5.clear();
-                        search = searchBar.getText().toString();
-                        for(int i=0; i<subtitle.size(); i++) {
-                            String subtitleString = subtitle.get(i);
-                            Bitmap imgidString = imgid.get(i);
-                            String usernameString = usernameArraylist.get(i);
-                            String timestampString = timestamp.get(i);
-
-                            if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
-                                result2.add(subtitleString);
-                                result3.add(imgidString);
-                                result4.add(usernameString);
-                                result5.add(timestampString);
-                                searchAdapt();
-                            }
-                            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
-                                result2.add(subtitleString);
-                                result3.add(imgidString);
-                                result4.add(usernameString);
-                                result5.add(timestampString);
-                                searchAdapt();
-                            }
-                        }
-
-                        return true;
+                        performSearch();
                     }
 
                 }
@@ -206,62 +196,16 @@ public class ExploreActivity extends AppCompatActivity {
             }
 
         });
-
-
-        searchBar.addTextChangedListener(new TextWatcher() {
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                /*result.clear();
-                search = searchBar.getText().toString();
-                for(int i=0; i<maintitle.size(); i++) {
-                    String titleString = maintitle.get(i);
-                    String subtitleString = subtitle.get(i);
-                    Bitmap imgidString = imgid.get(i);
-                    String usernameString = usernameArraylist.get(i);
-                    String timestampString = timestamp.get(i);
-                    if (titleString.contains(search)) {
-                        result.add(titleString);
-                        result2.add(subtitleString);
-                        result3.add(imgidString);
-                        result4.add(usernameString);
-                        result5.add(timestampString);
-                        searchAdapt();
-                    }
-                    else if(subtitleString.contains(search)) {
-                        result.add(titleString);
-                        result2.add(subtitleString);
-                        result3.add(imgidString);
-                        result4.add(usernameString);
-                        result5.add(timestampString);
-                        searchAdapt();
-                    }
-                    else if(usernameString.contains(search)) {
-                        result.add(titleString);
-                        result2.add(subtitleString);
-                        result3.add(imgidString);
-                        result4.add(usernameString);
-                        result5.add(timestampString);
-                        searchAdapt();
-                    }
-                    else {
-                        Toast.makeText(ExploreActivity.this, "ei toimi", Toast.LENGTH_SHORT).show();
-                    }
-                }*/
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch();
+                    return true;
+                }
+                return false;
             }
         });
-
-
-
 
 
         drawer = findViewById(R.id.drawer_layout);
@@ -298,6 +242,25 @@ public class ExploreActivity extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         finish();
                         overridePendingTransition(0, 0);
+                        return true;
+
+                    case R.id.side_delete_user:
+                        new AlertDialog.Builder(ExploreActivity.this)
+                                .setTitle("Are you sure")
+                                .setMessage("Your account and stories will be permanently deleted")
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        DeleteUser deleteUser = new DeleteUser();
+                                        deleteUser.deleteUserRequest("http://100.26.132.75/user/id/" + SaveSharedPreference.getUserId(ExploreActivity.this), ExploreActivity.this);
+                                        finish();
+                                        overridePendingTransition(0, 0);
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
                         return true;
                 }
                 return false;
@@ -357,6 +320,8 @@ public class ExploreActivity extends AppCompatActivity {
 
                             if(stories.isNull(0)) {
                                 allStoriesLoaded = true;
+                                listViewItems.remove(currentTotalItemCount - 1);
+                                adapter.notifyDataSetChanged();
                             }
                             else {
                                 parseJSON(stories);
@@ -391,35 +356,78 @@ public class ExploreActivity extends AppCompatActivity {
                 lat = story.getString("lat");
                 lng = story.getString("lng");
                 isoTime = story.getString("timestamp"); //tässä haetaan timestamp ISO 8601 muodossa
+                storyId = story.getString("storyid");
+
             } catch (JSONException e) {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            OffsetDateTime odt = OffsetDateTime.parse(isoTime); //tässä matiaksen huono yritys saaha parsetettua
-            String asd = odt.toString();
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-            subtitle.add(description);
-            imgid.add(decodedByte);
-            usernameArraylist.add(postersUsername);
-            latitude.add(lat);
-            longitude.add(lng);
-            timestamp.add(asd); // tässä timestamp lisätään listviewiin
+            try {
+                Date date = inputFormat.parse(isoTime);
+                niceDateStr = (String) DateUtils.getRelativeTimeSpanString(date.getTime() ,
+                        Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            ListViewItem l = new ListViewItem(description, decodedByte, postersUsername, lat, lng, niceDateStr);
+            listViewItems.add(l);
+            storyIdList.add(storyId);
         }
+        ListViewItem l = new ListViewItem("", null, "Loading...", "", "", "");
+        listViewItems.add(l);
         arrayAdapt();
     }
     private void arrayAdapt() {
-        adapter = new CustomListView(this, subtitle, imgid, usernameArraylist, timestamp);
+        if(firstItemLoaded == 0) {
+            adapter = new CustomListView(this, listViewItems);
+            listView.setAdapter(adapter);
+            firstItemLoaded = 1;
+        }
+        else {
+            listViewItems.remove(currentTotalItemCount - 1);
+        }
         adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
-        listView.setSelectionFromTop(currentFirstVisibleItem + firstItemLoaded, 0);
-        firstItemLoaded = 1;
     }
     private void searchAdapt() {
-        adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
+        //adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
+        //adapter.notifyDataSetChanged();
+        //listView.setAdapter(adapter);
+    }
+    private void performSearch() {
+        searchBar.clearFocus();
+        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+        result2.clear();
+        result3.clear();
+        result4.clear();
+        result5.clear();
+        search = searchBar.getText().toString();
+        for(int i=0; i<subtitle.size(); i++) {
+            String subtitleString = subtitle.get(i);
+            Bitmap imgidString = imgid.get(i);
+            String usernameString = usernameArraylist.get(i);
+            String timestampString = timestamp.get(i);
+
+            if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
+                result2.add(subtitleString);
+                result3.add(imgidString);
+                result4.add(usernameString);
+                result5.add(timestampString);
+                searchAdapt();
+            }
+            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
+                result2.add(subtitleString);
+                result3.add(imgidString);
+                result4.add(usernameString);
+                result5.add(timestampString);
+                searchAdapt();
+            }
+        }
     }
 
 }
