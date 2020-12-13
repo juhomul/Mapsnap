@@ -46,16 +46,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -150,7 +146,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu:
-
                         if (!drawer.isDrawerOpen(GravityCompat.START))
                             drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
@@ -182,7 +177,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -224,22 +218,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
         );
-
-
-        /** //TÄMÄ VANHA EI KERKEÄ HAKEMAAN LOCATION
-        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-            }
-        });
-
-         */
     }
-
 
     private void getMarkers(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -312,6 +291,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     && MapsActivity.this.marker.isInfoWindowShown()) {
                 MapsActivity.this.marker.hideInfoWindow();
                 MapsActivity.this.marker.showInfoWindow();
+                MapsActivity.this.marker = null;
             }
             return null;
         }
@@ -319,13 +299,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public View getInfoWindow(final Marker marker) {
             MapsActivity.this.marker = marker;
-
             String storyId = marker.getTag().toString();
             imageView = view.findViewById(R.id.image);
 
             getStory("http://100.26.132.75/story/id/" + storyId);
 
-            
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -391,21 +369,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         byte[] decodedString = Base64.decode(imageInMarker, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-                        //imageView.setImageBitmap(decodedByte);
-
                         try {
-                            if(not_first_time_showing_info_window==2){
-                                not_first_time_showing_info_window = 0;
-                                imageView.setImageBitmap(decodedByte);
-                            }
-                            else if (not_first_time_showing_info_window==1) {
-                                not_first_time_showing_info_window++;
-                                imageView.setImageBitmap(decodedByte);
-                                marker.showInfoWindow();
-                            }else if(not_first_time_showing_info_window==0){
-                                imageView.setImageBitmap(decodedByte);
-                                marker.showInfoWindow();
-                                not_first_time_showing_info_window++;
+                            switch(not_first_time_showing_info_window) {
+                                case 0:
+                                    imageView.setImageBitmap(decodedByte);
+                                    marker.showInfoWindow();
+                                    not_first_time_showing_info_window++;
+                                    break;
+                                case 1:
+                                    not_first_time_showing_info_window=0;
+                                    break;
                             }
                         } catch (Exception e) {
                             imageView.setImageDrawable(null);

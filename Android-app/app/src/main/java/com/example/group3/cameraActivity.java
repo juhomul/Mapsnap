@@ -33,7 +33,6 @@ public class cameraActivity extends AppCompatActivity {
     public static final int CAMERA_REQUEST_CODE = 102;
     ImageView displayImageView;
     Button cameraBtn;
-    Bitmap image;
     String currentPhotoPath;
 
     @Override
