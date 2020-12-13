@@ -71,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng userLatLng;
     ImageView imageView;
     static int ACCESS_LOCATION_CODE = 1001;
-    boolean not_first_time_showing_info_window = false;
+    int not_first_time_showing_info_window = 0;
 
     public ArrayList<LatLng> markersList;
     public ArrayList<Integer> markerIds;
@@ -299,8 +299,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
-        String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
-
         private View view;
 
         public CustomInfoWindowAdapter() {
@@ -393,10 +391,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         byte[] decodedString = Base64.decode(imageInMarker, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-                        imageView.setImageBitmap(decodedByte);
-                        if (not_first_time_showing_info_window == false) {
-                            marker.showInfoWindow();
-                            not_first_time_showing_info_window = true;
+                        //imageView.setImageBitmap(decodedByte);
+
+                        try {
+                            if(not_first_time_showing_info_window==2){
+                                not_first_time_showing_info_window = 0;
+                                imageView.setImageBitmap(decodedByte);
+                            }
+                            else if (not_first_time_showing_info_window==1) {
+                                not_first_time_showing_info_window++;
+                                imageView.setImageBitmap(decodedByte);
+                                marker.showInfoWindow();
+                            }else if(not_first_time_showing_info_window==0){
+                                imageView.setImageBitmap(decodedByte);
+                                marker.showInfoWindow();
+                                not_first_time_showing_info_window++;
+                            }
+                        } catch (Exception e) {
+                            imageView.setImageDrawable(null);
                         }
 
                     }
