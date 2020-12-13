@@ -65,7 +65,7 @@
             android:paddingTop="4dp"
             android:paddingEnd="8dp"
             android:paddingBottom="4dp"
-            android:textColor="#FFFFFF"
+            android:textColor="#F8F8F8"
             android:textColorHint="@color/grey" />
 
         </RelativeLayout>
