@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
@@ -77,10 +78,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        //userLatLng = new LatLng(0,0);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         drawer = findViewById(R.id.drawer_layout);
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -156,13 +160,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     case R.id.camera:
                         startActivity(new Intent(getApplicationContext(), cameraActivity.class));
-                        finish(); //Tämä sulkee maps activityn joten ku kamera/CreateStory activitysta tullaan niin mennäänki suoraan mainActivityyn.
+                        //finish(); //Tämä sulkee maps activityn joten ku kamera/CreateStory activitysta tullaan niin mennäänki suoraan mainActivityyn.
                         overridePendingTransition(0, 0);
                         return true;
 
                     case R.id.explore:
                         startActivity(new Intent(getApplicationContext(), ExploreActivity.class));
-                        finish();
+                        //finish();
                         overridePendingTransition(0, 0);
                         return true;
 
@@ -187,7 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Location enabled!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Permission OK", Toast.LENGTH_LONG).show();
             enableUserLocation();
             zoomToUserLocation();
         } else {
@@ -212,9 +216,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
-                        userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                        if (location == null) {
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                    mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                                    Toast.makeText(MapsActivity.this,"IF LOCATION NULL", Toast.LENGTH_LONG).show();
+                                }
+                            }, 5000);
+                        } else {
+                            userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                            Toast.makeText(MapsActivity.this,"ELSE TOAST", Toast.LENGTH_LONG).show();
+                        }
+                        //userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+                        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
+                        //Toast.makeText(MapsActivity.this,"AFTER SUCCESS", Toast.LENGTH_LONG).show();
                     }
                 }
         );
@@ -317,26 +339,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void openDialogNoPermission() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("ssdsdsdsds")
-                .setMessage("Tämdsdsdsdsse")
-                .setPositiveButton("OKe vittu", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-        builder.create();
-    }
-
-    public void checkPermission(int requestCode) {
-        if (requestCode == ACCESS_LOCATION_CODE) {
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-                    ACCESS_LOCATION_CODE);
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ACCESS_LOCATION_CODE) {
@@ -346,7 +348,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else {
                 //Shows dialog if permission is not granted
                 Toast.makeText(MapsActivity.this,"LOCATION PERMISSION NOT GRANTED", Toast.LENGTH_LONG).show();
-                openDialogNoPermission();
             }
         }
     }
