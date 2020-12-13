@@ -68,6 +68,7 @@ public class ExploreActivity extends AppCompatActivity {
     private DrawerLayout drawer;
     TextView showEmail, showUsername;
     String email, username, description, image, postersUsername, lat, lng, isoTime, search, storyId;
+    String niceDateStr;
     RequestQueue requestQueue;
     JSONArray stories;
     JSONObject story;
@@ -86,6 +87,7 @@ public class ExploreActivity extends AppCompatActivity {
     ArrayList<Bitmap> result3 = new ArrayList<>();
     ArrayList<String> result4 = new ArrayList<>();
     ArrayList<String> result5 = new ArrayList<>();
+    ArrayList<ListViewItem> listViewItems = new ArrayList<>();
 
     SwipeRefreshLayout swipeView;
     boolean flag_loading = false;
@@ -159,12 +161,11 @@ public class ExploreActivity extends AppCompatActivity {
 
             private void isScrollCompleted() {
 
-                if (currentFirstVisibleItem + currentVisibleItemCount >= currentTotalItemCount) {
+                if (currentFirstVisibleItem + currentVisibleItemCount >= currentTotalItemCount - 3) {
                     if (currentVisibleItemCount > 0
                             && currentScrollState == SCROLL_STATE_IDLE) {
 
-                        if(currentFirstVisibleItem + currentVisibleItemCount == currentTotalItemCount
-                                && currentTotalItemCount != 0) {
+                        if(currentTotalItemCount != 0) {
                             if(!flag_loading)
                             {
                                 flag_loading = true;
@@ -319,6 +320,8 @@ public class ExploreActivity extends AppCompatActivity {
 
                             if(stories.isNull(0)) {
                                 allStoriesLoaded = true;
+                                listViewItems.remove(currentTotalItemCount - 1);
+                                adapter.notifyDataSetChanged();
                             }
                             else {
                                 parseJSON(stories);
@@ -363,34 +366,37 @@ public class ExploreActivity extends AppCompatActivity {
 
             @SuppressLint("SimpleDateFormat")
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
             try {
                 Date date = inputFormat.parse(isoTime);
-                String niceDateStr = (String) DateUtils.getRelativeTimeSpanString(date.getTime() , Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS);
-                timestamp.add(niceDateStr);
+                niceDateStr = (String) DateUtils.getRelativeTimeSpanString(date.getTime() ,
+                        Calendar.getInstance().getTimeInMillis(), DateUtils.MINUTE_IN_MILLIS);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-            subtitle.add(description);
-            imgid.add(decodedByte);
-            usernameArraylist.add(postersUsername);
-            latitude.add(lat);
-            longitude.add(lng);
+            ListViewItem l = new ListViewItem(description, decodedByte, postersUsername, lat, lng, niceDateStr);
+            listViewItems.add(l);
             storyIdList.add(storyId);
         }
+        ListViewItem l = new ListViewItem("", null, "Loading...", "", "", "");
+        listViewItems.add(l);
         arrayAdapt();
     }
     private void arrayAdapt() {
-        adapter = new CustomListView(this, subtitle, imgid, usernameArraylist, timestamp);
+        if(firstItemLoaded == 0) {
+            adapter = new CustomListView(this, listViewItems);
+            listView.setAdapter(adapter);
+            firstItemLoaded = 1;
+        }
+        else {
+            listViewItems.remove(currentTotalItemCount - 1);
+        }
         adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
-        listView.setSelectionFromTop(currentFirstVisibleItem + firstItemLoaded, 0);
-        firstItemLoaded = 1;
     }
     private void searchAdapt() {
-        adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
+        //adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
+        //adapter.notifyDataSetChanged();
+        //listView.setAdapter(adapter);
     }
     private void performSearch() {
         searchBar.clearFocus();

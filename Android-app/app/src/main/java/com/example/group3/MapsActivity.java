@@ -378,7 +378,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     not_first_time_showing_info_window++;
                                     break;
                                 case 1:
-                                    not_first_time_showing_info_window=0;
+                                    not_first_time_showing_info_window = 0;
                                     break;
                             }
                         } catch (Exception e) {

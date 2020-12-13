@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -38,6 +39,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -65,9 +68,9 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<String> timestamp = new ArrayList<String>();
     MyRecyclerViewAdapter feedAdapter;
     RecyclerView recyclerView;
-    ImageView storyImage;
     Integer storiesAmount;
     AlertDialog.Builder builder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +107,15 @@ public class ProfileActivity extends AppCompatActivity {
         showUsername.setText(username);
 
         recyclerView = findViewById(R.id.rvFeed);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         feedAdapter = new MyRecyclerViewAdapter(ProfileActivity.this);
+        feedAdapter.setHasStableIds(true);
+
         recyclerView.setAdapter(feedAdapter);
         feedAdapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
             @Override
@@ -127,7 +135,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 ImageView image = new ImageView(getApplicationContext());
                 Bitmap originalPic = imgid.get(position);
-                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 300, 400, false);
+                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 400, 400, false);
                 image.setImageBitmap(newSize);
 
                 builder = new AlertDialog.Builder(ProfileActivity.this);
@@ -283,14 +291,15 @@ public class ProfileActivity extends AppCompatActivity {
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            Instant instant = Instant.parse(isoTime);
+                    Instant instant = Instant.parse(isoTime);
             Date myDate = Date.from(instant);
             @SuppressLint("SimpleDateFormat")
             SimpleDateFormat sdfDate = new SimpleDateFormat("MMM d, yyyy HH:mm");
             sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
             String formatDateTime = sdfDate.format(myDate);
 
-            feedAdapter.addNewItem(decodedByte);
+            feedAdapter.addNewItem(decodedString);
+
 
             imgid.add(decodedByte);
             storyIdlist.add(storyId);
