@@ -41,12 +41,12 @@ public class cameraActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+        //setContentView(R.layout.activity_camera);
 
-        displayImageView = findViewById(R.id.displayImageView);
+        //displayImageView = findViewById(R.id.displayImageView);
         askCameraPermissions();
+        /*
         cameraBtn = findViewById(R.id.cameraBtn);
         cameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +54,8 @@ public class cameraActivity extends AppCompatActivity {
                 sendImage();
             }
         });
+
+         */
     }
 
     private void sendImage() {
@@ -77,7 +79,8 @@ public class cameraActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
             } else {
-                Toast.makeText(this, "Camera Permission is required to use the camera.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera Permission is required to use the camera.", Toast.LENGTH_LONG).show();
+                finish();
             }
         }
     }
