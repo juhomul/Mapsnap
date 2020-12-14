@@ -381,6 +381,7 @@ public class ExploreActivity extends AppCompatActivity {
         ListViewItem l = new ListViewItem("", null, "Loading...", "", "", "");
         listViewItems.add(l);
         arrayAdapt();
+        findViewById(R.id.loading).setVisibility(View.GONE);
     }
     private void arrayAdapt() {
         if(firstItemLoaded == 0) {
