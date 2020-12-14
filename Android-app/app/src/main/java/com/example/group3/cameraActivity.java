@@ -35,27 +35,12 @@ public class cameraActivity extends AppCompatActivity {
 
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
-    ImageView displayImageView;
-    Button cameraBtn;
     String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_camera);
-
-        //displayImageView = findViewById(R.id.displayImageView);
         askCameraPermissions();
-        /*
-        cameraBtn = findViewById(R.id.cameraBtn);
-        cameraBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendImage();
-            }
-        });
-
-         */
     }
 
     private void sendImage() {
@@ -126,22 +111,27 @@ public class cameraActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST_CODE) {
-            // After image taken
-            //image = (Bitmap) data.getExtras().get("data");
-            String strNewName = "resizedImage.jpg";
-            String newPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + strNewName;
+            if(requestCode == RESULT_OK) {
+                // After image taken
+                //image = (Bitmap) data.getExtras().get("data");
+                String strNewName = "resizedImage.jpg";
+                String newPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + strNewName;
 
-            try {
-                ResizeImages(currentPhotoPath, newPath);
-            } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    ResizeImages(currentPhotoPath, newPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Log.d("bitmap", "" + newPath);
+                Intent imageIntent = new Intent(this, CreateStoryActivity.class);
+                imageIntent.putExtra("imagePath", newPath);
+                startActivity(imageIntent);
+                finish();
+            } else {
+                Intent mapsIntent = new Intent(this, MapsActivity.class);
+                startActivity(mapsIntent);
             }
-
-            Log.d("bitmap", "" + newPath);
-            Intent imageIntent = new Intent(this, CreateStoryActivity.class);
-            imageIntent.putExtra("imagePath", newPath);
-            startActivity(imageIntent);
-            finish();
         }
     }
 
