@@ -323,7 +323,9 @@ public class ExploreActivity extends AppCompatActivity {
 
                             if(stories.isNull(0)) {
                                 allStoriesLoaded = true;
-                                listViewItems.remove(currentTotalItemCount - 1);
+                                if(!onSearch) {
+                                    listViewItems.remove(currentTotalItemCount - 1);
+                                }
                                 adapter.notifyDataSetChanged();
                             }
                             else {
