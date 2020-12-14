@@ -87,24 +87,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         storyAmountTextView = findViewById(R.id.stories_amount);
 
-        long maxCounter = 5000;
-        long diff = 1000;
-
-        new CountDownTimer(maxCounter , diff ) {
-
-            public void onTick(long millisUntilFinished) {
-                //here you can have your logic to set text to edittext
-            }
-
-            public void onFinish() {
-                if(storiesAmount == null) {
-                    findViewById(R.id.loading).setVisibility(View.GONE);
-                    storyAmountTextView.setText("0");
-                }
-            }
-
-        }.start();
-
         drawer = findViewById(R.id.drawer_layout);
         //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
       
@@ -287,6 +269,8 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("mytag", "" + error);
+                        findViewById(R.id.loading).setVisibility(View.GONE);
+                        storyAmountTextView.setText("0");
                     }
                 });
 
