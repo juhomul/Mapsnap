@@ -55,22 +55,6 @@ public class ViewStoryActivity extends AppCompatActivity {
         //jos tulee profiilista
         getStory("http://100.26.132.75/story/id/" + storyId);
 
-        ImageView image = findViewById(R.id.storyImage);
-        ImageButton returnButton = findViewById(R.id.returnButton);
-
-
-        returnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent backIntent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(backIntent);
-            }
-        });
-
-        Picasso.get()
-                .load(imagePath)
-                .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                .into(image);
     }
     private void getStory(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
