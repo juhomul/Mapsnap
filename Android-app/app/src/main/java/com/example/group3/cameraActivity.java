@@ -35,27 +35,12 @@ public class cameraActivity extends AppCompatActivity {
 
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
-    ImageView displayImageView;
-    Button cameraBtn;
     String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_camera);
-
-        //displayImageView = findViewById(R.id.displayImageView);
         askCameraPermissions();
-        /*
-        cameraBtn = findViewById(R.id.cameraBtn);
-        cameraBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendImage();
-            }
-        });
-
-         */
     }
 
     private void sendImage() {
