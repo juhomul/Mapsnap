@@ -121,9 +121,13 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 String storyIdString = storyIdlist.get(position);
+                String postersUsernameString = usernameArraylist.get(position);
+                String descriptionString = subtitle.get(position);
 
                 Intent viewStoryIntent = new Intent(ProfileActivity.this, ViewStoryActivity.class);
                 viewStoryIntent.putExtra("storyid", storyIdString);
+                viewStoryIntent.putExtra("username", postersUsernameString);
+                viewStoryIntent.putExtra("description", descriptionString);
                 startActivity(viewStoryIntent);
                 //finish();
 
@@ -289,6 +293,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
                     Instant instant = Instant.parse(isoTime);
@@ -298,7 +303,7 @@ public class ProfileActivity extends AppCompatActivity {
             sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
             String formatDateTime = sdfDate.format(myDate);
 
-            feedAdapter.addNewItem(decodedString);
+            feedAdapter.addNewItem(decodedString); //kuva menee tässä recyclerviewii
 
 
             imgid.add(decodedByte);
@@ -322,6 +327,7 @@ public class ProfileActivity extends AppCompatActivity {
         feedAdapter.reverseFeed();
         storiesAmount = imgid.size();
         storyAmountTextView.setText(String.valueOf(storiesAmount));
+        findViewById(R.id.loading).setVisibility(View.GONE);
     }
 
     private void deleteStory(String delUrl) {
