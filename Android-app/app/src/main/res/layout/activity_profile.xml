@@ -146,7 +146,7 @@
             android:indeterminate="true"
             android:id="@+id/loading"
             android:layout_marginTop="30dp"
-            android:layout_marginLeft="175dp" />
+            android:layout_gravity="center"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvFeed"
