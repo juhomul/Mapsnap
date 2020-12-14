@@ -224,14 +224,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                     mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-                                    Toast.makeText(MapsActivity.this,"IF LOCATION NULL", Toast.LENGTH_LONG).show();
                                 }
                             }, 5000);
                         } else {
                             userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-                            Toast.makeText(MapsActivity.this,"ELSE TOAST", Toast.LENGTH_LONG).show();
                         }
                         //userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                         //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
