@@ -36,8 +36,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Username"
-                android:textSize="20sp"
+                android:textSize="25sp"
                 android:id="@+id/profile_username"
+                android:textColor="@color/dark"
                 android:layout_toRightOf="@id/profile_picture"
                 android:layout_marginTop="40dp"
                 android:includeFontPadding="false"
@@ -69,7 +70,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:id="@+id/followers_icon"
-                        android:src="@drawable/ic_person"
+                        android:src="@drawable/ic_person_dark"
                         android:layout_centerHorizontal="true"/>
 
                     <TextView
@@ -80,6 +81,7 @@
                         android:layout_below="@+id/followers_icon"
                         android:includeFontPadding="false"
                         android:textSize="18sp"
+                        android:textColor="@color/dark"
                         android:layout_centerInParent="true" />
 
                     <TextView
@@ -88,6 +90,7 @@
                         android:layout_height="wrap_content"
                         android:text="Followers"
                         android:textSize="12sp"
+                        android:textColor="@color/dark"
                         android:layout_below="@+id/followers_amount"
                         android:layout_centerHorizontal="true" />
 
@@ -112,7 +115,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:id="@+id/stories_icon"
-                        android:src="@drawable/ic_explore"
+                        android:src="@drawable/ic_explore_dark"
                         android:layout_centerHorizontal="true"/>
 
                     <TextView
@@ -123,6 +126,7 @@
                         android:layout_below="@+id/stories_icon"
                         android:includeFontPadding="false"
                         android:textSize="18sp"
+                        android:textColor="@color/dark"
                         android:layout_centerInParent="true" />
 
                     <TextView
@@ -131,6 +135,7 @@
                         android:layout_height="wrap_content"
                         android:text="Stories"
                         android:textSize="12sp"
+                        android:textColor="@color/dark"
                         android:layout_below="@+id/stories_amount"
                         android:layout_centerHorizontal="true" />
 
