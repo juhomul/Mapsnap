@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
@@ -85,6 +86,24 @@ public class ProfileActivity extends AppCompatActivity {
         getStories(URL);
 
         storyAmountTextView = findViewById(R.id.stories_amount);
+
+        long maxCounter = 5000;
+        long diff = 1000;
+
+        new CountDownTimer(maxCounter , diff ) {
+
+            public void onTick(long millisUntilFinished) {
+                //here you can have your logic to set text to edittext
+            }
+
+            public void onFinish() {
+                if(storiesAmount == null) {
+                    findViewById(R.id.loading).setVisibility(View.GONE);
+                    storyAmountTextView.setText("0");
+                }
+            }
+
+        }.start();
 
         drawer = findViewById(R.id.drawer_layout);
         //drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -296,7 +315,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-                    Instant instant = Instant.parse(isoTime);
+            Instant instant = Instant.parse(isoTime);
             Date myDate = Date.from(instant);
             @SuppressLint("SimpleDateFormat")
             SimpleDateFormat sdfDate = new SimpleDateFormat("MMM d, yyyy HH:mm");
