@@ -125,7 +125,7 @@ public class cameraActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST_CODE) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             // After image taken
             //image = (Bitmap) data.getExtras().get("data");
             String strNewName = "resizedImage.jpg";
@@ -142,6 +142,9 @@ public class cameraActivity extends AppCompatActivity {
             imageIntent.putExtra("imagePath", newPath);
             startActivity(imageIntent);
             finish();
+        } else {
+            Intent mapsIntent = new Intent(this, MapsActivity.class);
+            startActivity(mapsIntent);
         }
     }
 

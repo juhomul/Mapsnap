@@ -18,7 +18,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     .withFullScreen()
                     .withTargetActivity(MainActivity.class)
                     .withSplashTimeOut(2000)
-                    .withBackgroundColor(Color.parseColor("#FF000000"))
+                    .withBackgroundColor(Color.parseColor("#141414"))
                     //.withHeaderText("Header")
                     //.withFooterText("Footer")
                     //.withBeforeLogoText("Vitun mättö android projekti")
