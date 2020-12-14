@@ -271,6 +271,49 @@ app.get("/story/userid/:userId", (req, res) => {
   })
 });
 
+// Search stories
+app.get("/story/search/:keyword", (req, res) => {
+  let number = req.query.number;
+  let offset = req.query.offset;
+  let sql = null;
+  // Return all stories
+  if(number === undefined) {
+    sql = "SELECT * FROM story ORDER BY storyid DESC";
+  } 
+  // Return specific stories
+  else {
+    // Offset defaults to 0
+    if(offset === undefined) { offset = 0 }
+
+    sql = `SELECT * FROM story ORDER BY storyid DESC LIMIT ${offset}, ${number}`
+  }
+
+  db.query(sql, function(err, stories, fields) {
+    if (err) {
+      console.log(err);
+      res.status(500).send("MySQL ERROR");
+      return;
+    }
+
+    let searchStories = [];
+    let key = req.params.keyword.toLowerCase();
+
+    stories.forEach(e => {
+      let username = e.username.toLowerCase();
+      let desc = e.description.toLowerCase();
+
+      if (username.search(key) !== -1) {
+        searchStories.push(e);
+      } else if (desc.search(key) !== -1) {
+        searchStories.push(e);
+      }
+    })
+
+    res.status(200).json({ searchStories });
+  })
+  
+});
+
 // Get all story locations
 app.get("/story/location", (req, res) => {
   let sql = "SELECT * FROM story";
