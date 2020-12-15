@@ -6,13 +6,9 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
-    //Button buttonTurha;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-        //SaveSharedPreference.clearUser(this);
 
         if(SaveSharedPreference.getStayLogged(MainActivity.this).length() == 0)
         {
@@ -27,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
-        //Version 0.5
+        //Version 1.0
     }
 
 }
