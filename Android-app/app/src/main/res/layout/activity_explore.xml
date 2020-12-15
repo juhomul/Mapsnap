@@ -18,6 +18,14 @@
             android:layout_height="match_parent"
             tools:context=".MainActivity">
 
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:id="@+id/loading"
+            android:layout_marginTop="70dp"
+            android:layout_centerHorizontal="true"/>
+
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:layout_width="match_parent"
@@ -49,23 +57,24 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <EditText
+            android:id="@+id/searchBar"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="4dp"
             android:background="@drawable/searchbar"
+            android:drawableEnd="@drawable/ic_search_light"
+            android:hint="Search"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
             android:paddingStart="10dp"
+            android:paddingTop="4dp"
             android:paddingEnd="8dp"
-            android:drawableEnd="@drawable/ic_search_light"
-            android:hint="Search"
-            android:textColorHint="@color/grey"
-            android:id="@+id/searchBar"/>
+            android:paddingBottom="4dp"
+            android:textColor="#F8F8F8"
+            android:textColorHint="@color/grey" />
 
         </RelativeLayout>
 

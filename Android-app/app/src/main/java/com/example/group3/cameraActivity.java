@@ -35,26 +35,12 @@ public class cameraActivity extends AppCompatActivity {
 
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
-    ImageView displayImageView;
-    Button cameraBtn;
-    Bitmap image;
     String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
-
-        displayImageView = findViewById(R.id.displayImageView);
         askCameraPermissions();
-        cameraBtn = findViewById(R.id.cameraBtn);
-        cameraBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendImage();
-            }
-        });
     }
 
     private void sendImage() {
@@ -78,7 +64,8 @@ public class cameraActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera();
             } else {
-                Toast.makeText(this, "Camera Permission is required to use the camera.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Camera Permission is required to use the camera.", Toast.LENGTH_LONG).show();
+                finish();
             }
         }
     }
@@ -123,7 +110,7 @@ public class cameraActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST_CODE) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             // After image taken
             //image = (Bitmap) data.getExtras().get("data");
             String strNewName = "resizedImage.jpg";
@@ -140,6 +127,9 @@ public class cameraActivity extends AppCompatActivity {
             imageIntent.putExtra("imagePath", newPath);
             startActivity(imageIntent);
             finish();
+        } else {
+            Intent mapsIntent = new Intent(this, MapsActivity.class);
+            startActivity(mapsIntent);
         }
     }
 

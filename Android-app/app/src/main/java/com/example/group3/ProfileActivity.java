@@ -15,12 +15,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -38,6 +40,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -65,9 +69,9 @@ public class ProfileActivity extends AppCompatActivity {
     ArrayList<String> timestamp = new ArrayList<String>();
     MyRecyclerViewAdapter feedAdapter;
     RecyclerView recyclerView;
-    ImageView storyImage;
     Integer storiesAmount;
     AlertDialog.Builder builder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,18 +108,27 @@ public class ProfileActivity extends AppCompatActivity {
         showUsername.setText(username);
 
         recyclerView = findViewById(R.id.rvFeed);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
         feedAdapter = new MyRecyclerViewAdapter(ProfileActivity.this);
+        feedAdapter.setHasStableIds(true);
+
         recyclerView.setAdapter(feedAdapter);
         feedAdapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 String storyIdString = storyIdlist.get(position);
+                String postersUsernameString = usernameArraylist.get(position);
+                String descriptionString = subtitle.get(position);
 
                 Intent viewStoryIntent = new Intent(ProfileActivity.this, ViewStoryActivity.class);
                 viewStoryIntent.putExtra("storyid", storyIdString);
+                viewStoryIntent.putExtra("username", postersUsernameString);
+                viewStoryIntent.putExtra("description", descriptionString);
                 startActivity(viewStoryIntent);
                 //finish();
 
@@ -127,7 +140,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                 ImageView image = new ImageView(getApplicationContext());
                 Bitmap originalPic = imgid.get(position);
-                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 300, 400, false);
+                Bitmap newSize = Bitmap.createScaledBitmap(originalPic, 400, 400, false);
                 image.setImageBitmap(newSize);
 
                 builder = new AlertDialog.Builder(ProfileActivity.this);
@@ -256,6 +269,8 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d("mytag", "" + error);
+                        findViewById(R.id.loading).setVisibility(View.GONE);
+                        storyAmountTextView.setText("0");
                     }
                 });
 
@@ -281,6 +296,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Log.d("mytag", "" + e);
             }
             byte[] decodedString = Base64.decode(image, Base64.DEFAULT);
+
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
             Instant instant = Instant.parse(isoTime);
@@ -290,7 +306,8 @@ public class ProfileActivity extends AppCompatActivity {
             sdfDate.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
             String formatDateTime = sdfDate.format(myDate);
 
-            feedAdapter.addNewItem(decodedByte);
+            feedAdapter.addNewItem(decodedString); //kuva menee tässä recyclerviewii
+
 
             imgid.add(decodedByte);
             storyIdlist.add(storyId);
@@ -313,6 +330,7 @@ public class ProfileActivity extends AppCompatActivity {
         feedAdapter.reverseFeed();
         storiesAmount = imgid.size();
         storyAmountTextView.setText(String.valueOf(storiesAmount));
+        findViewById(R.id.loading).setVisibility(View.GONE);
     }
 
     private void deleteStory(String delUrl) {

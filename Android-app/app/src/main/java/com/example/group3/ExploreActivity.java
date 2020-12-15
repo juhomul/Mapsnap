@@ -75,23 +75,15 @@ public class ExploreActivity extends AppCompatActivity {
     ListView listView;
     EditText searchBar;
     private int loadCount = 0;
-    ArrayList<String> subtitle = new ArrayList<String>();
-    ArrayList<Bitmap> imgid = new ArrayList<Bitmap>();
-    ArrayList<String> usernameArraylist = new ArrayList<String>();
-    ArrayList<String> latitude = new ArrayList<String>();
-    ArrayList<String> longitude = new ArrayList<String>();
-    ArrayList<String> timestamp = new ArrayList<>();
+
     ArrayList<String> storyIdList = new ArrayList<String>();
 
-    ArrayList<String> result2 = new ArrayList<>();
-    ArrayList<Bitmap> result3 = new ArrayList<>();
-    ArrayList<String> result4 = new ArrayList<>();
-    ArrayList<String> result5 = new ArrayList<>();
     ArrayList<ListViewItem> listViewItems = new ArrayList<>();
 
     SwipeRefreshLayout swipeView;
     boolean flag_loading = false;
     boolean allStoriesLoaded = false;
+    boolean onSearch = false;
     int firstItemLoaded = 0;
     CustomListView adapter;
     int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount, currentScrollState;
@@ -166,7 +158,7 @@ public class ExploreActivity extends AppCompatActivity {
                             && currentScrollState == SCROLL_STATE_IDLE) {
 
                         if(currentTotalItemCount != 0) {
-                            if(!flag_loading)
+                            if(!flag_loading && !onSearch)
                             {
                                 flag_loading = true;
                                 loadCount++;
@@ -187,7 +179,10 @@ public class ExploreActivity extends AppCompatActivity {
 
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     if (motionEvent.getRawX() >= (searchBar.getRight() - searchBar.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        performSearch();
+                        onSearch = true;
+                        firstItemLoaded = 0;
+                        listViewItems.clear();
+                        getStories("http://100.26.132.75/story/search/" + searchBar.getText().toString());
                     }
 
                 }
@@ -200,7 +195,10 @@ public class ExploreActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_SEARCH) {
-                    performSearch();
+                    onSearch = true;
+                    firstItemLoaded = 0;
+                    listViewItems.clear();
+                    getStories("http://100.26.132.75/story/search/" + searchBar.getText().toString());
                     return true;
                 }
                 return false;
@@ -315,12 +313,19 @@ public class ExploreActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            stories = response.getJSONArray("stories");
+                            if(onSearch) {
+                                stories = response.getJSONArray("searchStories");
+                            }
+                            else {
+                                stories = response.getJSONArray("stories");
+                            }
                             Log.d("mytag", "stories: " + stories);
 
                             if(stories.isNull(0)) {
                                 allStoriesLoaded = true;
-                                listViewItems.remove(currentTotalItemCount - 1);
+                                if(!onSearch) {
+                                    listViewItems.remove(currentTotalItemCount - 1);
+                                }
                                 adapter.notifyDataSetChanged();
                             }
                             else {
@@ -341,6 +346,7 @@ public class ExploreActivity extends AppCompatActivity {
 
         requestQueue.add(jsonObjectRequest);
     }
+
     private void parseJSON(JSONArray json) {
 
         for(int i = 0; i < json.length(); i++) {
@@ -374,14 +380,21 @@ public class ExploreActivity extends AppCompatActivity {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
             ListViewItem l = new ListViewItem(description, decodedByte, postersUsername, lat, lng, niceDateStr);
             listViewItems.add(l);
             storyIdList.add(storyId);
         }
-        ListViewItem l = new ListViewItem("", null, "Loading...", "", "", "");
-        listViewItems.add(l);
+
+        if(!onSearch) {
+            ListViewItem l = new ListViewItem("", null, "Loading...", "", "", "");
+            listViewItems.add(l);
+        }
+
         arrayAdapt();
+        findViewById(R.id.loading).setVisibility(View.GONE);
     }
+
     private void arrayAdapt() {
         if(firstItemLoaded == 0) {
             adapter = new CustomListView(this, listViewItems);
@@ -393,41 +406,4 @@ public class ExploreActivity extends AppCompatActivity {
         }
         adapter.notifyDataSetChanged();
     }
-    private void searchAdapt() {
-        //adapter = new CustomListView(ExploreActivity.this, result2, result3, result4, result5);
-        //adapter.notifyDataSetChanged();
-        //listView.setAdapter(adapter);
-    }
-    private void performSearch() {
-        searchBar.clearFocus();
-        InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        in.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
-        result2.clear();
-        result3.clear();
-        result4.clear();
-        result5.clear();
-        search = searchBar.getText().toString();
-        for(int i=0; i<subtitle.size(); i++) {
-            String subtitleString = subtitle.get(i);
-            Bitmap imgidString = imgid.get(i);
-            String usernameString = usernameArraylist.get(i);
-            String timestampString = timestamp.get(i);
-
-            if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(subtitleString).find()) {
-                result2.add(subtitleString);
-                result3.add(imgidString);
-                result4.add(usernameString);
-                result5.add(timestampString);
-                searchAdapt();
-            }
-            else if(Pattern.compile(Pattern.quote(search), Pattern.CASE_INSENSITIVE).matcher(usernameString).find()) {
-                result2.add(subtitleString);
-                result3.add(imgidString);
-                result4.add(usernameString);
-                result5.add(timestampString);
-                searchAdapt();
-            }
-        }
-    }
-
 }

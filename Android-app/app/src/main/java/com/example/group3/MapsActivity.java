@@ -47,16 +47,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -72,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng userLatLng;
     ImageView imageView;
     static int ACCESS_LOCATION_CODE = 1001;
-    boolean not_first_time_showing_info_window = false;
+    int not_first_time_showing_info_window = 0;
 
     public ArrayList<LatLng> markersList;
     public ArrayList<Integer> markerIds;
@@ -154,7 +150,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu:
-
                         if (!drawer.isDrawerOpen(GravityCompat.START))
                             drawer.openDrawer(GravityCompat.START);
                         else drawer.closeDrawer(GravityCompat.END);
@@ -187,7 +182,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -197,7 +191,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Permission OK", Toast.LENGTH_LONG).show();
             enableUserLocation();
             zoomToUserLocation();
         } else {
@@ -230,14 +223,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                     mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-                                    Toast.makeText(MapsActivity.this,"IF LOCATION NULL", Toast.LENGTH_LONG).show();
                                 }
                             }, 5000);
                         } else {
                             userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-                            Toast.makeText(MapsActivity.this,"ELSE TOAST", Toast.LENGTH_LONG).show();
                         }
                         //userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                         //mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
@@ -246,20 +237,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
         );
-
-
-        /** //TÄMÄ VANHA EI KERKEÄ HAKEMAAN LOCATION
-        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 10));
-            }
-        });
-
-         */
     }
 
     private void getMarkers(String url) {
@@ -320,8 +297,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
-        String imageUri = "https://i.imgur.com/tGbaZCY.jpg";
-
         private View view;
 
         public CustomInfoWindowAdapter() {
@@ -335,6 +310,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     && MapsActivity.this.marker.isInfoWindowShown()) {
                 MapsActivity.this.marker.hideInfoWindow();
                 MapsActivity.this.marker.showInfoWindow();
+                MapsActivity.this.marker = null;
             }
             return null;
         }
@@ -342,7 +318,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public View getInfoWindow(final Marker marker) {
             MapsActivity.this.marker = marker;
-
             String storyId = marker.getTag().toString();
             imageView = view.findViewById(R.id.image);
 
@@ -392,10 +367,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         byte[] decodedString = Base64.decode(imageInMarker, Base64.DEFAULT);
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-                        imageView.setImageBitmap(decodedByte);
-                        if (not_first_time_showing_info_window == false) {
-                            marker.showInfoWindow();
-                            //not_first_time_showing_info_window = true;
+                        try {
+                            switch(not_first_time_showing_info_window) {
+                                case 0:
+                                    imageView.setImageBitmap(decodedByte);
+                                    marker.showInfoWindow();
+                                    not_first_time_showing_info_window++;
+                                    break;
+                                case 1:
+                                    not_first_time_showing_info_window = 0;
+                                    break;
+                            }
+                        } catch (Exception e) {
+                            imageView.setImageDrawable(null);
                         }
 
                     }

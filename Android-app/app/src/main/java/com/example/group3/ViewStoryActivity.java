@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,6 +31,7 @@ public class ViewStoryActivity extends AppCompatActivity {
     RequestQueue requestQueue;
     JSONArray storyArray;
     JSONObject story;
+    TextView tvuserName, tvdesc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,30 +41,20 @@ public class ViewStoryActivity extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(this);
 
         Bundle bundle = getIntent().getExtras();
-        String imagePath = bundle.getString("imagePath");
+
         String storyId = bundle.getString("storyid");
+        username = bundle.getString("username");
+        description = bundle.getString("description");
+
+        tvuserName = findViewById(R.id.userText);
+        tvdesc = findViewById(R.id.descText);
+
+        tvuserName.setText(username);
+        tvdesc.setText(description);
 
         //jos tulee profiilista
         getStory("http://100.26.132.75/story/id/" + storyId);
 
-        ImageView image = findViewById(R.id.storyImage);
-        TextView userName = findViewById(R.id.userText);
-        TextView desc = findViewById(R.id.descText);
-        ImageButton returnButton = findViewById(R.id.returnButton);
-
-
-        returnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent backIntent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(backIntent);
-            }
-        });
-
-        Picasso.get()
-                .load(imagePath)
-                .error(R.mipmap.ic_launcher) // will be displayed if the image cannot be loaded
-                .into(image);
     }
     private void getStory(String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -88,12 +78,12 @@ public class ViewStoryActivity extends AppCompatActivity {
                         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
                         ImageView imageView = findViewById(R.id.storyImage);
-                        TextView userName = findViewById(R.id.userText);
-                        TextView desc = findViewById(R.id.descText);
 
                         imageView.setImageBitmap(decodedByte);
-                        userName.setText(username);
-                        desc.setText(description);
+
+                        tvuserName.setText(username);
+                        tvdesc.setText(description);
+
 
 
 

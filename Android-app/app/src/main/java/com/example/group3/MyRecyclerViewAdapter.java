@@ -11,19 +11,23 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<Bitmap> bmData = new ArrayList<>();
+    private ArrayList<byte[]> bmData = new ArrayList<>();
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private View headerView;
+    Context context;
 
     // data is passed into the constructor
     MyRecyclerViewAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
+        this.context = context;
         //this.bmData = data;
     }
 
@@ -31,15 +35,17 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.recyclerview_row, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_row, parent, false);
         return new ViewHolder(view);
     }
 
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Bitmap bmImage = bmData.get(position);
-        holder.feedPicture.setImageBitmap(bmImage);
+        byte[] bmImage = bmData.get(position);
+        Glide.with(context).load(bmImage)
+                .placeholder(R.drawable.icon_pika)
+                .into(holder.feedPicture);
     }
 
     // total number of rows
@@ -73,7 +79,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     }
 
     // convenience method for getting data at click position
-    Bitmap getItem(int id) {
+    byte[] getItem(int id) {
         return bmData.get(id);
     }
 
@@ -91,7 +97,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         this.headerView = view;
     }
 
-    public void addNewItem(Bitmap item) {
+    public void addNewItem(byte[] item) {
         bmData.add(item);
         this.notifyDataSetChanged();
     }
